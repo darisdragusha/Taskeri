@@ -1,0 +1,30 @@
+from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.middleware.cors import CORSMiddleware
+from views import routers
+
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #might need later
+app = FastAPI()
+
+# CORS Configuration
+allowed_origins = ["http://localhost", "http://127.0.0.1:8000", '*']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+for router in routers:
+    app.include_router(router)
+
+if __name__ == "__main__":
+    import os
+    import uvicorn
+
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", 10000))
+    uvicorn.run("app:app", host=host, port=port, reload=True)
