@@ -1,32 +1,27 @@
-import mysql.connector
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
-from contextlib import contextmanager
-from fastapi import HTTPException
-from mysql.connector import connect, Error
-from typing import Any, Callable
 
-# Load environment variables from .env file
-load_dotenv(dotenv_path='.env')
+# Load environment variables
+load_dotenv(dotenv_path=".env")
 
-def getDbConnection():
-    return mysql.connector.connect(
+# Database URL
+DB_URL = f"mysql+mysqlconnector://{os.getenv('DB_USERNAME')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
 
-        host = os.getenv("DB_HOST"),
-        user = os.getenv("DB_USERNAME"),
-        password = os.getenv("DB_PASSWORD"),
-        database = os.getenv("DB_NAME"),
+# Create the database engine
+engine = create_engine(DB_URL, echo=True, pool_pre_ping=True)
 
-    )
+# Create a session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Base class for models
+Base = declarative_base()
 
-
-@contextmanager
-def db_connection():
-    """Context manager to handle database connections."""
-    connection = getDbConnection()
+# Dependency function for database session
+def get_db():
+    db = SessionLocal()
     try:
-        yield connection
+        yield db
     finally:
-        if connection.is_connected():
-            connection.close()
+        db.close()
