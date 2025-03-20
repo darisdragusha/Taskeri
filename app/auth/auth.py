@@ -1,9 +1,10 @@
 import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from jose import jwt
+from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
-
+from fastapi import Depends, HTTPException, status
+from typing import Dict
 
 # Load environment variables
 load_dotenv()
@@ -45,4 +46,49 @@ def create_access_token(user_id: int, tenant_id: str) -> str:
         "exp": expire
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_token(token: str) -> Dict:
+    """
+    Decode and validate a JWT token.
+
+    If the token is valid, extracts `user_id` and `tenant_id`. 
+    Otherwise, raises an HTTP 401 Unauthorized error.
+
+    Args:
+        token (str): The JWT token.
+
+    Returns:
+        dict: Decoded token payload containing:
+            - `user_id` (int)
+            - `tenant_id` (str)
+
+    Raises:
+        HTTPException: If the token is invalid or expired.
+    
+    Example:
+        ```python
+        payload = verify_token(token)
+        print(payload["user_id"], payload["tenant_id"])
+        ```
+    """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        tenant_id = payload.get("tenant_id")
+
+        if not user_id or not tenant_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        return {"user_id": int(user_id), "tenant_id": tenant_id}
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
