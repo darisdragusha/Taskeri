@@ -1,28 +1,39 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from typing import Dict
-
-# Load environment variables
-load_dotenv()
+from functools import lru_cache
 
 class AuthService:
-    """Handles authentication logic, including token generation and verification."""
+    """
+    Handles authentication logic, including token generation and verification.
+    
+    This service provides methods for creating JWT access tokens, verifying them,
+    and extracting user details from the token.
+    """
 
-    def __init__(self):
-        """Initialize AuthService with environment-configured settings."""
-        self.SECRET_KEY = os.getenv("SECRET_KEY")
-        self.ALGORITHM = os.getenv("ALGORITHM")
-        self.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    # Load environment variables once at class level
+    load_dotenv()
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    ALGORITHM = os.getenv("ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
-        # Ensure all required environment variables are set
-        if not self.SECRET_KEY or not self.ALGORITHM or not self.ACCESS_TOKEN_EXPIRE_MINUTES:
-            raise ValueError("Missing required environment variables: SECRET_KEY, ALGORITHM, or ACCESS_TOKEN_EXPIRE_MINUTES")
+    if not SECRET_KEY or not ALGORITHM or not ACCESS_TOKEN_EXPIRE_MINUTES:
+        raise ValueError("Missing required environment variables: SECRET_KEY, ALGORITHM, or ACCESS_TOKEN_EXPIRE_MINUTES")
 
-        self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+    ALGORITHM_SET = {ALGORITHM}  # Preload as a set for faster lookup
+
+    @lru_cache()
+    def get_oauth2_scheme():
+        """Cache the OAuth2PasswordBearer instance to reduce memory overhead."""
+        return OAuth2PasswordBearer(tokenUrl="token")
+
+    oauth2_scheme = get_oauth2_scheme()
+
+
 
     def create_access_token(self, user_id: int, tenant_id: str) -> str:
         """
@@ -36,13 +47,13 @@ class AuthService:
 
         Returns:
             str: Encoded JWT access token.
-        
+
         Example:
             ```python
             token = auth_service.create_access_token(user_id=123, tenant_id="tenant_1")
             ```
         """
-        expire = datetime.now() + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
         payload = {
             "sub": str(user_id),  # User ID as subject
             "tenant_id": tenant_id,
@@ -67,7 +78,7 @@ class AuthService:
 
         Raises:
             HTTPException: If the token is invalid or expired.
-        
+
         Example:
             ```python
             payload = auth_service.verify_token(token)
@@ -75,11 +86,11 @@ class AuthService:
             ```
         """
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=self.ALGORITHM_SET)
             user_id = payload.get("sub")
             tenant_id = payload.get("tenant_id")
 
-            if not user_id or not tenant_id:
+            if not all([user_id, tenant_id]):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid token",
@@ -95,7 +106,7 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    def get_current_user(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))) -> Dict:
+    def get_current_user(self, token: str = Depends(oauth2_scheme)) -> Dict:
         """
         Extract `user_id` and `tenant_id` from a valid JWT token.
 
@@ -111,7 +122,7 @@ class AuthService:
 
         Raises:
             HTTPException: If the token is invalid or expired.
-        
+
         Example:
             ```python
             user = auth_service.get_current_user(token)
@@ -119,7 +130,5 @@ class AuthService:
             ```
         """
         return self.verify_token(token)
-
-
-# Instantiate a global authentication service instance
+    
 auth_service = AuthService()
