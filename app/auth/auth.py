@@ -92,3 +92,27 @@ def verify_token(token: str) -> Dict:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict:
+    """
+    Extract `user_id` and `tenant_id` from a valid JWT token.
+
+    This function acts as a FastAPI dependency for protected routes.
+
+    Args:
+        token (str): The JWT token obtained from the request.
+
+    Returns:
+        dict: Dictionary with:
+            - `user_id` (int)
+            - `tenant_id` (str)
+
+    Raises:
+        HTTPException: If the token is invalid or expired.
+    
+    Example:
+        ```python
+        user = get_current_user(token)
+        print(user["user_id"], user["tenant_id"])
+        ```
+    """
+    return verify_token(token)
