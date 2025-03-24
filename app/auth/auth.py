@@ -17,23 +17,21 @@ class AuthService:
 
     # Load environment variables once at class level
     load_dotenv()
-    SECRET_KEY = os.getenv("SECRET_KEY")
-    ALGORITHM = os.getenv("ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+    ALGORITHM: str = os.getenv("ALGORITHM", "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
     if not SECRET_KEY or not ALGORITHM or not ACCESS_TOKEN_EXPIRE_MINUTES:
         raise ValueError("Missing required environment variables: SECRET_KEY, ALGORITHM, or ACCESS_TOKEN_EXPIRE_MINUTES")
 
-    ALGORITHM_SET = {ALGORITHM}  # Preload as a set for faster lookup
+    ALGORITHM_SET: set[str] = {ALGORITHM}  # Preload as a set for faster lookup
 
     @lru_cache()
-    def get_oauth2_scheme():
+    def get_oauth2_scheme() -> OAuth2PasswordBearer:
         """Cache the OAuth2PasswordBearer instance to reduce memory overhead."""
         return OAuth2PasswordBearer(tokenUrl="token")
 
-    oauth2_scheme = get_oauth2_scheme()
-
-
+    oauth2_scheme: OAuth2PasswordBearer = get_oauth2_scheme()
 
     def create_access_token(self, user_id: int, tenant_id: str) -> str:
         """
@@ -53,15 +51,15 @@ class AuthService:
             token = auth_service.create_access_token(user_id=123, tenant_id="tenant_1")
             ```
         """
-        expire = datetime.now(timezone.utc) + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
-        payload = {
+        expire: datetime = datetime.now(timezone.utc) + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
+        payload: Dict[str, str | int | datetime] = {
             "sub": str(user_id),  # User ID as subject
             "tenant_id": tenant_id,
             "exp": expire
         }
         return jwt.encode(payload, self.SECRET_KEY, algorithm=self.ALGORITHM)
 
-    def verify_token(self, token: str) -> Dict:
+    def verify_token(self, token: str) -> Dict[str, int | str]:
         """
         Decode and validate a JWT token.
 
@@ -86,9 +84,9 @@ class AuthService:
             ```
         """
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=self.ALGORITHM_SET)
-            user_id = payload.get("sub")
-            tenant_id = payload.get("tenant_id")
+            payload: Dict[str, str] = jwt.decode(token, self.SECRET_KEY, algorithms=self.ALGORITHM_SET)
+            user_id: str | None = payload.get("sub")
+            tenant_id: str | None = payload.get("tenant_id")
 
             if not all([user_id, tenant_id]):
                 raise HTTPException(
@@ -106,7 +104,7 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    def get_current_user(self, token: str = Depends(oauth2_scheme)) -> Dict:
+    def get_current_user(self, token: str = Depends(oauth2_scheme)) -> Dict[str, int | str]:
         """
         Extract `user_id` and `tenant_id` from a valid JWT token.
 
@@ -131,4 +129,4 @@ class AuthService:
         """
         return self.verify_token(token)
     
-auth_service = AuthService()
+auth_service: AuthService = AuthService()
