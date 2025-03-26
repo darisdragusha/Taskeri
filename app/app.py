@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from views import routers
 
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #might need later
 app = FastAPI()
 
 # CORS Configuration
