@@ -8,12 +8,33 @@ from typing import Awaitable, Callable, Dict, Any
 
 
 class MultiTenantMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware for handling multi-tenancy by extracting tenant-specific information from JWT tokens.
+
+    This middleware:
+    - Extracts the JWT token from the `Authorization` header.
+    - Decodes and verifies the token to retrieve `user_id` and `tenant_id`.
+    - Dynamically switches the database schema based on the `tenant_id`.
+    - Attaches the authenticated user's information and the database session to the request state.
+    """
+
     async def dispatch(
         self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        """Middleware to handle multi-tenant authentication and schema switching."""
+        """
+        Process incoming requests, verify authentication, and dynamically set the tenant schema.
 
-        # Exclude public routes
+        Args:
+            request (Request): The incoming FastAPI request.
+            call_next (Callable[[Request], Awaitable[Response]]): The next middleware or endpoint handler.
+
+        Returns:
+            Response: The response from the next middleware or endpoint.
+
+        Raises:
+            HTTPException: If the token is missing, invalid, or cannot be decoded.
+        """
+        # Exclude public routes from authentication
         if request.url.path in {"/login", "/register", "/docs"}:
             return await call_next(request)
 
@@ -25,15 +46,16 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
         token: str = auth_header.split(" ")[1]
 
         try:
+            # Decode the token to extract user and tenant details
             user_data: Dict[str, int | str] = auth_service.verify_token(token)
             user_id: int = user_data["user_id"]
             tenant_id: str = user_data["tenant_id"]
 
-            # Attach user & tenant info to request state
+            # Attach extracted data to request state for later use in the request lifecycle
             request.state.user_id = user_id
             request.state.tenant_id = tenant_id
 
-            # Set tenant schema dynamically
+            # Initialize a new database session and set the tenant schema
             db: Session = SessionLocal()
             self.set_session_schema(db, tenant_id)
             request.state.db = db
@@ -42,11 +64,28 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             raise e  # Rethrow exception from `verify_token`
 
         response: Response = await call_next(request)
-        db.close()  # Close DB session
+        db.close()  # Ensure the database session is closed after request processing
         return response
 
     def set_session_schema(self, db: Session, tenant_id: str) -> None:
-        """Set the tenant-specific schema dynamically."""
+        """
+        Switch the active database schema dynamically based on the `tenant_id`.
+
+        This function ensures that all queries for the request will operate within the correct tenant schema.
+
+        Args:
+            db (Session): The active SQLAlchemy database session.
+            tenant_id (str): The tenant identifier used to determine the schema.
+
+        Returns:
+            None
+
+        Raises:
+            HTTPException: If the schema switching fails.
+        """
         schema_name: str = f"tenant_{tenant_id}"
-        db.execute(f"USE {schema_name};")
-        db.commit()
+        try:
+            db.execute(f"USE {schema_name};")
+            db.commit()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to switch tenant schema: {str(e)}")
