@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from views import routers
+from middleware import MultiTenantMiddleware  # Import the middleware
 
 app = FastAPI()
 
@@ -13,6 +14,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add MultiTenantMiddleware to the FastAPI app
+app.add_middleware(MultiTenantMiddleware)
 
 # Include routers
 for router in routers:
