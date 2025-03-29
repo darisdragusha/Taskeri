@@ -1,5 +1,6 @@
 from fastapi import Request, HTTPException, Depends
 from starlette.middleware.base import BaseHTTPMiddleware
+from sqlalchemy import text
 from starlette.responses import Response
 from sqlalchemy.orm import Session
 from utils.db_utils import SessionLocal
@@ -39,7 +40,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             HTTPException: If the token is missing, invalid, or cannot be decoded.
         """
         # Exclude public routes from authentication
-        if request.url.path in {"/login", "/register", "/docs"}:
+        if request.url.path in {"/login", "/register", "/docs","/openapi.json","/token"}:
             return await call_next(request)
 
         # Extract and verify the token
@@ -105,7 +106,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
 
         try:
             # Use a single session to set the schema dynamically
-            db.execute(f"USE {schema_name};")
+            db.execute(text(f"USE {schema_name};"))
             db.commit()
             logger.info(f"Switched to schema: {schema_name}")
         except Exception as e:
