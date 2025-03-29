@@ -1,4 +1,3 @@
-# app/models/tenant_user.py
 from sqlalchemy import Column, String, Text, Integer, TIMESTAMP, func
 from app.utils.db_utils import Base
 
