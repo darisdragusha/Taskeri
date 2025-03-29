@@ -1,11 +1,15 @@
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Depends
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 from sqlalchemy.orm import Session
 from utils.db_utils import SessionLocal
 from auth.auth import auth_service
 from typing import Awaitable, Callable, Dict, Any
+import logging
 
+# Setup basic logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class MultiTenantMiddleware(BaseHTTPMiddleware):
     """
@@ -38,12 +42,8 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
         if request.url.path in {"/login", "/register", "/docs"}:
             return await call_next(request)
 
-        # Extract token from Authorization header
-        auth_header: str | None = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing or invalid token")
-
-        token: str = auth_header.split(" ")[1]
+        # Extract and verify the token
+        token: str = await self.extract_token(request)
 
         try:
             # Decode the token to extract user and tenant details
@@ -57,17 +57,35 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
 
             # Initialize a new database session and set the tenant schema
             db: Session = SessionLocal()
-            self.set_session_schema(db, tenant_id)
+            await self.set_session_schema(db, tenant_id)
             request.state.db = db
 
         except HTTPException as e:
             raise e  # Rethrow exception from `verify_token`
 
         response: Response = await call_next(request)
-        db.close()  # Ensure the database session is closed after request processing
         return response
 
-    def set_session_schema(self, db: Session, tenant_id: str) -> None:
+    async def extract_token(self, request: Request) -> str:
+        """
+        Extract and validate the JWT token from the request header.
+
+        Args:
+            request (Request): The FastAPI request object.
+
+        Returns:
+            str: The JWT token.
+
+        Raises:
+            HTTPException: If the token is missing or invalid.
+        """
+        auth_header: str | None = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing or invalid token")
+        
+        return auth_header.split(" ")[1]
+
+    async def set_session_schema(self, db: Session, tenant_id: str) -> None:
         """
         Switch the active database schema dynamically based on the `tenant_id`.
 
@@ -84,8 +102,12 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             HTTPException: If the schema switching fails.
         """
         schema_name: str = f"tenant_{tenant_id}"
+
         try:
+            # Use a single session to set the schema dynamically
             db.execute(f"USE {schema_name};")
             db.commit()
+            logger.info(f"Switched to schema: {schema_name}")
         except Exception as e:
+            logger.error(f"Failed to switch schema {schema_name}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Failed to switch tenant schema: {str(e)}")
