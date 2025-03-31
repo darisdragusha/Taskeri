@@ -3,6 +3,7 @@ from app.utils.db_utils import Base
 
 class Project(Base):
     __tablename__ = "projects"
+    __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
 
     id = Column(BigInteger, primary_key=True)
     name = Column(String(255), nullable=False)
