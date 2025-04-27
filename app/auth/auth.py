@@ -104,7 +104,7 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    def get_current_user(self, token: str = Depends(oauth2_scheme)) -> Dict[str, int | str]:
+    def verify_user(self, token: str = Depends(oauth2_scheme)) -> Dict[str, int | str]:
         """
         Extract `user_id` and `tenant_id` from a valid JWT token.
 
@@ -123,7 +123,7 @@ class AuthService:
 
         Example:
             ```python
-            user = auth_service.get_current_user(token)
+            user = auth_service.verify_user(token)
             print(user["user_id"], user["tenant_id"])
             ```
         """
