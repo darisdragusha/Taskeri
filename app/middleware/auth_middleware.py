@@ -65,6 +65,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             raise e  # Rethrow exception from `verify_token`
 
         response: Response = await call_next(request)
+        request.state.db.close()
         return response
 
     async def extract_token(self, request: Request) -> str:
