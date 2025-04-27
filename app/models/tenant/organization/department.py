@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, BigInteger, ForeignKey
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class Department(Base):
     __tablename__ = "departments"

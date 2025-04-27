@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, DECIMAL, TIMESTAMP, Enum, ForeignKey, func
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class Invoice(Base):
     __tablename__ = "invoices"

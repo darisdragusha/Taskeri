@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, ForeignKey
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class RolePermission(Base):
     __tablename__ = "role_permissions"

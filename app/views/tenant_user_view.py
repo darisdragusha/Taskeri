@@ -12,4 +12,4 @@ def register_user(
     db: Session = Depends(get_db)
 ):
     controller = TenantUserController(db)
-    return controller.register_tenant_user(user_data)  # ✅ returns a Pydantic model
+    return controller.register_tenant_user(user_data)  
