@@ -1,8 +1,8 @@
-from app.models.dtos.tenant_user_dtos import TenantUserCreate, TenantUserOut
-from app.repositories.tenant_user_repository import TenantUserRepository
-from app.services.tenant_provisioning import create_new_tenant
+from models.dtos.tenant_user_dtos import TenantUserCreate, TenantUserOut
+from repositories.tenant_user_repository import TenantUserRepository
+from services.tenant_provisioning import create_new_tenant
 from sqlalchemy.orm import Session
-from fastapi import HTTPException  # ← ✅ Correct
+from fastapi import HTTPException
 
 
 class TenantUserController:
@@ -16,5 +16,4 @@ class TenantUserController:
         create_new_tenant(self.repo.db, user_data.tenant_schema)
         user = self.repo.create(user_data)
 
-        # ✅ Make sure to return a Pydantic model, not a raw SQLAlchemy object
         return TenantUserOut.model_validate(user)

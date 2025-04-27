@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, ForeignKey
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class UserRole(Base):
     __tablename__ = "user_roles"

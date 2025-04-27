@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class TaskAssignment(Base):
     __tablename__ = "task_assignments"

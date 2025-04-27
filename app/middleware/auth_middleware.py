@@ -40,7 +40,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             HTTPException: If the token is missing, invalid, or cannot be decoded.
         """
         # Exclude public routes from authentication
-        if request.url.path in {"/login", "/register", "/docs","/openapi.json","/token"}:
+        if request.url.path in {"/login", "/register", "/docs","/openapi.json","/token", "/tenant-users/"}:
             return await call_next(request)
 
         # Extract and verify the token

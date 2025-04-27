@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, BigInteger
-from app.utils.db_utils import Base
+from utils.db_utils import Base
 
 class Permission(Base):
     __tablename__ = "permissions"
