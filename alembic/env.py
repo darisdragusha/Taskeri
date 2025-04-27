@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
@@ -11,12 +12,10 @@ from app.models import tenant
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env")
 
-# ───── Add app to sys.path for imports ─────
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # ───── Import Base and models (this loads metadata) ─────
 from app.utils.db_utils import Base
-from app.models import tenant  # 👈 this will trigger all models listed in models/tenant/__init__.py
+from app.models import tenant 
 
 # ───── Alembic Config ─────
 config = context.config
