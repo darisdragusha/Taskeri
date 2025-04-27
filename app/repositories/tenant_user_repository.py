@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from app.models.tenant_user import TenantUser
-from app.models.dtos.tenant_user_dtos import TenantUserCreate
-from passlib.hash import bcrypt
+from models.tenant_user import TenantUser
+from models.dtos.tenant_user_dtos import TenantUserCreate
+from utils.auth_utils import hash_password
 
 
 class TenantUserRepository:
@@ -9,7 +9,7 @@ class TenantUserRepository:
         self.db = db
 
     def create(self, user_data: TenantUserCreate) -> TenantUser:
-        hashed_pw = bcrypt.hash(user_data.password)
+        hashed_pw = hash_password(user_data.password) 
 
         user = TenantUser(
             email=user_data.email,
