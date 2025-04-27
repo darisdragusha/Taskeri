@@ -1,4 +1,4 @@
-from repositories.login_repository import LoginRepository
+from repositories.tenant_user_repository import TenantUserRepository
 from auth.auth import auth_service
 from utils.auth_utils import hash_password, verify_password
 from sqlalchemy.orm import Session
@@ -19,7 +19,7 @@ class LoginController:
             db (Session): The database session to interact with the database.
         """
         self.db = db
-        self.login_repo = LoginRepository(db)
+        self.tenant_user_repo = TenantUserRepository(db)
 
     async def authenticate_user(self, email: str, password: str):
         """
@@ -39,16 +39,15 @@ class LoginController:
         if not email or not password:
             return None
         
-        #Hash the password using bcrypt
-        hashed_password = hash_password(password)
 
         # Verify user credentials through the repository layer
-        user = self.login_repo.verify_user_credentials(email, hashed_password)
-        
-        valid_user = (user and user.email == email and verify_password(hashed_password, user.password))
+        user = self.tenant_user_repo.get_by_email(email)
+
+        valid_user = (user and user.email == email and verify_password(password, user.password_hash))
+
         # If user is valid, generate and return the JWT token
         if valid_user:
-            access_token = auth_service.create_access_token(data={"sub": user.id, "tenant_id": user.tenant_id})
+            access_token = auth_service.create_access_token(user_id=user.id, tenant_id=user.tenant_schema)
             return access_token
         
         # If authentication fails, return None
