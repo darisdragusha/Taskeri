@@ -2,6 +2,7 @@ from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from repositories.role_repository import RoleRepository
 from utils.db_utils import get_db
+from typing import List
 from models.dtos.role_dtos import RoleCreate, RoleUpdate, RoleResponse
 
 class RoleController:
@@ -74,3 +75,13 @@ class RoleController:
         if role:
             return {"message": "Role deleted successfully"}
         raise HTTPException(status_code=404, detail="Role not found")
+    
+    def get_all_roles(self) -> List[RoleResponse]:
+        """
+        Retrieve all roles.
+
+        Returns:
+            List[RoleResponse]: List of all role responses.
+        """
+        roles = self.repository.list_roles()
+        return [RoleResponse.from_orm(role) for role in roles]

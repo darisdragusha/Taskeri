@@ -2,6 +2,7 @@ from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from repositories.permission_repository import PermissionRepository
 from utils.db_utils import get_db
+from typing import List
 from models.dtos.permission_dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 
 class PermissionController:
@@ -74,3 +75,13 @@ class PermissionController:
         if permission:
             return {"message": "Permission deleted successfully"}
         raise HTTPException(status_code=404, detail="Permission not found")
+    
+    def get_all_permissions(self) -> List[PermissionResponse]:
+        """
+        Retrieve all permissions.
+
+        Returns:
+            List[PermissionResponse]: List of all permission responses.
+        """
+        permissions = self.repository.list_permissions()
+        return [PermissionResponse.from_orm(permission) for permission in permissions]

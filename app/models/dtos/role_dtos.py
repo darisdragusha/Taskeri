@@ -1,4 +1,3 @@
-# models/dtos/role_dtos.py
 from pydantic import BaseModel
 from typing import Optional
 
@@ -12,5 +11,6 @@ class RoleResponse(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

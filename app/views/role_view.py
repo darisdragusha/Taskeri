@@ -1,6 +1,7 @@
 # app/views/role_view.py
 from fastapi import APIRouter, Depends
 from controllers.role_controller import RoleController
+from typing import List
 from models.dtos.role_dtos import RoleCreate, RoleUpdate, RoleResponse
 from auth.auth import auth_service
 
@@ -50,3 +51,13 @@ async def delete_role(
     Endpoint to delete a role.
     """
     return controller.delete_role(role_id)
+
+@router.get("/roles", response_model=List[RoleResponse])
+async def get_all_roles(
+    controller: RoleController = Depends(),
+    user_data: dict = Depends(auth_service.verify_user)
+) -> List[RoleResponse]:
+    """
+    Endpoint to retrieve all roles.
+    """
+    return controller.get_all_roles()

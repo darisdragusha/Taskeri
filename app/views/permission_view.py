@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends
 from controllers.permission_controller import PermissionController
 from models.dtos.permission_dtos import PermissionCreate, PermissionUpdate, PermissionResponse
+from typing import List
 from auth.auth import auth_service
 
 router = APIRouter()
@@ -50,3 +51,13 @@ async def delete_permission(
     Endpoint to delete a permission.
     """
     return controller.delete_permission(permission_id)
+
+@router.get("/permissions", response_model=List[PermissionResponse])
+async def get_all_permissions(
+    controller: PermissionController = Depends(),
+    user_data: dict = Depends(auth_service.verify_user)
+) -> List[PermissionResponse]:
+    """
+    Endpoint to retrieve all permissions.
+    """
+    return controller.get_all_permissions()
