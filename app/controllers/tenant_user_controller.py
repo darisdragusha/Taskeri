@@ -1,5 +1,5 @@
 from models.dtos import TenantUserCreate, TenantUserOut
-from repositories.tenant_user_repository import TenantUserRepository
+from repositories import TenantUserRepository
 from services.tenant_provisioning import create_new_tenant
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
