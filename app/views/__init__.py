@@ -3,12 +3,14 @@ from .user_view import router as user_router
 from .task_view import router as task_router
 from .role_view import router as role_router
 from .permission_view import router as permission_router
+from .company_view import router as company_router  
 
 routers = [
     login_router,
     user_router,
     task_router,
     role_router,
-    permission_router
+    permission_router,
+    company_router
 ]
 
