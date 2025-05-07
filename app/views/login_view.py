@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from controllers import LoginController
@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
 
-
+# Login endpoint remains public without permission checks
 @router.post("/token", response_model=dict)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
