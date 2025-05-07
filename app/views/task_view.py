@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status, Query, Body, Path
-from controllers.task_controller import TaskController
+from controllers import TaskController
 from models.dtos.task_dtos import (
     TaskCreate, TaskUpdate, TaskResponse, TaskDetailResponse, 
     TaskListResponse, TaskFilterParams, TaskStatistics

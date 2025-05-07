@@ -1,6 +1,6 @@
 # app/views/user_view.py
 from fastapi import APIRouter, Depends
-from controllers.user_controller import UserController
+from controllers import UserController
 from models.dtos.user_dtos import UserCreate, UserUpdate, UserResponse
 from auth import auth_service
 

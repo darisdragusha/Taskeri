@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from utils.db_utils import get_db
-from controllers.tenant_user_controller import TenantUserController
+from controllers import TenantUserController
 from models.dtos.tenant_user_dtos import TenantUserCreate, TenantUserOut
 
 router = APIRouter(prefix="/tenant-users", tags=["Tenant Users"])
