@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from repositories.permission_repository import PermissionRepository
 from utils.db_utils import get_db
 from typing import List
-from models.dtos.permission_dtos import PermissionCreate, PermissionUpdate, PermissionResponse
+from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 
 class PermissionController:
     """Controller class for handling permission operations."""

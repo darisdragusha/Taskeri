@@ -1,4 +1,4 @@
-from models.dtos.tenant_user_dtos import TenantUserCreate, TenantUserOut
+from models.dtos import TenantUserCreate, TenantUserOut
 from repositories.tenant_user_repository import TenantUserRepository
 from services.tenant_provisioning import create_new_tenant
 from sqlalchemy.orm import Session

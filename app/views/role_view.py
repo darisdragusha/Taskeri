@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from controllers import RoleController
 from typing import List
-from models.dtos.role_dtos import RoleCreate, RoleUpdate, RoleResponse
+from models.dtos import RoleCreate, RoleUpdate, RoleResponse
 from auth import auth_service
 
 router = APIRouter()
