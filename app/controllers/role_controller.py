@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from repositories.role_repository import RoleRepository
-from utils.db_utils import get_db
+from repositories import RoleRepository
+from utils import get_db
 from typing import List
-from models.dtos.role_dtos import RoleCreate, RoleUpdate, RoleResponse
+from models.dtos import RoleCreate, RoleUpdate, RoleResponse
 
 class RoleController:
     """Controller class for handling role operations."""

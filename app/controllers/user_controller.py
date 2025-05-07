@@ -1,8 +1,8 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from repositories.user_repository import UserRepository
-from utils.db_utils import get_db
-from models.dtos.user_dtos import UserCreate, UserUpdate, UserResponse
+from repositories import UserRepository
+from utils import get_db
+from models.dtos import UserCreate, UserUpdate, UserResponse
 
 class UserController:
     """Controller class for handling user operations."""

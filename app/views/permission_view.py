@@ -1,9 +1,9 @@
 # app/views/permission_view.py
 from fastapi import APIRouter, Depends
-from controllers.permission_controller import PermissionController
-from models.dtos.permission_dtos import PermissionCreate, PermissionUpdate, PermissionResponse
+from controllers import PermissionController
+from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 from typing import List
-from auth.auth import auth_service
+from auth import auth_service
 
 router = APIRouter()
 

@@ -1,0 +1,6 @@
+from company_repository import CompanyRepository
+from permission_repository import PermissionRepository
+from role_repository import RoleRepository
+from task_repository import TaskRepository
+from tenant_user_repository import TenantUserRepository
+from user_repository import UserRepository

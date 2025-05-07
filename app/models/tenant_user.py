@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Text, Integer, TIMESTAMP, func
-from utils.db_utils import Base
+from utils import Base
 
 
 class TenantUser(Base):

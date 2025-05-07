@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from repositories.company_repository import CompanyRepository
-from models.dtos.company_dtos import CompanyCreate, CompanyUpdate
+from repositories import CompanyRepository
+from models.dtos import CompanyCreate, CompanyUpdate
 from typing import List, Optional
 from models.company import Company
 
