@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from controllers.user_controller import UserController
 from models.dtos.user_dtos import UserCreate, UserUpdate, UserResponse
-from auth.auth import auth_service
+from auth import auth_service
 
 router = APIRouter()
 

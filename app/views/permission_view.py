@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from controllers.permission_controller import PermissionController
 from models.dtos.permission_dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 from typing import List
-from auth.auth import auth_service
+from auth import auth_service
 
 router = APIRouter()
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models.dtos.company_dtos import CompanyCreate, CompanyResponse, CompanyUpdate
 from controllers.company_controller import CompanyController
 from utils.db_utils import get_db
-from auth.auth import auth_service  # Import authentication dependency
+from auth import auth_service  # Import authentication dependency
 from typing import List
 
 router = APIRouter(prefix="/companies", tags=["Companies"])
