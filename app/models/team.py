@@ -1,7 +1,7 @@
 # app/models/team.py
 from sqlalchemy import Column, String, BigInteger, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
-from utils.db_utils import Base
+from utils import Base
 from .department import Department
 class Team(Base):
     __tablename__ = "teams"

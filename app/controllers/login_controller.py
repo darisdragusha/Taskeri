@@ -1,6 +1,6 @@
 from repositories import TenantUserRepository
 from auth.auth import auth_service
-from utils.auth_utils import hash_password, verify_password
+from utils import hash_password, verify_password
 from sqlalchemy.orm import Session
 
 class LoginController:

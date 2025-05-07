@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from models.user import User
-from utils.auth_utils import hash_password
+from utils import hash_password
 
 class UserRepository:
     """Repository class for handling user-related database operations."""

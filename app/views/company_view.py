@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from models.dtos import CompanyCreate, CompanyResponse, CompanyUpdate
 from controllers import CompanyController
-from utils.db_utils import get_db
+from utils import get_db
 from auth import auth_service  # Import authentication dependency
 from typing import List
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models.tenant_user import TenantUser
 from models.dtos import TenantUserCreate
-from utils.auth_utils import hash_password
+from utils import hash_password
 
 
 class TenantUserRepository:
