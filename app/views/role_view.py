@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from controllers import RoleController
 from typing import List
 from models.dtos import RoleCreate, RoleUpdate, RoleResponse
-from utils.permission_utils import PermissionChecker
 
 router = APIRouter()
 
@@ -11,12 +10,17 @@ router = APIRouter()
 async def create_role(
     role_create: RoleCreate,
     request: Request,
-    controller: RoleController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("create_role"))
+    controller: RoleController = Depends()
 ) -> RoleResponse:
     """
     Endpoint to create a new role.
-    Requires the 'create_role' permission.
+    
+    Permission requirements (handled by middleware):
+    - 'create_role' permission
+    
+    Business logic:
+    - Only administrators should be able to create new roles
+    - Role names should be unique in the system
     """
     return controller.create_role(role_create)
 
@@ -24,12 +28,16 @@ async def create_role(
 async def get_role(
     role_id: int,
     request: Request,
-    controller: RoleController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("read_role"))
+    controller: RoleController = Depends()
 ) -> RoleResponse:
     """
     Endpoint to get a role by ID.
-    Requires the 'read_role' permission.
+    
+    Permission requirements (handled by middleware):
+    - 'read_role' permission
+    
+    Business logic:
+    - All authenticated users with permission can view role details
     """
     return controller.get_role(role_id)
 
@@ -38,12 +46,17 @@ async def update_role(
     role_id: int,
     role_update: RoleUpdate,
     request: Request,
-    controller: RoleController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("update_role"))
+    controller: RoleController = Depends()
 ) -> RoleResponse:
     """
     Endpoint to update a role.
-    Requires the 'update_role' permission.
+    
+    Permission requirements (handled by middleware):
+    - 'update_role' permission
+    
+    Business logic:
+    - Only administrators should be able to modify existing roles
+    - System-critical roles (Admin, Manager, Employee) may have additional protection
     """
     return controller.update_role(role_id, role_update)
 
@@ -51,23 +64,33 @@ async def update_role(
 async def delete_role(
     role_id: int,
     request: Request,
-    controller: RoleController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("delete_role"))
+    controller: RoleController = Depends()
 ) -> dict:
     """
     Endpoint to delete a role.
-    Requires the 'delete_role' permission.
+    
+    Permission requirements (handled by middleware):
+    - 'delete_role' permission
+    
+    Business logic:
+    - Only administrators should be able to delete roles
+    - System-critical roles (Admin, Manager, Employee) cannot be deleted
+    - Roles currently assigned to users should be protected or reassigned
     """
     return controller.delete_role(role_id)
 
 @router.get("/roles", response_model=List[RoleResponse])
 async def get_all_roles(
     request: Request,
-    controller: RoleController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("read_role"))
+    controller: RoleController = Depends()
 ) -> List[RoleResponse]:
     """
     Endpoint to retrieve all roles.
-    Requires the 'read_role' permission.
+    
+    Permission requirements (handled by middleware):
+    - 'read_role' permission
+    
+    Business logic:
+    - All authenticated users with permission can view all roles
     """
     return controller.get_all_roles()
