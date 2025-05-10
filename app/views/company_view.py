@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from models.dtos import CompanyCreate, CompanyResponse, CompanyUpdate
 from controllers import CompanyController
 from utils import get_db
-from utils.permission_utils import PermissionChecker
 from typing import List
 
 router = APIRouter(prefix="/companies", tags=["Companies"])
@@ -13,24 +12,36 @@ def create_company(
     data: CompanyCreate,
     request: Request,
     db: Session = Depends(get_db),
-    user_data: dict = Depends(PermissionChecker.require_permission("create_company"))
+    controller: CompanyController = Depends()
 ):
     """
-    Create a new company. Requires 'create_company' permission.
+    Create a new company. 
+    
+    Permission requirements (handled by middleware):
+    - 'create_company' permission
+    
+    Business logic:
+    - Only authorized administrators can create companies
+    - Company names must be unique in the system
     """
-    controller = CompanyController(db)
     return controller.create_company(data)
 
 @router.get("/", response_model=List[CompanyResponse])
 def get_all_companies(
     request: Request,
     db: Session = Depends(get_db),
-    user_data: dict = Depends(PermissionChecker.require_permission("read_company"))
+    controller: CompanyController = Depends()
 ):
     """
-    Get a list of all companies. Requires 'read_company' permission.
+    Get a list of all companies. 
+    
+    Permission requirements (handled by middleware):
+    - 'read_company' permission
+    
+    Business logic:
+    - Users with proper permissions can view all companies
+    - Results may be filtered based on user access level in implementation
     """
-    controller = CompanyController(db)
     return controller.get_all_companies()
 
 @router.get("/{company_id}", response_model=CompanyResponse)
@@ -38,12 +49,18 @@ def get_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    user_data: dict = Depends(PermissionChecker.require_permission("read_company"))
+    controller: CompanyController = Depends()
 ):
     """
-    Get a specific company by ID. Requires 'read_company' permission.
+    Get a specific company by ID. 
+    
+    Permission requirements (handled by middleware):
+    - 'read_company' permission
+    
+    Business logic:
+    - Users with proper permissions can view company details
+    - Company must exist or a 404 error is returned
     """
-    controller = CompanyController(db)
     company = controller.get_company_by_id(company_id)
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
@@ -55,12 +72,19 @@ def update_company(
     data: CompanyUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    user_data: dict = Depends(PermissionChecker.require_permission("update_company"))
+    controller: CompanyController = Depends()
 ):
     """
-    Update a specific company by ID. Requires 'update_company' permission.
+    Update a specific company by ID. 
+    
+    Permission requirements (handled by middleware):
+    - 'update_company' permission
+    
+    Business logic:
+    - Only authorized administrators can update company information
+    - Company must exist or a 404 error is returned
+    - Company name changes must not conflict with existing companies
     """
-    controller = CompanyController(db)
     company = controller.update_company(company_id, data)
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
@@ -71,12 +95,19 @@ def delete_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    user_data: dict = Depends(PermissionChecker.require_permission("delete_company"))
+    controller: CompanyController = Depends()
 ):
     """
-    Delete a specific company by ID. Requires 'delete_company' permission.
+    Delete a specific company by ID. 
+    
+    Permission requirements (handled by middleware):
+    - 'delete_company' permission
+    
+    Business logic:
+    - Only authorized administrators can delete companies
+    - Company must exist or a 404 error is returned
+    - Deletion may be restricted if the company has associated departments, teams or users
     """
-    controller = CompanyController(db)
     success = controller.delete_company(company_id)
     if not success:
         raise HTTPException(status_code=404, detail="Company not found")
