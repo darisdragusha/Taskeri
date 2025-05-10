@@ -112,7 +112,10 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
         Returns:
             bool: True if user has the required permissions
         """
-        cache = getattr(db.info, "permission_cache", {})
+        # Initialize permission cache in request.state if it doesn't exist
+        if not hasattr(request.state, "permission_cache"):
+            request.state.permission_cache = {}
+        cache = request.state.permission_cache
         
         results = []
         for permission in permissions:
