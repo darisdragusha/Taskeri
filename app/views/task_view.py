@@ -98,14 +98,6 @@ async def get_tasks_by_user(
     - Users can always view their own tasks
     - Viewing others' tasks requires the 'read_any_user_task' permission
     """
-    # This business logic check ensures users can only see their own tasks
-    # unless they have explicit permission to see others' tasks
-    requesting_user_id = request.state.user_id
-    if requesting_user_id != user_id:
-        # The authorization middleware will check if the user has the 
-        # 'read_any_user_task' permission, but we keep this check here
-        # as an additional safeguard
-        pass
             
     return controller.get_tasks_by_user(user_id)
 

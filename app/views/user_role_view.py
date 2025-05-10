@@ -49,13 +49,6 @@ async def remove_role_from_user(
     - System-critical role removals may be restricted
     - Users cannot remove their own admin role (prevents admin lockout)
     """
-    # Check if user is trying to remove their own admin role
-    requesting_user_id = request.state.user_id
-    if requesting_user_id == user_id:
-        # Additional protection could be added here
-        # to prevent admins from removing their own admin role
-        pass
-    
     return controller.remove_role_from_user(user_id, role_id)
 
 @router.get("/{user_id}/roles", response_model=List[Dict[str, str]])
@@ -74,12 +67,5 @@ async def get_user_roles(
     - Administrators and managers can view any user's roles
     - Users might be allowed to view their own roles (check middleware settings)
     """
-    # Could add business logic to allow users to see their own roles
-    # without the 'manage_user_roles' permission
-    requesting_user_id = request.state.user_id
-    if requesting_user_id == user_id:
-        # Additional rule could be added here to allow users
-        # to view their own roles regardless of permissions
-        pass
     
     return controller.get_user_roles(user_id)

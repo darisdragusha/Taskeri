@@ -2,6 +2,7 @@
 from fastapi import HTTPException, status, APIRouter, Depends, Request
 from controllers import UserController
 from models.dtos import UserCreate, UserUpdate, UserResponse
+from sqlalchemy.sql import text
 
 router = APIRouter()
 
@@ -34,14 +35,6 @@ async def get_user(
     - Users can always view their own profile
     - Viewing other profiles requires the 'read_any_user' permission
     """
-    # The middleware will check permissions, but we still need to handle
-    # specific business logic for users viewing their own profile
-    # This is an additional security check in case middleware rules change
-    requesting_user_id = request.state.user_id
-    if requesting_user_id != user_id:
-        # Additional business check could be added here if needed
-        # The primary permission check is handled by the middleware
-        pass
     
     return controller.get_user(user_id)
 
@@ -63,15 +56,6 @@ async def update_user(
     - Users can always update their own profile with 'update_user' permission
     - Updating other profiles requires the 'update_any_user' permission
     """
-    # The middleware will check permissions, but we still need to handle
-    # specific business logic for users updating their own profile
-    # This is an additional security check in case middleware rules change
-    requesting_user_id = request.state.user_id
-    if requesting_user_id != user_id:
-        # Additional business check could be added here if needed
-        # The primary permission check is handled by the middleware
-        pass
-    
     return controller.update_user(user_id, user_update)
 
 @router.delete("/users/{user_id}", response_model=dict)
