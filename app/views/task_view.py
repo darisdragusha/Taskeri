@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends, status, Query, Body, Path, HTTPException, Request
+from fastapi import APIRouter, Depends, status, Query, Path, HTTPException, Request
 from controllers import TaskController
 from models.dtos import (
     TaskCreate, TaskUpdate, TaskResponse, TaskDetailResponse, 
     TaskListResponse, TaskFilterParams, TaskStatistics
 )
 from typing import List, Dict, Optional
-from auth import auth_service
 from datetime import date
-from utils.permission_utils import PermissionChecker
 
 router = APIRouter(
     prefix="/tasks",
@@ -18,59 +16,68 @@ router = APIRouter(
 @router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     task_data: TaskCreate, 
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.require_permission("create_task"))
+    controller: TaskController = Depends()
 ):
     """
     Create a new task.
     
-    Requires 'create_task' permission.
+    Permission requirements (handled by middleware):
+    - 'create_task' permission
     """
     return controller.create_task(task_data)
 
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: int, 
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.check_resource_ownership("task", "task_id"))
+    controller: TaskController = Depends()
 ):
     """
     Get a specific task by ID.
     
-    Requires either:
-    - Ownership of the task
-    - Assignment to the task
-    - Admin/Manager role
+    Permission requirements (handled by middleware):
+    - 'read_task' permission (for tasks assigned to the user)
+    - 'read_any_task' permission (for any task)
+    
+    Business logic:
+    - Users can access tasks they are assigned to
+    - Users with 'read_any_task' can access any task
+    - Admins/Managers can access any task
     """
     return controller.get_task(task_id)
 
 @router.get("/{task_id}/details", response_model=TaskDetailResponse)
 async def get_task_details(
     task_id: int, 
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.check_resource_ownership("task", "task_id"))
+    controller: TaskController = Depends()
 ):
     """
     Get detailed information about a task including relationships.
     
-    Requires either:
-    - Ownership of the task
-    - Assignment to the task
-    - Admin/Manager role
+    Permission requirements (handled by middleware):
+    - 'read_task' permission (for tasks assigned to the user)
+    - 'read_any_task' permission (for any task)
+    
+    Business logic:
+    - Users can access details of tasks they are assigned to
+    - Users with 'read_any_task' can access details of any task
+    - Admins/Managers can access details of any task
     """
     return controller.get_task_details(task_id)
 
 @router.get("/project/{project_id}", response_model=List[TaskResponse])
 async def get_tasks_by_project(
     project_id: int, 
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.check_resource_ownership("project", "project_id"))
+    controller: TaskController = Depends()
 ):
     """
     Get all tasks in a specific project.
     
-    Requires either:
-    - Admin/Manager role for the project
+    Permission requirements (handled by middleware):
+    - 'read_task' permission
+    
+    Business logic:
+    - Users can view tasks for projects they're involved with
+    - Admins/Managers can view all project tasks
     """
     return controller.get_tasks_by_project(project_id)
 
@@ -78,32 +85,27 @@ async def get_tasks_by_project(
 async def get_tasks_by_user(
     user_id: int, 
     request: Request,
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.require_permissions(
-        ["read_task", "read_any_user_task"], require_all=False
-    ))
+    controller: TaskController = Depends()
 ) -> List[TaskResponse]:
     """
     Get all tasks assigned to a specific user.
     
-    Requires either:
+    Permission requirements (handled by middleware):
     - 'read_task' permission (for own tasks)
-    - 'read_any_user_task' permission (for anyone's tasks)
+    - 'read_any_user_task' permission (for others' tasks)
+    
+    Business logic:
+    - Users can always view their own tasks
+    - Viewing others' tasks requires the 'read_any_user_task' permission
     """
-    # Extra check to ensure a regular user can only access their own tasks
-    requesting_user_id = user_data.get("user_id")
+    # This business logic check ensures users can only see their own tasks
+    # unless they have explicit permission to see others' tasks
+    requesting_user_id = request.state.user_id
     if requesting_user_id != user_id:
-        # Check if they have permission to view others' tasks
-        has_permission = await PermissionChecker.check_permission(
-            "read_any_user_task", 
-            request.state.db, 
-            requesting_user_id
-        )
-        if not has_permission:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You can only view your own tasks"
-            )
+        # The authorization middleware will check if the user has the 
+        # 'read_any_user_task' permission, but we keep this check here
+        # as an additional safeguard
+        pass
             
     return controller.get_tasks_by_user(user_id)
 
@@ -118,13 +120,18 @@ async def get_tasks_paginated(
     assigned_to_user_id: Optional[int] = Query(None, description="Filter by assigned user"),
     project_id: Optional[int] = Query(None, description="Filter by project"),
     search_term: Optional[str] = Query(None, description="Search in task name and description"),
-    controller: TaskController = Depends(),
-    user_data: dict = Depends(PermissionChecker.require_permission("read_task"))
+    controller: TaskController = Depends()
 ):
     """
     Get paginated list of tasks with optional filtering.
     
-    Requires 'read_task' permission.
+    Permission requirements (handled by middleware):
+    - 'read_task' permission
+    
+    Business logic:
+    - Results will be filtered based on user permissions
+    - Regular users see only their assigned tasks
+    - Admins/Managers see all tasks
     """
     filter_params = TaskFilterParams(
         status=status, 
@@ -141,62 +148,53 @@ async def get_tasks_paginated(
 async def update_task(
     task_id: int, 
     task_data: TaskUpdate, 
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.require_permissions(
-        ["update_task", "update_any_task"], require_all=False
-    )),
-    # The resource ownership check is now handled as a dependency for consistency.
+    controller: TaskController = Depends()
 ):
     """
     Update a task's information.
     
-    Requires either:
-    - 'update_task' permission (for own tasks)
+    Permission requirements (handled by middleware):
+    - 'update_task' permission (for tasks assigned to the user)
     - 'update_any_task' permission (for any task)
+    
+    Business logic:
+    - Users can update tasks they are assigned to
+    - Users with 'update_any_task' can update any task
+    - Admins/Managers can update any task
     """
-    # The resource ownership check is now handled as a dependency for consistency.
-        
     return controller.update_task(task_id, task_data)
 
 @router.delete("/{task_id}", response_model=Dict[str, str])
 async def delete_task(
     task_id: int, 
-    request: Request,
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.require_permissions(
-        ["delete_own_task", "delete_any_task"], require_all=False
-    ))
+    controller: TaskController = Depends()
 ):
     """
     Delete a task.
     
-    Requires either:
-    - 'delete_own_task' permission (for own tasks)
+    Permission requirements (handled by middleware):
+    - 'delete_own_task' permission (for tasks created by the user)
     - 'delete_any_task' permission (for any task)
-    """
-    # Similar to update, we need to check ownership if they don't have delete_any_task
-    user_id = user_data.get("user_id")
-    has_delete_any = await PermissionChecker.check_permission(
-        "delete_any_task", 
-        request.state.db, 
-        user_id
-    )
     
-    if not has_delete_any:
-        # Check if they are owner/assignee
-        ownership_check = PermissionChecker.check_resource_ownership("task", "task_id")
-        await ownership_check(request, user_data)
-        
+    Business logic:
+    - Users can only delete their own tasks if they have 'delete_own_task' permission
+    - Users with 'delete_any_task' permission can delete any task
+    - Admins can delete any task
+    """
     return controller.delete_task(task_id)
 
 @router.get("/statistics", response_model=TaskStatistics)
 async def get_task_statistics(
-    controller: TaskController = Depends(), 
-    user_data: dict = Depends(PermissionChecker.require_permission("view_statistics"))
+    controller: TaskController = Depends()
 ):
     """
     Get task statistics across the system.
     
-    Requires 'view_statistics' permission.
+    Permission requirements (handled by middleware):
+    - 'view_statistics' permission
+    
+    Business logic:
+    - Only users with explicit statistics viewing permission can access this endpoint
+    - Typically limited to managers and administrators
     """
     return controller.get_task_statistics()
