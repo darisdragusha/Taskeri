@@ -73,7 +73,7 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
         # Check permissions for this route
         required_permissions = self._get_required_permissions(path, method)
         
-        if required_permissions and not await self._check_permissions(db, user_id, required_permissions):
+        if required_permissions and not await self._check_permissions(db, user_id, required_permissions, request=request):
             # Check if this is a resource ownership route
             is_owner = await self._check_resource_ownership(request, path, user_id)
             if not is_owner:
@@ -98,7 +98,7 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
         return []
         
     async def _check_permissions(
-        self, db, user_id: int, permissions: List[str], require_all: bool = False
+        self, db, user_id: int, permissions: List[str], require_all: bool = False, request: Request = None
     ) -> bool:
         """
         Check if user has the required permissions.
@@ -108,14 +108,25 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
             user_id: ID of the user
             permissions: List of permission names to check
             require_all: If True, require all permissions; otherwise, any one is sufficient
+            request: The FastAPI request object (optional)
             
         Returns:
             bool: True if user has the required permissions
         """
-        # Initialize permission cache in request.state if it doesn't exist
-        if not hasattr(request.state, "permission_cache"):
-            request.state.permission_cache = {}
-        cache = request.state.permission_cache
+        # Use db.info for caching if request is not provided
+        cache = {}
+        if request:
+            # If request is provided, use request.state for caching
+            if not hasattr(request.state, "permission_cache"):
+                request.state.permission_cache = {}
+            cache = request.state.permission_cache
+        else:
+            # Otherwise use db.info for caching
+            if not hasattr(db, "info"):
+                db.info = {}
+            if not hasattr(db.info, "permission_cache"):
+                db.info.permission_cache = {}
+            cache = db.info.permission_cache
         
         results = []
         for permission in permissions:
