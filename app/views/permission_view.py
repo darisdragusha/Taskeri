@@ -5,7 +5,7 @@ from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 from typing import List
 from utils import get_db 
 
-router = APIRouter()
+router = APIRouter(tags=["Permissions"])
 
 @router.post("/permissions", response_model=PermissionResponse)
 async def create_permission(

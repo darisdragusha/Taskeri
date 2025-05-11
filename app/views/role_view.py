@@ -6,7 +6,7 @@ from models.dtos import RoleCreate, RoleUpdate, RoleResponse
 from utils import get_db 
 
 
-router = APIRouter()
+router = APIRouter(tags=["Roles"])
 
 @router.post("/roles", response_model=RoleResponse)
 async def create_role(

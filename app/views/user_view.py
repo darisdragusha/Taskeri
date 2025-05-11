@@ -6,9 +6,9 @@ from sqlalchemy.sql import text
 from utils.db_utils import get_db 
 
 
-router = APIRouter()
+router = APIRouter(tags=["User"])
 
-@router.post("/users", response_model=UserResponse)
+@router.post("/users/create", response_model=UserResponse)
 async def create_user(
     user_create: UserCreate,
     request: Request,
