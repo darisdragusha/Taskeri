@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from controllers import RoleController
 from typing import List
 from models.dtos import RoleCreate, RoleUpdate, RoleResponse
+from utils import get_db 
+
 
 router = APIRouter()
 

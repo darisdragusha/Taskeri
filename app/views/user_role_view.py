@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException, status
 from controllers import UserController
 from typing import Dict, List
 from models.dtos import UserResponse
+from utils.db_utils import get_db 
 
 router = APIRouter(prefix="/user-roles", tags=["User Roles"])
 

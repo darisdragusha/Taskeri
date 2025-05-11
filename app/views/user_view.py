@@ -3,6 +3,8 @@ from fastapi import HTTPException, status, APIRouter, Depends, Request
 from controllers import UserController
 from models.dtos import UserCreate, UserUpdate, UserResponse
 from sqlalchemy.sql import text
+from utils.db_utils import get_db 
+
 
 router = APIRouter()
 

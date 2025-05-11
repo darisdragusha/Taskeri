@@ -7,12 +7,15 @@ from typing import List
 
 router = APIRouter(prefix="/companies", tags=["Companies"])
 
+def get_company_controller(db: Session = Depends(get_db)) -> CompanyController:
+    return CompanyController(db)
+
 @router.post("/", response_model=CompanyResponse)
 def create_company(
     data: CompanyCreate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends()
+    controller: CompanyController = Depends(get_company_controller)
 ):
     """
     Create a new company. 
@@ -30,7 +33,7 @@ def create_company(
 def get_all_companies(
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends()
+    controller: CompanyController = Depends(get_company_controller)
 ):
     """
     Get a list of all companies. 
@@ -49,7 +52,7 @@ def get_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends()
+    controller: CompanyController = Depends(get_company_controller)
 ):
     """
     Get a specific company by ID. 
@@ -72,7 +75,7 @@ def update_company(
     data: CompanyUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends()
+    controller: CompanyController = Depends(get_company_controller)
 ):
     """
     Update a specific company by ID. 
@@ -95,7 +98,7 @@ def delete_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends()
+    controller: CompanyController = Depends(get_company_controller)
 ):
     """
     Delete a specific company by ID. 

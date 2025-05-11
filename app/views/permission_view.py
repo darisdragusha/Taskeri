@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from controllers import PermissionController
 from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 from typing import List
+from utils import get_db 
 
 router = APIRouter()
 
