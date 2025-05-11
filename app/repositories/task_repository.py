@@ -6,7 +6,7 @@ from models.tenant.tasks.task_assignment import TaskAssignment
 from models.tenant.tasks.comment import Comment
 from models.tenant.tasks.file_attachment import FileAttachment
 from models.user import User
-from models.tenant.projects.project import Project
+from models.project import Project
 from models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
 from datetime import date, datetime
 

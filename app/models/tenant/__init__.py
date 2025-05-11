@@ -12,7 +12,7 @@ from models.department import Department
 from models.team import Team
 from models.tenant.organization.company_settings import CompanySettings
 
-from models.tenant.projects.project import Project
+from models.project import Project
 
 from models.tenant.tasks.task import Task
 from models.tenant.tasks.task_assignment import TaskAssignment
