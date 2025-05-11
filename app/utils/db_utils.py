@@ -1,14 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from fastapi import Request
-from dotenv import load_dotenv
+from utils.env_utils import EnvironmentVariable, get_env
 import os
 
-# Load environment variables
-load_dotenv(dotenv_path=".env")
-
 # Database URL
-DB_URL = f"mysql+mysqlconnector://{os.getenv('DB_USERNAME')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+DB_URL = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}/{get_env(EnvironmentVariable.DB_NAME)}"
 
 # Create the database engine
 engine = create_engine(DB_URL, echo=True, pool_pre_ping=True)
