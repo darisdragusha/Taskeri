@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from views import routers
 from middleware import MultiTenantMiddleware, AuthorizationMiddleware 
 
@@ -118,6 +119,31 @@ app.add_middleware(
 for router in routers:
     app.include_router(router)
 
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    openapi_schema = get_openapi(
+        title="FastAPI",
+        version="0.1.0",
+        description="API with JWT Bearer authentication",
+        routes=app.routes,
+    )
+    openapi_schema["components"]["securitySchemes"] = {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+        }
+    }
+    for path in openapi_schema["paths"].values():
+        for operation in path.values():
+            operation.setdefault("security", []).append({"BearerAuth": []})
+
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 if __name__ == "__main__":
     import os
