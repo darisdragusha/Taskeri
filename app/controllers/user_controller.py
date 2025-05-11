@@ -1,8 +1,9 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from repositories import UserRepository
 from utils import get_db
 from models.dtos import UserCreate, UserUpdate, UserResponse
+from typing import List, Optional, Dict
 
 class UserController:
     """Controller class for handling user operations."""
@@ -16,16 +17,19 @@ class UserController:
         """
         self.repository = UserRepository(db_session)
 
-    def create_user(self, user_create: UserCreate) -> UserResponse:
+    def create_user(self, user_create: UserCreate, default_role_id: Optional[int] = None) -> UserResponse:
         """
-        Create a new user.
+        Create a new user and assign them default roles.
 
         Args:
             user_create (UserCreate): Data for the new user.
+            default_role_id (Optional[int]): ID of the default role to assign to the user.
+                                            If None, will use Employee role by default.
 
         Returns:
             UserResponse: Created user response.
         """
+        # Create the user first
         user = self.repository.create_user(
             email=user_create.email,
             password=user_create.password,
@@ -34,6 +38,22 @@ class UserController:
             department_id=user_create.department_id,
             team_id=user_create.team_id
         )
+        
+        # Assign default role if specified, otherwise find the "Employee" role
+        if default_role_id:
+            self.repository.assign_role_to_user(user.id, default_role_id)
+        else:
+            # Try to find Employee role by name and assign it
+            employee_role = self.repository.get_role_by_name("Employee")
+            if employee_role:
+                self.repository.assign_role_to_user(user.id, employee_role.id)
+            else:
+                # Log a warning or raise an exception if the Employee role is not found
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Default 'Employee' role not found. Unable to assign default role."
+                )
+        
         return UserResponse.from_orm(user)
 
     def get_user(self, user_id: int) -> UserResponse:
@@ -87,3 +107,60 @@ class UserController:
         if user:
             return {"message": "User deleted successfully"}
         raise HTTPException(status_code=404, detail="User not found")
+        
+    def assign_role_to_user(self, user_id: int, role_id: int) -> dict:
+        """
+        Assign a role to a user.
+        
+        Args:
+            user_id (int): User ID.
+            role_id (int): Role ID.
+            
+        Returns:
+            dict: Success message.
+        """
+        success = self.repository.assign_role_to_user(user_id, role_id)
+        if success:
+            return {"message": "Role assigned successfully"}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Failed to assign role to user"
+        )
+        
+    def remove_role_from_user(self, user_id: int, role_id: int) -> dict:
+        """
+        Remove a role from a user.
+        
+        Args:
+            user_id (int): User ID.
+            role_id (int): Role ID.
+            
+        Returns:
+            dict: Success message.
+        """
+        success = self.repository.remove_role_from_user(user_id, role_id)
+        if success:
+            return {"message": "Role removed successfully"}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Failed to remove role from user"
+        )
+        
+    def get_user_roles(self, user_id: int) -> List[Dict[str, str]]:
+        """
+        Get all roles assigned to a user.
+        
+        Args:
+            user_id (int): User ID.
+            
+        Returns:
+            List[Dict[str, str]]: List of roles with their details.
+        """
+        # Check if user exists
+        user = self.repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        # Get user roles
+        roles = self.repository.get_user_roles(user_id)
+        return [{"id": role.id, "name": role.name} for role in roles]

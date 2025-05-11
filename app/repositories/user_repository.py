@@ -1,8 +1,15 @@
-
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 from models.user import User
+from models.tenant.roles.role import Role
+from models.tenant.roles.user_role import UserRole
 from utils import hash_password
+from sqlalchemy.exc import SQLAlchemyError
+from fastapi import HTTPException
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class UserRepository:
     """Repository class for handling user-related database operations."""
@@ -114,3 +121,106 @@ class UserRepository:
             self.db_session.commit()
             return user
         return None
+        
+    def get_role_by_name(self, role_name: str) -> Optional[Role]:
+        """
+        Get a role by its name.
+        
+        Args:
+            role_name (str): Name of the role.
+            
+        Returns:
+            Optional[Role]: Role object if found, otherwise None.
+        """
+        return self.db_session.query(Role).filter(Role.name == role_name).first()
+        
+    def get_user_roles(self, user_id: int) -> List[Role]:
+        """
+        Get all roles assigned to a user.
+        
+        Args:
+            user_id (int): User ID.
+            
+        Returns:
+            List[Role]: List of roles assigned to the user.
+        """
+        roles = self.db_session.query(Role).join(
+            UserRole, UserRole.role_id == Role.id
+        ).filter(
+            UserRole.user_id == user_id
+        ).all()
+        
+        return roles
+        
+    def assign_role_to_user(self, user_id: int, role_id: int) -> bool:
+        """
+        Assign a role to a user.
+        
+        Args:
+            user_id (int): User ID.
+            role_id (int): Role ID.
+            
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        try:
+            # Check if user and role exist
+            user = self.get_user_by_id(user_id)
+            role = self.db_session.query(Role).filter(Role.id == role_id).first()
+            
+            if not user or not role:
+                return False
+                
+            # Check if the user already has this role
+            existing = self.db_session.query(UserRole).filter(
+                UserRole.user_id == user_id,
+                UserRole.role_id == role_id
+            ).first()
+            
+            if existing:
+                return True  # Role already assigned
+                
+            # Create the new role assignment
+            user_role = UserRole(
+                user_id=user_id,
+                role_id=role_id
+            )
+            
+            self.db_session.add(user_role)
+            self.db_session.commit()
+            return True
+            
+        except SQLAlchemyError as e:
+            logger.error(f"Error assigning role to user {user_id}: {e}")
+            self.db_session.rollback()
+            return False
+            
+    def remove_role_from_user(self, user_id: int, role_id: int) -> bool:
+        """
+        Remove a role from a user.
+        
+        Args:
+            user_id (int): User ID.
+            role_id (int): Role ID.
+            
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        try:
+            # Find the role assignment
+            role_assignment = self.db_session.query(UserRole).filter(
+                UserRole.user_id == user_id,
+                UserRole.role_id == role_id
+            ).first()
+            
+            if not role_assignment:
+                return False  # Role not assigned to user
+                
+            # Remove the role assignment
+            self.db_session.delete(role_assignment)
+            self.db_session.commit()
+            return True
+            
+        except SQLAlchemyError:
+            self.db_session.rollback()
+            return False

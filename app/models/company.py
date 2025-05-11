@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, BigInteger, TIMESTAMP
+from sqlalchemy import Column, String, Integer, BigInteger, TIMESTAMP, func
 from utils import Base
 
 class Company(Base):
@@ -8,4 +8,4 @@ class Company(Base):
     name = Column(String(255), unique=True, nullable=False)
     industry = Column(String(100))
     country = Column(String(100))
-    created_at = Column(TIMESTAMP, default="CURRENT_TIMESTAMP")
+    created_at = Column(TIMESTAMP, server_default=func.now())

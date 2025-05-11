@@ -5,9 +5,8 @@ from .company import Company
 class Department(Base):
     __tablename__ = "departments"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True)
     name = Column(String(100), nullable=False)
-    company_id = Column(BigInteger, ForeignKey('companies.id', ondelete="CASCADE"))
-    created_at = Column(TIMESTAMP, default="CURRENT_TIMESTAMP")
+    company_id = Column(BigInteger, ForeignKey("companies.id"), nullable=False)
 
     company = relationship("Company", backref="departments")
