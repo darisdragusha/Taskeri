@@ -146,9 +146,9 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 if __name__ == "__main__":
-    import os
     import uvicorn
+    from utils.env_utils import EnvironmentVariable, get_env
 
-    host = os.getenv("HOST", "127.0.0.1")
-    port = int(os.getenv("PORT", 10000))
+    host = get_env(EnvironmentVariable.HOST, "127.0.0.1")
+    port = int(get_env(EnvironmentVariable.PORT, "10000"))
     uvicorn.run("app:app", host=host, port=port, reload=True)
