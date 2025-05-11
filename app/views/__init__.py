@@ -7,6 +7,7 @@ from .company_view import router as company_router
 from .user_role_view import router as user_role_router
 from .tenant_user_view import router as tenant_user_router
 from .project_views import router as project_router
+from .team_view import router as team_router
 
 routers = [
     login_router,
@@ -17,6 +18,7 @@ routers = [
     company_router,
     user_role_router,
     tenant_user_router,
-    project_router
+    project_router, 
+    team_router
 ]
 
