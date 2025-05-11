@@ -6,9 +6,8 @@ from .department import Department
 class Team(Base):
     __tablename__ = "teams"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True)
     name = Column(String(100), nullable=False)
-    department_id = Column(BigInteger, ForeignKey('departments.id', ondelete="CASCADE"))
-    created_at = Column(TIMESTAMP, default="CURRENT_TIMESTAMP")
+    department_id = Column(BigInteger, ForeignKey("departments.id"))
 
     department = relationship("Department", backref="teams")
