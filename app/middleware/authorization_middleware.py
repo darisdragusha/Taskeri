@@ -1,10 +1,17 @@
 from fastapi import Request, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
-from sqlalchemy import text
+from sqlalchemy import select, exists, and_, or_
 from starlette.responses import Response
 from typing import Awaitable, Callable, Dict, Any, List, Optional, Set
 import logging
 import re
+from models.tenant.roles.user_role import UserRole
+from models.tenant.roles.role import Role
+from models.tenant.roles.permission import Permission
+from models.tenant.roles.role_permission import RolePermission
+from models.tenant.tasks.task import Task
+from models.tenant.tasks.task_assignment import TaskAssignment
+from models.project import Project
 
 # Setup basic logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -136,16 +143,17 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
                 results.append(cache[cache_key])
                 continue
                 
-            # If not in cache, check database
-            query = text("""
-                SELECT COUNT(*) > 0 
-                FROM user_roles ur
-                JOIN role_permissions rp ON ur.role_id = rp.role_id
-                JOIN permissions p ON rp.permission_id = p.id
-                WHERE ur.user_id = :user_id AND p.name = :permission_name
-            """)
+            # If not in cache, check database using ORM
+            stmt = select(exists().where(
+                and_(
+                    UserRole.user_id == user_id,
+                    UserRole.role_id == RolePermission.role_id,
+                    RolePermission.permission_id == Permission.id,
+                    Permission.name == permission
+                )
+            ))
             
-            result = db.execute(query, {"user_id": user_id, "permission_name": permission}).scalar()
+            result = db.scalar(stmt)
             
             # Cache the result
             cache[cache_key] = result
@@ -185,41 +193,61 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
         
         # Check ownership based on resource type
         if resource_type == "task":
-            query = text("""
-                SELECT EXISTS (
-                    SELECT 1 FROM tasks t
-                    LEFT JOIN task_assignments ta ON t.id = ta.task_id
-                    WHERE t.id = :resource_id AND (ta.user_id = :user_id OR EXISTS (
-                        SELECT 1 FROM user_roles ur
-                        JOIN roles r ON ur.role_id = r.id
-                        WHERE ur.user_id = :user_id AND r.name IN ('Admin', 'Manager')
-                    ))
+            # Check if user is assigned to the task or has admin/manager role
+            admin_manager_stmt = select(exists().where(
+                and_(
+                    UserRole.user_id == user_id,
+                    UserRole.role_id == Role.id,
+                    Role.name.in_(['Admin', 'Manager'])
                 )
-            """)
-        elif resource_type == "project":
-            query = text("""
-                SELECT EXISTS (
-                    SELECT 1 FROM projects p
-                    WHERE p.id = :resource_id AND EXISTS (
-                        SELECT 1 FROM user_roles ur
-                        JOIN roles r ON ur.role_id = r.id
-                        WHERE ur.user_id = :user_id AND r.name IN ('Admin', 'Manager')
+            ))
+            
+            task_access_stmt = select(exists().where(
+                and_(
+                    Task.id == resource_id,
+                    or_(
+                        and_(
+                            TaskAssignment.task_id == Task.id,
+                            TaskAssignment.user_id == user_id
+                        ),
+                        admin_manager_stmt.scalar_subquery()
                     )
                 )
-            """)
+            ))
+            
+            result = db.scalar(task_access_stmt)
+            
+        elif resource_type == "project":
+            # Check if user has admin/manager role for project access
+            project_access_stmt = select(exists().where(
+                and_(
+                    Project.id == resource_id,
+                    select(exists().where(
+                        and_(
+                            UserRole.user_id == user_id,
+                            UserRole.role_id == Role.id,
+                            Role.name.in_(['Admin', 'Manager'])
+                        )
+                    )).scalar_subquery()
+                )
+            ))
+            
+            result = db.scalar(project_access_stmt)
+            
         elif resource_type == "user":
             # Special case for user resources - users can access their own profile
             return resource_id == user_id or await self._check_permissions(
                 db, user_id, ["read_any_user"], False)
         else:
             # Default to admin check for unknown resource types
-            query = text("""
-                SELECT EXISTS (
-                    SELECT 1 FROM user_roles ur
-                    JOIN roles r ON ur.role_id = r.id
-                    WHERE ur.user_id = :user_id AND r.name = 'Admin'
+            admin_check_stmt = select(exists().where(
+                and_(
+                    UserRole.user_id == user_id,
+                    UserRole.role_id == Role.id,
+                    Role.name == 'Admin'
                 )
-            """)
+            ))
             
-        result = db.execute(query, {"resource_id": resource_id, "user_id": user_id}).scalar()
+            result = db.scalar(admin_check_stmt)
+            
         return result

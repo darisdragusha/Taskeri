@@ -1,8 +1,15 @@
 from typing import List, Callable
 from fastapi import HTTPException, Depends, Request, status
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import select, exists, and_, or_
 from auth import auth_service
+from models.tenant.roles.user_role import UserRole
+from models.tenant.roles.role import Role
+from models.tenant.roles.permission import Permission
+from models.tenant.roles.role_permission import RolePermission
+from models.tenant.tasks.task import Task
+from models.tenant.tasks.task_assignment import TaskAssignment
+from models.project import Project
 
 class PermissionChecker:
     """
@@ -22,17 +29,17 @@ class PermissionChecker:
         Returns:
             bool: True if the user has the permission, False otherwise
         """
-        # SQL query to check if user has the permission through their roles
-        query = text("""
-            SELECT COUNT(*) > 0 
-            FROM user_roles ur
-            JOIN role_permissions rp ON ur.role_id = rp.role_id
-            JOIN permissions p ON rp.permission_id = p.id
-            WHERE ur.user_id = :user_id AND p.name = :permission_name
-        """)
+        # Using SQLAlchemy ORM to check if user has the permission through their roles
+        stmt = select(exists().where(
+            and_(
+                UserRole.user_id == user_id,
+                UserRole.role_id == RolePermission.role_id,
+                RolePermission.permission_id == Permission.id,
+                Permission.name == permission_name
+            )
+        ))
         
-        result = db.execute(query, {"user_id": user_id, "permission_name": permission_name})
-        has_permission = result.scalar()
+        has_permission = db.scalar(stmt)
         return has_permission
     
     @classmethod
@@ -133,46 +140,62 @@ class PermissionChecker:
                 
                 # Check ownership based on resource type
                 if resource_type == "task":
-                    # Check if user created the task or is assigned to it
-                    query = text("""
-                        SELECT EXISTS (
-                            SELECT 1 FROM tasks t
-                            LEFT JOIN task_assignments ta ON t.id = ta.task_id
-                            WHERE t.id = :task_id AND (ta.user_id = :user_id OR EXISTS (
-                                SELECT 1 FROM user_roles ur
-                                JOIN roles r ON ur.role_id = r.id
-                                WHERE ur.user_id = :user_id AND r.name IN ('Admin', 'Manager')
-                            ))
+                    # Check if user is assigned to the task or has admin/manager role
+                    admin_manager_stmt = select(exists().where(
+                        and_(
+                            UserRole.user_id == user_id,
+                            UserRole.role_id == Role.id,
+                            Role.name.in_(['Admin', 'Manager'])
                         )
-                    """)
-                    result = db.execute(query, {"task_id": resource_id, "user_id": user_id})
+                    ))
                     
-                elif resource_type == "project":
-                    # Check if user is assigned to any task in the project or has admin/manager role
-                    query = text("""
-                        SELECT EXISTS (
-                            SELECT 1 FROM projects p
-                            WHERE p.id = :project_id AND EXISTS (
-                                SELECT 1 FROM user_roles ur
-                                JOIN roles r ON ur.role_id = r.id
-                                WHERE ur.user_id = :user_id AND r.name IN ('Admin', 'Manager')
+                    task_access_stmt = select(exists().where(
+                        and_(
+                            Task.id == resource_id,
+                            or_(
+                                and_(
+                                    TaskAssignment.task_id == Task.id,
+                                    TaskAssignment.user_id == user_id
+                                ),
+                                admin_manager_stmt.scalar_subquery()
                             )
                         )
-                    """)
-                    result = db.execute(query, {"project_id": resource_id, "user_id": user_id})
+                    ))
+                    
+                    has_access = db.scalar(task_access_stmt)
+                    
+                elif resource_type == "project":
+                    # Check if user has admin/manager role for project access
+                    project_access_stmt = select(exists().where(
+                        and_(
+                            Project.id == resource_id,
+                            select(exists().where(
+                                and_(
+                                    UserRole.user_id == user_id,
+                                    UserRole.role_id == Role.id,
+                                    Role.name.in_(['Admin', 'Manager'])
+                                )
+                            )).scalar_subquery()
+                        )
+                    ))
+                    
+                    has_access = db.scalar(project_access_stmt)
+                    
+                elif resource_type == "user":
+                    # Special case for user resources - users can access their own profile
+                    has_access = int(resource_id) == user_id or await cls.check_permission("read_any_user", db, user_id)
                     
                 else:
-                    # For other resources, default to checking admin role
-                    query = text("""
-                        SELECT EXISTS (
-                            SELECT 1 FROM user_roles ur
-                            JOIN roles r ON ur.role_id = r.id
-                            WHERE ur.user_id = :user_id AND r.name = 'Admin'
+                    # Default to admin check for unknown resource types
+                    admin_check_stmt = select(exists().where(
+                        and_(
+                            UserRole.user_id == user_id,
+                            UserRole.role_id == Role.id,
+                            Role.name == 'Admin'
                         )
-                    """)
-                    result = db.execute(query, {"user_id": user_id})
-                
-                has_access = result.scalar()
+                    ))
+                    
+                    has_access = db.scalar(admin_check_stmt)
                 
                 if not has_access:
                     raise HTTPException(
