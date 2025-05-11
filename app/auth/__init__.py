@@ -1,1 +1,1 @@
-from auth import auth_service
+from .auth import auth_service

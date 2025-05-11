@@ -3,6 +3,6 @@ from sqlalchemy.orm import Session
 from utils.migration_runner import run_alembic_for_schema
 
 def create_new_tenant(db: Session, schema_name: str):
-    db.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema_name}"))
+    db.execute(text(f"CREATE SCHEMA IF NOT EXISTS {"tenant_" + schema_name}"))
     db.commit()
-    run_alembic_for_schema(schema_name)
+    run_alembic_for_schema("tenant_" + schema_name)
