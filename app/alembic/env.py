@@ -6,12 +6,8 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from models import tenant
 
-
-
-# ───── Load environment variables ─────
-from dotenv import load_dotenv
-load_dotenv(dotenv_path=".env")
-
+# ───── Import environment utilities ─────
+from utils.env_utils import EnvironmentVariable, get_env
 
 # ───── Import Base and models (this loads metadata) ─────
 from utils.db_utils import Base
@@ -20,8 +16,8 @@ from models import tenant
 # ───── Alembic Config ─────
 config = context.config
 
-# Dynamically set the DB URL from .env
-db_url = os.getenv("DB_URL")
+
+db_url = get_env(EnvironmentVariable.DB_URL, None)
 if db_url is None:
     raise ValueError("Environment variable DB_URL is not set in .env")
 
