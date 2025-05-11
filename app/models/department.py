@@ -9,4 +9,4 @@ class Department(Base):
     name = Column(String(100), nullable=False)
     company_id = Column(BigInteger, ForeignKey("companies.id"), nullable=False)
 
-    company = relationship("Company", back_populates="departments")
+    company = relationship("Company", backref="departments")

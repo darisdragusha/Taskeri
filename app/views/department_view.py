@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from models.dtos import DepartmentCreate, DepartmentUpdate, DepartmentResponse
-from controllers import DepartmentController
+from models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate, DepartmentResponse
+from controllers.department_controller import DepartmentController
 from utils import get_db
 from typing import List
 

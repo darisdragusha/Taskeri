@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from repositories import DepartmentRepository
-from models.dtos import DepartmentCreate, DepartmentUpdate
+from repositories.department_repository import DepartmentRepository
+from models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate
 from models.department import Department
 
 
