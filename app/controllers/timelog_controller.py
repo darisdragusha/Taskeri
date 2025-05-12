@@ -2,6 +2,7 @@ from typing import Optional, List
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 from models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate, TimeLogResponse
 from repositories.timelog_repository import TimeLogRepository
@@ -108,3 +109,16 @@ class TimeLogController:
             end_time=log.end_time,
             duration=log.duration
         )
+    
+    def get_user_logs_by_time_range(self, user_id: int, start: datetime, end: datetime) -> List[TimeLogResponse]:
+        """
+        Get all time logs for a user within a specific date range.
+        """
+        try:
+            logs = self.repository.get_user_logs_by_time_range(user_id, start, end)
+            return [self._map_to_response(log) for log in logs]
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )

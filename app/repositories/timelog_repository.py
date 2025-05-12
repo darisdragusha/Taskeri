@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional, Tuple
 from sqlalchemy import desc
+from datetime import datetime
 
 from models.time_log import TimeLog  # Adjust the import path if needed
 from models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate  # You must define these DTOs
@@ -78,3 +79,15 @@ class TimeLogRepository:
         except Exception as e:
             self.db_session.rollback()
             raise e
+        
+
+    def get_user_logs_by_time_range(self, user_id: int, start: datetime, end: datetime) -> List[TimeLog]:
+        """
+        Get logs for a user where start_time is within the given range.
+        """
+        return self.db_session.query(TimeLog).filter(
+            TimeLog.user_id == user_id,
+            TimeLog.start_time >= start,
+            TimeLog.start_time <= end
+        ).order_by(TimeLog.start_time).all()
+
