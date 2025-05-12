@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List
-
+from models.dtos.attendance_dtos import AttendanceResponse
 from controllers.attendance_controller import AttendanceController
 from models.attendance import Attendance
 from utils.db_utils import get_db
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.post("/check-in", response_model=Attendance, status_code=status.HTTP_201_CREATED)
+@router.post("/check-in", response_model=AttendanceResponse, status_code=status.HTTP_201_CREATED)
 def check_in(
     request: Request,
     db: Session = Depends(get_db),
@@ -28,7 +28,7 @@ def check_in(
     return controller.create_attendance(user_id=current_user.get("user_id"))
 
 
-@router.put("/check-out", response_model=Attendance)
+@router.put("/check-out", response_model=AttendanceResponse)
 def check_out(
     request: Request,
     db: Session = Depends(get_db),
@@ -42,7 +42,7 @@ def check_out(
     return controller.close_attendance(user_id=current_user.get("user_id"))
 
 
-@router.get("/my", response_model=List[Attendance])
+@router.get("/my", response_model=List[AttendanceResponse])
 def get_my_attendance(
     request: Request,
     db: Session = Depends(get_db),
@@ -54,7 +54,7 @@ def get_my_attendance(
     controller = AttendanceController(db)
     return controller.get_user_attendance(user_id=current_user.get("user_id"))
 
-@router.get("/user/{user_id}", response_model=List[Attendance])
+@router.get("/user/{user_id}", response_model=List[AttendanceResponse])
 def get_my_attendance(
     request: Request,
     user_id: int, 

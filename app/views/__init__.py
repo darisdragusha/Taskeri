@@ -16,6 +16,7 @@ from .timelog_view import router as timelog_router
 from .company_settings_view import router as company_settings_router
 from .leave_request_view import router as leave_request_router
 from .file_attachment_view import router as file_attatchment_router
+from .attendance_view import router as attendance_router
 
 routers = [
     login_router,
@@ -35,6 +36,7 @@ routers = [
     timelog_router,
     company_settings_router,
     leave_request_router,
-    file_attatchment_router
+    file_attatchment_router,
+    attendance_router
 ]
 
