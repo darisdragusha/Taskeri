@@ -62,23 +62,38 @@ class CommentRepository:
         user = self.db_session.query(User).filter(User.id == comment.user_id).first()
         return comment, user
 
-    def get_comments_by_task(self, task_id: int) -> List[Tuple[Comment, User]]:
+    def get_comments_by_task(self, task_id: int, page: int = 1, page_size: int = 20) -> Tuple[List[Tuple[Comment, User]], int]:
         """
-        Get all comments for a specific task along with user information.
+        Get paginated comments for a specific task along with user information.
 
         Args:
             task_id (int): Task ID to retrieve comments for.
+            page (int): Page number (starting from 1).
+            page_size (int): Number of comments per page.
 
         Returns:
-            List[Tuple[Comment, User]]: List of tuples containing (Comment, User) pairs.
+            Tuple[List[Tuple[Comment, User]], int]: Tuple containing list of (Comment, User) pairs and total count.
         """
+        # Get total count first
+        total_count = self.db_session.query(Comment).filter(
+            Comment.task_id == task_id
+        ).count()
+        
+        # If no comments found, return empty list and zero count
+        if total_count == 0:
+            return [], 0
+            
+        # Calculate offset
+        offset = (page - 1) * page_size
+        
+        # Get paginated comments
         comments = self.db_session.query(Comment).filter(
             Comment.task_id == task_id
-        ).order_by(desc(Comment.created_at)).all()
+        ).order_by(desc(Comment.created_at)).offset(offset).limit(page_size).all()
         
-        # If no comments found, return empty list
+        # If no comments on this page, return empty list
         if not comments:
-            return []
+            return [], total_count
             
         # Get all user IDs from comments to fetch users in a single query (avoid N+1 query problem)
         user_ids = [comment.user_id for comment in comments]
@@ -88,7 +103,7 @@ class CommentRepository:
         user_dict = {user.id: user for user in users}
         
         # Pair each comment with its user
-        return [(comment, user_dict.get(comment.user_id)) for comment in comments]
+        return [(comment, user_dict.get(comment.user_id)) for comment in comments], total_count
 
     def update_comment(self, comment_id: int, data: CommentUpdate) -> Optional[Comment]:
         """
