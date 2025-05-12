@@ -17,11 +17,11 @@ from models.project import Project
 from models.tenant.tasks.task import Task
 from models.tenant.tasks.task_assignment import TaskAssignment
 from models.tenant.tasks.comment import Comment
-from models.tenant.tasks.file_attachment import FileAttachment
+from models.file_attachment import FileAttachment
 
 from models.time_log import TimeLog
-from models.tenant.time_tracking.attendance import Attendance
-from models.tenant.time_tracking.leave_request import LeaveRequest
+from models.attendance import Attendance
+from models.leave_request import LeaveRequest
 
 from models.tenant.notifications.notification import Notification
 from models.tenant.notifications.activity_log import ActivityLog

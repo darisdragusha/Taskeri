@@ -4,7 +4,7 @@ from typing import Optional, List, Dict, Any, Tuple
 from models.tenant.tasks.task import Task
 from models.tenant.tasks.task_assignment import TaskAssignment
 from models.tenant.tasks.comment import Comment
-from models.tenant.tasks.file_attachment import FileAttachment
+from models.file_attachment import FileAttachment
 from models.user import User
 from models.project import Project
 from models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
