@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
 from sqlalchemy.orm import Session
 from typing import List, Dict
 
-from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse
+from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, CommentListResponse
 from controllers.comment_controller import CommentController
 from utils.db_utils import get_db
 from middleware.auth_middleware import get_current_user
@@ -57,20 +57,27 @@ def get_comment(
     return comment
 
 
-@router.get("/task/{task_id}", response_model=List[CommentResponse])
+@router.get("/task/{task_id}", response_model=CommentListResponse)
 def get_task_comments(
     task_id: int,
     request: Request,
+    page: int = Query(1, ge=1, description="Page number (starting from 1)"),
+    page_size: int = Query(20, ge=1, le=100, description="Number of comments per page"),
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Get all comments for a specific task.
+    Get paginated comments for a specific task.
     
-    Returns a list of comments with user details, ordered by creation date (newest first).
+    Returns a paginated list of comments with user details, ordered by creation date (newest first).
+    Use page and page_size parameters to navigate through comments for tasks with many comments.
     """
     controller = CommentController(db)
-    return controller.get_task_comments(task_id)
+    return controller.get_task_comments(
+        task_id=task_id, 
+        page=page, 
+        page_size=page_size
+    )
 
 
 @router.put("/{comment_id}", response_model=CommentResponse)
