@@ -6,7 +6,7 @@ from auth import auth_service
 from models.tenant.roles.user_role import UserRole
 from models.tenant.roles.role import Role
 from models.tenant.roles.permission import Permission
-from models.tenant.roles.role_permission import RolePermission
+from models.role_permission import RolePermission
 from models.tenant.tasks.task import Task
 from models.tenant.tasks.task_assignment import TaskAssignment
 from models.project import Project
