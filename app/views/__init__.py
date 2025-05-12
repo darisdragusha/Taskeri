@@ -11,6 +11,7 @@ from .team_view import router as team_router
 from .department_view import router as department_router
 from .comment_view import router as comment_router
 from .user_profile_views import router as user_profile_router
+from .role_permission_view import router as role_permission_router
 
 routers = [
     login_router,
@@ -25,6 +26,7 @@ routers = [
     team_router,
     department_router,
     comment_router,
-    user_profile_router
+    user_profile_router,
+    role_permission_router
 ]
 
