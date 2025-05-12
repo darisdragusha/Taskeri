@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.company_settings import CompanySettings
-from models.dtos import CompanySettingsCreate, CompanySettingsUpdate
+from models.dtos.company_settings_dtos import CompanySettingsCreate, CompanySettingsUpdate
 from typing import Optional
 
 class CompanySettingsRepository:

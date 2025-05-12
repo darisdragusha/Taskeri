@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from controllers.company_settings_controller import CompanySettingsController
-from models.dtos import (
+from models.dtos.company_settings_dtos import (
     CompanySettingsCreate,
     CompanySettingsUpdate,
     CompanySettingsResponse,
