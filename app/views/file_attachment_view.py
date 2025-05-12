@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from controllers.file_attachment_controller import FileAttachmentController
-from models.dtos import (
+from models.dtos.file_attachment_dtos import (
     FileAttachmentCreate,
     FileAttachmentUpdate,
     FileAttachmentResponse
