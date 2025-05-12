@@ -44,6 +44,19 @@ class UserBasicInfo(BaseModel):
         orm_mode = True
         from_attributes = True
 
+class CommentBase(BaseModel):
+    """Base model for Comment data"""
+    content: str = Field(..., description="The content of the comment")
+
+class CommentCreate(CommentBase):
+    """Model for creating a new comment"""
+    task_id: int = Field(..., description="ID of the task this comment belongs to")
+    user_id: int = Field(..., description="ID of the user who created the comment")
+
+class CommentUpdate(CommentBase):
+    """Model for updating an existing comment"""
+    pass
+
 class CommentResponse(BaseModel):
     id: int
     content: str
