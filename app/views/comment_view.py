@@ -5,7 +5,7 @@ from typing import List, Dict
 from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, CommentListResponse
 from controllers.comment_controller import CommentController
 from utils.db_utils import get_db
-from middleware.auth_middleware import get_current_user
+from auth import auth_service
 
 router = APIRouter(
     prefix="/comments",
@@ -19,7 +19,7 @@ def create_comment(
     data: CommentCreate,
     request: Request,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new comment for a task.
@@ -38,7 +38,7 @@ def get_comment(
     comment_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a specific comment by ID.
@@ -64,7 +64,7 @@ def get_task_comments(
     page: int = Query(1, ge=1, description="Page number (starting from 1)"),
     page_size: int = Query(20, ge=1, le=100, description="Number of comments per page"),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get paginated comments for a specific task.
@@ -86,7 +86,7 @@ def update_comment(
     data: CommentUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update a comment.
@@ -106,7 +106,7 @@ def delete_comment(
     comment_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a comment.
