@@ -102,6 +102,19 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_permission"],
         "PUT": ["update_permission"],
         "DELETE": ["delete_permission"]
+    },
+    
+    # Comment routes
+    r"^/comments$": {
+        "POST": ["create_comment"]
+    },
+    r"^/comments/\d+$": {
+        "GET": ["read_comment"],
+        "PUT": ["update_comment"],
+        "DELETE": ["delete_comment"]
+    },
+    r"^/comments/task/\d+$": {
+        "GET": ["read_comment"]
     }
 }
 

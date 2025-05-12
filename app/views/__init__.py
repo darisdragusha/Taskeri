@@ -9,6 +9,7 @@ from .tenant_user_view import router as tenant_user_router
 from .project_views import router as project_router
 from .team_view import router as team_router
 from .department_view import router as department_router
+from .comment_view import router as comment_router
 
 routers = [
     login_router,
@@ -21,6 +22,7 @@ routers = [
     tenant_user_router,
     project_router, 
     team_router,
-    department_router
+    department_router,
+    comment_router
 ]
 

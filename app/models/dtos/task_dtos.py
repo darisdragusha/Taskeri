@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from enum import Enum
+from utils.formatters.datetime_formatter import to_api_datetime
 
 class PriorityEnum(str, Enum):
     LOW = "Low"
@@ -44,6 +45,19 @@ class UserBasicInfo(BaseModel):
         orm_mode = True
         from_attributes = True
 
+class CommentBase(BaseModel):
+    """Base model for Comment data"""
+    content: str = Field(..., description="The content of the comment")
+
+class CommentCreate(CommentBase):
+    """Model for creating a new comment"""
+    task_id: int = Field(..., description="ID of the task this comment belongs to")
+    user_id: int = Field(..., description="ID of the user who created the comment")
+
+class CommentUpdate(CommentBase):
+    """Model for updating an existing comment"""
+    pass
+
 class CommentResponse(BaseModel):
     id: int
     content: str
@@ -56,10 +70,8 @@ class CommentResponse(BaseModel):
         from_attributes = True
 
     @validator('created_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class FileAttachmentResponse(BaseModel):
     id: int
@@ -71,10 +83,8 @@ class FileAttachmentResponse(BaseModel):
         from_attributes = True
 
     @validator('uploaded_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class ProjectBasicInfo(BaseModel):
     id: int
@@ -95,10 +105,8 @@ class TaskResponse(TaskBase):
         from_attributes = True
 
     @validator('created_at', 'updated_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class TaskDetailResponse(TaskResponse):
     """Detailed task response including assignments and related entities"""
@@ -113,7 +121,14 @@ class TaskListResponse(BaseModel):
     total: int
     page: int
     page_size: int
-    
+
+class CommentListResponse(BaseModel):
+    """Response model for paginated comment lists"""
+    items: List[CommentResponse]
+    total: int
+    page: int
+    page_size: int
+
 class TaskFilterParams(BaseModel):
     """Parameters for filtering tasks in search operations"""
     status: Optional[List[StatusEnum]] = None
