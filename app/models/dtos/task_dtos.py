@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from enum import Enum
+from utils.formatters.datetime_formatter import to_api_datetime
 
 class PriorityEnum(str, Enum):
     LOW = "Low"
@@ -69,10 +70,8 @@ class CommentResponse(BaseModel):
         from_attributes = True
 
     @validator('created_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class FileAttachmentResponse(BaseModel):
     id: int
@@ -84,10 +83,8 @@ class FileAttachmentResponse(BaseModel):
         from_attributes = True
 
     @validator('uploaded_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class ProjectBasicInfo(BaseModel):
     id: int
@@ -108,10 +105,8 @@ class TaskResponse(TaskBase):
         from_attributes = True
 
     @validator('created_at', 'updated_at', pre=True)
-    def datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    def format_datetime(cls, v):
+        return to_api_datetime(v)
 
 class TaskDetailResponse(TaskResponse):
     """Detailed task response including assignments and related entities"""
@@ -126,7 +121,14 @@ class TaskListResponse(BaseModel):
     total: int
     page: int
     page_size: int
-    
+
+class CommentListResponse(BaseModel):
+    """Response model for paginated comment lists"""
+    items: List[CommentResponse]
+    total: int
+    page: int
+    page_size: int
+
 class TaskFilterParams(BaseModel):
     """Parameters for filtering tasks in search operations"""
     status: Optional[List[StatusEnum]] = None
