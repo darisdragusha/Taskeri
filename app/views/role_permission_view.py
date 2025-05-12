@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from controllers.role_permission_controller import RolePermissionController
-from models.dtos import RolePermissionCreate, RolePermissionResponse
+from models.dtos.role_permission_dto import RolePermissionCreate, RolePermissionResponse
 from utils import get_db
 from typing import List
 
