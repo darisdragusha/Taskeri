@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from repositories.user_profile_repository import UserProfileRepository
-from models.dtos import UserProfileCreate, UserProfileUpdate
+from models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate
 from models.user_profile import UserProfile
 
 class UserProfileController:
