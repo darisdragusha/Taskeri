@@ -10,7 +10,7 @@ from models.role_permission import RolePermission
 from models.company import Company
 from models.department import Department
 from models.team import Team
-from models.tenant.organization.company_settings import CompanySettings
+from models.company_settings import CompanySettings
 
 from models.project import Project
 

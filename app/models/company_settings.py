@@ -3,7 +3,7 @@ from utils.db_utils import Base
 
 class CompanySettings(Base):
     __tablename__ = "company_settings"
-    __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
+    __table_args__ = {"schema": None}
 
 
     company_id = Column(BigInteger, ForeignKey("companies.id"), primary_key=True)
