@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, Depends, status
 
-from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, UserBasicInfo
+from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, UserBasicInfo, CommentListResponse
 from repositories.comment_repository import CommentRepository
 from models.tenant.tasks.comment import Comment
 from models.user import User
@@ -80,22 +80,36 @@ class CommentController:
                 detail="An unexpected error occurred"
             )
 
-    def get_task_comments(self, task_id: int) -> List[CommentResponse]:
+    def get_task_comments(self, task_id: int, page: int = 1, page_size: int = 20) -> CommentListResponse:
         """
-        Get all comments for a task.
+        Get paginated comments for a task.
 
         Args:
             task_id (int): Task ID.
+            page (int): Page number (starting from 1).
+            page_size (int): Number of comments per page.
 
         Returns:
-            List[CommentResponse]: List of comments for the task.
+            CommentListResponse: Paginated list of comments for the task.
             
         Raises:
             HTTPException: If there's a database error.
         """
         try:
-            comments_with_users = self.repository.get_comments_by_task(task_id)
-            return [self._map_to_response(comment, user) for comment, user in comments_with_users]
+            comments_with_users, total = self.repository.get_comments_by_task(
+                task_id=task_id,
+                page=page,
+                page_size=page_size
+            )
+            
+            comments = [self._map_to_response(comment, user) for comment, user in comments_with_users]
+            
+            return CommentListResponse(
+                items=comments,
+                total=total,
+                page=page,
+                page_size=page_size
+            )
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
