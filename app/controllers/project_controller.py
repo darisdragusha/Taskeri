@@ -1,5 +1,3 @@
-# app/controllers/project_controller.py
-
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -40,7 +38,8 @@ class ProjectController:
                 description=project_create.description,
                 start_date=project_create.start_date,
                 end_date=project_create.end_date,
-                status=project_create.status or "Not Started"
+                status=project_create.status or "Not Started",
+                assigned_user_ids=project_create.assigned_user_ids  # <-- added
             )
             return ProjectResponse.from_orm(project)
         except SQLAlchemyError as e:
@@ -102,7 +101,12 @@ class ProjectController:
         """
         try:
             update_data = project_update.dict(exclude_unset=True)
-            project = self.repository.update_project(project_id, update_data)
+            assigned_user_ids = update_data.pop("assigned_user_ids", None)  # <-- handled here
+            project = self.repository.update_project(
+                project_id,
+                update_data,
+                assigned_user_ids=assigned_user_ids
+            )
             if not project:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
             return ProjectResponse.from_orm(project)

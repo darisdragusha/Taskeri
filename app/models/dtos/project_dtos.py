@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import date
 from enum import Enum
 from datetime import datetime
@@ -19,6 +19,7 @@ class ProjectCreate(BaseModel):
     start_date: date
     end_date: Optional[date] = None
     status: Optional[ProjectStatusEnum] = ProjectStatusEnum.NOT_STARTED
+    assigned_user_ids: Optional[List[int]] = None
 
     model_config = {
         "from_attributes": True
@@ -31,6 +32,7 @@ class ProjectUpdate(BaseModel):
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     status: Optional[ProjectStatusEnum] = None
+    assigned_user_ids: Optional[List[int]] = None
 
     model_config = {
         "from_attributes": True
