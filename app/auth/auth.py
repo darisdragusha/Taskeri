@@ -1,11 +1,11 @@
 import os
 from datetime import datetime, timedelta, timezone
-from dotenv import load_dotenv
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from typing import Dict
 from functools import lru_cache
+from utils.env_utils import EnvironmentVariable, get_env
 
 class AuthService:
     """
@@ -15,11 +15,10 @@ class AuthService:
     and extracting user details from the token.
     """
 
-    # Load environment variables once at class level
-    load_dotenv()
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
-    ALGORITHM: str = os.getenv("ALGORITHM", "")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    # Load environment variables from env_utils
+    SECRET_KEY: str = get_env(EnvironmentVariable.SECRET_KEY, "")
+    ALGORITHM: str = get_env(EnvironmentVariable.ALGORITHM, "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(get_env(EnvironmentVariable.ACCESS_TOKEN_EXPIRE_MINUTES, "30"))
 
     if not SECRET_KEY or not ALGORITHM or not ACCESS_TOKEN_EXPIRE_MINUTES:
         raise ValueError("Missing required environment variables: SECRET_KEY, ALGORITHM, or ACCESS_TOKEN_EXPIRE_MINUTES")
