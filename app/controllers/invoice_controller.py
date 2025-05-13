@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from repositories.invoice_repository import InvoiceRepository
-from models.dtos.invoice_dto import InvoiceCreate, InvoiceUpdate
+from models.dtos.invoice_dtos import InvoiceCreate, InvoiceUpdate
 from models.invoice import Invoice
 from typing import List, Optional
 
