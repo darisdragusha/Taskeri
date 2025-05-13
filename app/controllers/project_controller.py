@@ -1,10 +1,9 @@
-# app/controllers/project_controller.py
-
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from repositories.project_repository import ProjectRepository
 from utils import get_db
+from models.user import User
 from models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
 from typing import List, Dict, Optional
 
@@ -35,12 +34,15 @@ class ProjectController:
             HTTPException: If a database error occurs.
         """
         try:
+            if project_create.assigned_user_ids:
+                self._validate_user_ids_exist(project_create.assigned_user_ids)
             project = self.repository.create_project(
                 name=project_create.name,
                 description=project_create.description,
                 start_date=project_create.start_date,
                 end_date=project_create.end_date,
-                status=project_create.status or "Not Started"
+                status=project_create.status or "Not Started",
+                assigned_user_ids=project_create.assigned_user_ids
             )
             return ProjectResponse.from_orm(project)
         except SQLAlchemyError as e:
@@ -102,7 +104,14 @@ class ProjectController:
         """
         try:
             update_data = project_update.dict(exclude_unset=True)
-            project = self.repository.update_project(project_id, update_data)
+            assigned_user_ids = update_data.pop("assigned_user_ids", None)
+            if assigned_user_ids is not None:
+                self._validate_user_ids_exist(assigned_user_ids)
+            project = self.repository.update_project(
+                project_id,
+                update_data,
+                assigned_user_ids=assigned_user_ids
+            )
             if not project:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
             return ProjectResponse.from_orm(project)
@@ -148,3 +157,16 @@ class ProjectController:
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
+
+
+    def _validate_user_ids_exist(self, user_ids: List[int]) -> None:
+        existing_ids = {
+            user.id for user in self.repository.db_session.query(User)
+            .filter(User.id.in_(user_ids)).all()
+        }
+        missing_ids = set(user_ids) - existing_ids
+        if missing_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"The following user IDs do not exist: {sorted(missing_ids)}"
+            )

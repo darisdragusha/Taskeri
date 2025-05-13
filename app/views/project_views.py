@@ -15,13 +15,14 @@ async def create_project(
     controller: ProjectController = Depends()
 ):
     """
-    Create a new project.
+    Create a new project (optionally assign users).
 
     Permission requirements (handled by middleware):
     - 'create_project' permission
 
     Business logic:
     - Only authorized users (e.g., Admins/PMs) can create projects
+    - Optional user assignments can be included at creation
     """
     return controller.create_project(project_data)
 
@@ -79,7 +80,7 @@ async def update_project(
     controller: ProjectController = Depends()
 ):
     """
-    Update an existing project.
+    Update an existing project (optionally reassign users).
 
     Permission requirements (handled by middleware):
     - 'update_project' permission (if the user created it)
@@ -87,6 +88,7 @@ async def update_project(
 
     Business logic:
     - Users with correct permission can update any field
+    - User assignments can be replaced if provided
     """
     return controller.update_project(project_id, project_update)
 
