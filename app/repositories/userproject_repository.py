@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models.userproject import UserProject
 from models.user import User
+from models.project import Project
 
 class UserProjectRepository:
     """Handles operations related to project-user assignments."""
@@ -30,5 +31,14 @@ class UserProjectRepository:
             self.db_session.query(User)
             .join(UserProject, User.id == UserProject.user_id)
             .filter(UserProject.project_id == project_id)
+            .all()
+        )
+    
+    def get_projects_for_user(self, user_id: int) -> list[Project]:
+        """Get full project details for projects a user is assigned to."""
+        return (
+            self.db_session.query(Project)
+            .join(UserProject, Project.id == UserProject.project_id)
+            .filter(UserProject.user_id == user_id)
             .all()
         )

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Path, Query
 from controllers.userproject_controller import UserProjectController
 from models.dtos.user_dtos import UserResponse
+from models.dtos.project_dtos import ProjectResponse
+from auth import auth_service
 from typing import List
 
 router = APIRouter(
@@ -39,3 +41,24 @@ async def get_users_for_project(
     List all users assigned to a project with full user details.
     """
     return controller.get_users(project_id)
+
+@router.get("/users/{user_id}/projects", response_model=List[ProjectResponse])
+async def get_projects_for_user(
+    user_id: int = Path(..., gt=0, description="User ID (must be positive)"),
+    controller: UserProjectController = Depends()
+):
+    """
+    List all projects assigned to a user with full project details.
+    """
+    return controller.get_projects(user_id)
+
+@router.get("/me/projects", response_model=List[ProjectResponse])
+async def get_my_projects(
+    user_data: dict = Depends(auth_service.verify_user),
+    controller: UserProjectController = Depends()
+):
+    """
+    Get all projects assigned to the authenticated user.
+    """
+    user_id = user_data.get("user_id")
+    return controller.get_projects(user_id)
