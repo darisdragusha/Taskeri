@@ -26,5 +26,5 @@ from models.leave_request import LeaveRequest
 from models.tenant.notifications.notification import Notification
 from models.tenant.notifications.activity_log import ActivityLog
 
-from models.tenant.billing.invoice import Invoice
+from models.invoice import Invoice
 from models.user_profile import UserProfile
