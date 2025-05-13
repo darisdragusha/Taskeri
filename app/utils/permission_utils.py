@@ -3,7 +3,7 @@ from fastapi import HTTPException, Depends, Request, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, exists, and_, or_
 from auth import auth_service
-from models.tenant.roles.user_role import UserRole
+from models.user_role import UserRole
 from models.tenant.roles.role import Role
 from models.tenant.roles.permission import Permission
 from models.role_permission import RolePermission

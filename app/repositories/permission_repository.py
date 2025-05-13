@@ -29,6 +29,24 @@ class PermissionRepository:
         self.db_session.commit()
         self.db_session.refresh(permission)
         return permission
+    
+    def create_permissions_bulk(self, names: List[str]) -> List[Permission]:
+        """
+        Create multiple permissions in bulk.
+
+        Args:
+            names (List[str]): List of permission names.
+
+        Returns:
+            List[Permission]: List of created Permission objects.
+        """
+        permissions = [Permission(name=name) for name in names]
+        self.db_session.bulk_save_objects(permissions)
+        self.db_session.commit()
+
+        # Optional: re-query to get full objects with IDs
+        return self.db_session.query(Permission).filter(Permission.name.in_(names)).all()
+
 
     def get_permission_by_id(self, permission_id: int) -> Optional[Permission]:
         """

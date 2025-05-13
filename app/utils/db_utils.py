@@ -16,6 +16,13 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base class for models
 Base = declarative_base()
 
+def get_tenant_scoped_session(database_name: str) -> Session:
+    db_url = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}/{database_name}"
+    engine = create_engine(db_url, echo=True, pool_pre_ping=True)
+    SessionLocal = sessionmaker(bind=engine)
+    return SessionLocal()
+
+
 #dependancy function for db session
 async def get_db(request: Request) -> Session:
     """
