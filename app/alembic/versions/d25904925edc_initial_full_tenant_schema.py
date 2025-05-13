@@ -222,7 +222,8 @@ def upgrade() -> None:
         sa.Column('project_id', sa.BigInteger(), nullable=False),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
         sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
-        sa.PrimaryKeyConstraint('id')
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('user_id', 'project_id', name='uq_user_project')
     )
     
     # ### end Alembic commands ###
