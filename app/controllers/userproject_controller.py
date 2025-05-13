@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from models.dtos.user_dtos import UserResponse
 from repositories.userproject_repository import UserProjectRepository
 from utils import get_db
 
@@ -25,8 +26,12 @@ class UserProjectController:
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def get_users(self, project_id: int):
+    def get_users(self, project_id: int) -> list[UserResponse]:
         try:
-            return self.repository.get_users_for_project(project_id)
+            users = self.repository.get_users_for_project(project_id)
+            return [UserResponse.from_orm(user) for user in users]
         except SQLAlchemyError as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )

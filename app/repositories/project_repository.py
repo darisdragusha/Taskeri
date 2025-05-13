@@ -71,7 +71,7 @@ class ProjectRepository:
         assigned_user_ids: Optional[List[int]] = None
     ) -> Optional[Project]:
         """
-        Update an existing project.
+        Update an existing project and efficiently update user assignments.
 
         Args:
             project_id (int): ID of the project to update.
@@ -91,12 +91,22 @@ class ProjectRepository:
                     setattr(project, key, value)
 
             if assigned_user_ids is not None:
-                # Clear existing user assignments
-                self.db_session.query(UserProject).filter(
+                current_assignments = self.db_session.query(UserProject).filter(
                     UserProject.project_id == project_id
-                ).delete()
-                # Assign new users
-                for user_id in assigned_user_ids:
+                ).all()
+                current_user_ids = {up.user_id for up in current_assignments}
+                new_user_ids = set(assigned_user_ids)
+
+                users_to_remove = current_user_ids - new_user_ids
+                users_to_add = new_user_ids - current_user_ids
+
+                if users_to_remove:
+                    self.db_session.query(UserProject).filter(
+                        UserProject.project_id == project_id,
+                        UserProject.user_id.in_(users_to_remove)
+                    ).delete(synchronize_session=False)
+
+                for user_id in users_to_add:
                     self.db_session.add(UserProject(user_id=user_id, project_id=project_id))
 
             self.db_session.commit()
@@ -105,6 +115,7 @@ class ProjectRepository:
         except Exception as e:
             self.db_session.rollback()
             raise e
+
 
     def delete_project(self, project_id: int) -> Optional[Project]:
         """
