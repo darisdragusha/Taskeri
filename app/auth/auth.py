@@ -79,7 +79,7 @@ class AuthService:
             user_id = payload.get("sub")
             tenant_id = payload.get("tenant_id")
             tenant_name = payload.get("tenant_name")
-            
+            exp = payload.get("exp")
 
             if not all([user_id, tenant_id, tenant_name, exp]):
                 raise HTTPException(
@@ -88,7 +88,13 @@ class AuthService:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-            
+            # Explicit expiration check
+            if datetime.now(timezone.utc).timestamp() > float(exp):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token has expired",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
 
             return {
                 "user_id": int(user_id),
