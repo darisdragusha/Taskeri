@@ -3,6 +3,7 @@ from controllers.team_controller import TeamController
 from models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
 from typing import List
 from utils import get_db
+from auth import auth_service
 
 router = APIRouter(tags=["Teams"])
 
@@ -11,7 +12,8 @@ router = APIRouter(tags=["Teams"])
 async def create_team(
     team_create: TeamCreate,
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> TeamResponse:
     """
     Endpoint to create a new team.
@@ -27,7 +29,8 @@ async def create_team(
 async def get_team(
     team_id: int,
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> TeamResponse:
     """
     Endpoint to get a team by ID.
@@ -44,7 +47,8 @@ async def update_team(
     team_id: int,
     team_update: TeamUpdate,
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> TeamResponse:
     """
     Endpoint to update a team.
@@ -60,7 +64,8 @@ async def update_team(
 async def delete_team(
     team_id: int,
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> dict:
     """
     Endpoint to delete a team.
@@ -75,7 +80,8 @@ async def delete_team(
 @router.get("/teams", response_model=List[TeamResponse])
 async def get_all_teams(
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> List[TeamResponse]:
     """
     Endpoint to retrieve all teams.
@@ -89,7 +95,8 @@ async def get_all_teams(
 @router.get("/teams/statistics", response_model=TeamStatistics)
 async def get_team_statistics(
     request: Request,
-    controller: TeamController = Depends()
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> TeamStatistics:
     """
     Endpoint to retrieve team count per department.
