@@ -22,7 +22,6 @@ class LoginController:
         """
         self.db = db
         self.tenant_user_repo = TenantUserRepository(db)
-        self.user_repo = UserRepository(db)
 
     async def authenticate_user(self, email: str, password: str):
         """
@@ -55,8 +54,12 @@ class LoginController:
         # Switch to the tenant schema
         self.db.execute(text(f"USE tenant_{schema}"))
         self.db.commit()
+
+        # Re-initialize repo AFTER switching schema
+        user_repo = UserRepository(self.db)
+
         # Get the user by email and verify the password
-        user = self.user_repo.get_user_by_email(email)
+        user = user_repo.get_user_by_email(email)
         valid_user = (tenant_user and tenant_user.email == email and verify_password(password, tenant_user.password_hash))
 
         # If user is valid, generate and return the JWT token
