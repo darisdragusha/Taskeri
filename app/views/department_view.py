@@ -4,6 +4,7 @@ from models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate, Depa
 from controllers.department_controller import DepartmentController
 from utils import get_db
 from typing import List
+from auth import auth_service
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
 
@@ -15,7 +16,8 @@ def create_department(
     data: DepartmentCreate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: DepartmentController = Depends(get_department_controller)
+    controller: DepartmentController = Depends(get_department_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new department.
@@ -34,7 +36,8 @@ def create_department(
 def get_all_departments(
     request: Request,
     db: Session = Depends(get_db),
-    controller: DepartmentController = Depends(get_department_controller)
+    controller: DepartmentController = Depends(get_department_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a list of all departments.
@@ -53,7 +56,8 @@ def get_department(
     department_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: DepartmentController = Depends(get_department_controller)
+    controller: DepartmentController = Depends(get_department_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a specific department by ID.
@@ -75,7 +79,8 @@ def update_department(
     data: DepartmentUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: DepartmentController = Depends(get_department_controller)
+    controller: DepartmentController = Depends(get_department_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update a specific department by ID.
@@ -97,7 +102,8 @@ def delete_department(
     department_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: DepartmentController = Depends(get_department_controller)
+    controller: DepartmentController = Depends(get_department_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a specific department by ID.
