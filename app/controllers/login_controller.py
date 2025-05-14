@@ -21,7 +21,7 @@ class LoginController:
             db (Session): The database session to interact with the database.
         """
         self.db = db
-        self.tenant_user_repo = TenantUserRepository(db)
+        
 
     async def authenticate_user(self, email: str, password: str):
         """
@@ -41,11 +41,16 @@ class LoginController:
         if not email or not password:
             return None
         
-
+        self.db.execute(text(f"USE taskeri_global"))
+    
+        self.db.commit()
+        print("executed")
+        tenant_user_repo = TenantUserRepository(self.db)
         
         # Get tenant user by email
-        tenant_user = self.tenant_user_repo.get_by_email(email)
+        tenant_user = tenant_user_repo.get_by_email(email)
         schema = tenant_user.tenant_schema
+        tenant_id = tenant_user.id
 
         # Validate the schema name to prevent SQL injection
         if not re.match(r"^[a-zA-Z0-9_]+$", schema):
@@ -60,11 +65,11 @@ class LoginController:
 
         # Get the user by email and verify the password
         user = user_repo.get_user_by_email(email)
-        valid_user = (tenant_user and tenant_user.email == email and verify_password(password, tenant_user.password_hash))
+        valid_user = (user and user.email == email and verify_password(password, user.password_hash))
 
         # If user is valid, generate and return the JWT token
         if valid_user:
-            access_token = auth_service.create_access_token(user_id=user.id,tenant_id=tenant_user.id, tenant_name=tenant_user.tenant_schema)
+            access_token = auth_service.create_access_token(user_id=user.id,tenant_id=tenant_id, tenant_name=schema)
             return access_token
         
         # If authentication fails, return None
