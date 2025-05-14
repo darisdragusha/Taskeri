@@ -4,6 +4,7 @@ from controllers import UserController
 from models.dtos import UserCreate, UserUpdate, UserResponse
 from sqlalchemy.sql import text
 from utils.db_utils import get_db 
+from auth import auth_service
 
 
 router = APIRouter(tags=["User"])
@@ -12,7 +13,8 @@ router = APIRouter(tags=["User"])
 async def create_user(
     user_create: UserCreate,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> UserResponse:
     """
     Endpoint to create a new user.
@@ -24,7 +26,8 @@ async def create_user(
 async def get_user(
     user_id: int,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> UserResponse:
     """
     Endpoint to get a user by ID.
@@ -45,7 +48,8 @@ async def update_user(
     user_id: int,
     user_update: UserUpdate,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> UserResponse:
     """
     Endpoint to update a user.
@@ -64,7 +68,8 @@ async def update_user(
 async def delete_user(
     user_id: int,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> dict:
     """
     Endpoint to delete a user.

@@ -8,6 +8,7 @@ from models.dtos.file_attachment_dtos import (
 )
 from utils import get_db
 from typing import List
+from auth import auth_service
 
 router = APIRouter(prefix="/attachments", tags=["File Attachments"])
 
@@ -18,7 +19,8 @@ def get_file_attachment_controller(db: Session = Depends(get_db)) -> FileAttachm
 def create_file_attachment(
     data: FileAttachmentCreate,
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new file attachment.
@@ -31,7 +33,8 @@ def create_file_attachment(
 @router.get("/", response_model=List[FileAttachmentResponse])
 def get_all_attachments(
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve all file attachments.
@@ -45,7 +48,8 @@ def get_all_attachments(
 def get_attachments_by_task(
     task_id: int,
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all attachments for a specific task.
@@ -58,7 +62,8 @@ def get_attachments_by_task(
 def get_attachment_by_id(
     attachment_id: int,
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve a file attachment by ID.
@@ -76,7 +81,8 @@ def update_attachment(
     attachment_id: int,
     data: FileAttachmentUpdate,
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update an existing file attachment.
@@ -93,7 +99,8 @@ def update_attachment(
 def delete_attachment(
     attachment_id: int,
     request: Request,
-    controller: FileAttachmentController = Depends(get_file_attachment_controller)
+    controller: FileAttachmentController = Depends(get_file_attachment_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a file attachment by ID.

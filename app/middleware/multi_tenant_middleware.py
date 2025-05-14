@@ -18,8 +18,8 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
 
     This middleware:
     - Extracts the JWT token from the `Authorization` header.
-    - Decodes and verifies the token to retrieve `user_id` and `tenant_id`.
-    - Dynamically switches the database schema based on the `tenant_id`.
+    - Decodes and verifies the token to retrieve `user_id`, `tenant_id` and `tenant_schema`.
+    - Dynamically switches the database schema based on the `tenant_schema`.
     - Attaches the authenticated user's information and the database session to the request state.
     """
 
@@ -48,17 +48,19 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
 
         try:
             # Decode the token to extract user and tenant details
-            user_data: Dict[str, int | str] = auth_service.verify_token(token)
+            user_data: dict = auth_service.verify_token(token)
             user_id: int = user_data["user_id"]
-            tenant_id: str = user_data["tenant_id"]
+            tenant_id: int = user_data["tenant_id"]
+            tenant_schema: str = user_data["tenant_name"]
 
             # Attach extracted data to request state for later use in the request lifecycle
             request.state.user_id = user_id
             request.state.tenant_id = tenant_id
+            request.state.tenant_schema = tenant_schema
 
             # Initialize a new database session and set the tenant schema
             db: Session = SessionLocal()
-            await self.set_session_schema(db, tenant_id)
+            await self.set_session_schema(db, tenant_schema)
             request.state.db = db
 
         except HTTPException as e:

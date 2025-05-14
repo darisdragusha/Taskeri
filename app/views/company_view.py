@@ -4,6 +4,7 @@ from models.dtos import CompanyCreate, CompanyResponse, CompanyUpdate
 from controllers import CompanyController
 from utils import get_db
 from typing import List
+from auth import auth_service
 
 router = APIRouter(prefix="/companies", tags=["Companies"])
 
@@ -15,7 +16,8 @@ def create_company(
     data: CompanyCreate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends(get_company_controller)
+    controller: CompanyController = Depends(get_company_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new company. 
@@ -33,7 +35,8 @@ def create_company(
 def get_all_companies(
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends(get_company_controller)
+    controller: CompanyController = Depends(get_company_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a list of all companies. 
@@ -52,7 +55,8 @@ def get_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends(get_company_controller)
+    controller: CompanyController = Depends(get_company_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a specific company by ID. 
@@ -75,7 +79,8 @@ def update_company(
     data: CompanyUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends(get_company_controller)
+    controller: CompanyController = Depends(get_company_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update a specific company by ID. 
@@ -98,7 +103,8 @@ def delete_company(
     company_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: CompanyController = Depends(get_company_controller)
+    controller: CompanyController = Depends(get_company_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a specific company by ID. 

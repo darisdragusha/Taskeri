@@ -4,6 +4,7 @@ from controllers import RoleController
 from typing import List
 from models.dtos import RoleCreate, RoleUpdate, RoleResponse
 from utils import get_db 
+from auth import auth_service
 
 
 router = APIRouter(tags=["Roles"])
@@ -12,7 +13,8 @@ router = APIRouter(tags=["Roles"])
 async def create_role(
     role_create: RoleCreate,
     request: Request,
-    controller: RoleController = Depends()
+    controller: RoleController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> RoleResponse:
     """
     Endpoint to create a new role.
@@ -30,7 +32,8 @@ async def create_role(
 async def get_role(
     role_id: int,
     request: Request,
-    controller: RoleController = Depends()
+    controller: RoleController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> RoleResponse:
     """
     Endpoint to get a role by ID.
@@ -48,7 +51,8 @@ async def update_role(
     role_id: int,
     role_update: RoleUpdate,
     request: Request,
-    controller: RoleController = Depends()
+    controller: RoleController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> RoleResponse:
     """
     Endpoint to update a role.
@@ -66,7 +70,8 @@ async def update_role(
 async def delete_role(
     role_id: int,
     request: Request,
-    controller: RoleController = Depends()
+    controller: RoleController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> dict:
     """
     Endpoint to delete a role.
@@ -84,7 +89,8 @@ async def delete_role(
 @router.get("/roles", response_model=List[RoleResponse])
 async def get_all_roles(
     request: Request,
-    controller: RoleController = Depends()
+    controller: RoleController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> List[RoleResponse]:
     """
     Endpoint to retrieve all roles.

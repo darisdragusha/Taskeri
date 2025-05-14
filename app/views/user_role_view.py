@@ -3,6 +3,7 @@ from controllers import UserController
 from typing import Dict, List
 from models.dtos import UserResponse
 from utils.db_utils import get_db 
+from auth import auth_service
 
 router = APIRouter(prefix="/user-roles", tags=["User Roles"])
 
@@ -11,7 +12,8 @@ async def assign_role_to_user(
     user_id: int,
     role_id: int,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Assign a role to a user.
@@ -36,7 +38,8 @@ async def remove_role_from_user(
     user_id: int,
     role_id: int,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Remove a role from a user.
@@ -56,7 +59,8 @@ async def remove_role_from_user(
 async def get_user_roles(
     user_id: int,
     request: Request,
-    controller: UserController = Depends()
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all roles assigned to a user.

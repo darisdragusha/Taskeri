@@ -7,6 +7,7 @@ from models.dtos.company_settings_dtos import (
     CompanySettingsResponse,
 )
 from utils import get_db
+from auth import auth_service
 
 router = APIRouter(prefix="/company-settings", tags=["Company Settings"])
 
@@ -17,7 +18,8 @@ def get_company_settings_controller(db: Session = Depends(get_db)) -> CompanySet
 def create_company_settings(
     data: CompanySettingsCreate,
     request: Request,
-    controller: CompanySettingsController = Depends(get_company_settings_controller)
+    controller: CompanySettingsController = Depends(get_company_settings_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create settings for a specific company.
@@ -28,7 +30,8 @@ def create_company_settings(
 def get_company_settings(
     company_id: int,
     request: Request,
-    controller: CompanySettingsController = Depends(get_company_settings_controller)
+    controller: CompanySettingsController = Depends(get_company_settings_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve settings for a specific company.
@@ -43,7 +46,8 @@ def update_company_settings(
     company_id: int,
     data: CompanySettingsUpdate,
     request: Request,
-    controller: CompanySettingsController = Depends(get_company_settings_controller)
+    controller: CompanySettingsController = Depends(get_company_settings_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update settings for a specific company.
@@ -57,7 +61,8 @@ def update_company_settings(
 def delete_company_settings(
     company_id: int,
     request: Request,
-    controller: CompanySettingsController = Depends(get_company_settings_controller)
+    controller: CompanySettingsController = Depends(get_company_settings_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete settings for a specific company.

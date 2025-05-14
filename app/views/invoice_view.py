@@ -4,6 +4,7 @@ from controllers.invoice_controller import InvoiceController
 from models.dtos.invoice_dtos import InvoiceCreate, InvoiceUpdate, InvoiceResponse
 from utils import get_db
 from typing import List
+from auth import auth_service
 
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
 
@@ -14,7 +15,8 @@ def get_invoice_controller(db: Session = Depends(get_db)) -> InvoiceController:
 def create_invoice(
     data: InvoiceCreate,
     request: Request,
-    controller: InvoiceController = Depends(get_invoice_controller)
+    controller: InvoiceController = Depends(get_invoice_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new invoice.
@@ -29,7 +31,8 @@ def create_invoice(
 @router.get("/", response_model=List[InvoiceResponse])
 def get_all_invoices(
     request: Request,
-    controller: InvoiceController = Depends(get_invoice_controller)
+    controller: InvoiceController = Depends(get_invoice_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve all invoices in the system.
@@ -42,7 +45,8 @@ def get_all_invoices(
 def get_invoice(
     invoice_id: int,
     request: Request,
-    controller: InvoiceController = Depends(get_invoice_controller)
+    controller: InvoiceController = Depends(get_invoice_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve a single invoice by its ID.
@@ -59,7 +63,8 @@ def update_invoice(
     invoice_id: int,
     data: InvoiceUpdate,
     request: Request,
-    controller: InvoiceController = Depends(get_invoice_controller)
+    controller: InvoiceController = Depends(get_invoice_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update an invoice's amount or status.
@@ -76,7 +81,8 @@ def update_invoice(
 def delete_invoice(
     invoice_id: int,
     request: Request,
-    controller: InvoiceController = Depends(get_invoice_controller)
+    controller: InvoiceController = Depends(get_invoice_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a specific invoice by its ID.

@@ -32,28 +32,25 @@ class AuthService:
 
     oauth2_scheme: OAuth2PasswordBearer = get_oauth2_scheme()
 
-    def create_access_token(self, user_id: int, tenant_id: str) -> str:
+    def create_access_token(self, user_id: int, tenant_id: int, tenant_name: str) -> str:
         """
-        Generate a JWT access token containing `user_id` and `tenant_id`.
+        Generate a JWT access token containing `user_id`, `tenant_id`, and `tenant_name`.
 
         This token will expire in `ACCESS_TOKEN_EXPIRE_MINUTES` minutes.
 
         Args:
             user_id (int): Unique identifier of the user.
-            tenant_id (str): Tenant (schema) identifier.
+            tenant_id (int): Tenant (schema) identifier.
+            tenant_name (str): Name of the tenant.
 
         Returns:
             str: Encoded JWT access token.
-
-        Example:
-            ```python
-            token = auth_service.create_access_token(user_id=123, tenant_id="tenant_1")
-            ```
         """
         expire: datetime = datetime.now(timezone.utc) + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
         payload: Dict[str, str | int | datetime] = {
-            "sub": str(user_id),  # User ID as subject
+            "sub": str(user_id),
             "tenant_id": tenant_id,
+            "tenant_name": tenant_name,
             "exp": expire
         }
         return jwt.encode(payload, self.SECRET_KEY, algorithm=self.ALGORITHM)
@@ -62,7 +59,7 @@ class AuthService:
         """
         Decode and validate a JWT token.
 
-        If the token is valid, extracts `user_id` and `tenant_id`. 
+        If the token is valid, extracts `user_id`, `tenant_id`, and `tenant_name`. 
         Otherwise, raises an HTTP 401 Unauthorized error.
 
         Args:
@@ -71,30 +68,39 @@ class AuthService:
         Returns:
             dict: Decoded token payload containing:
                 - `user_id` (int)
-                - `tenant_id` (str)
+                - `tenant_id` (int)
+                - `tenant_name` (str)
 
         Raises:
             HTTPException: If the token is invalid or expired.
-
-        Example:
-            ```python
-            payload = auth_service.verify_token(token)
-            print(payload["user_id"], payload["tenant_id"])
-            ```
         """
         try:
             payload: Dict[str, str] = jwt.decode(token, self.SECRET_KEY, algorithms=self.ALGORITHM_SET)
-            user_id: str | None = payload.get("sub")
-            tenant_id: str | None = payload.get("tenant_id")
+            user_id = payload.get("sub")
+            tenant_id = payload.get("tenant_id")
+            tenant_name = payload.get("tenant_name")
+            exp = payload.get("exp")
 
-            if not all([user_id, tenant_id]):
+            if not all([user_id, tenant_id, tenant_name, exp]):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token",
+                    detail="Invalid token payload",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-            return {"user_id": int(user_id), "tenant_id": tenant_id}
+            # Explicit expiration check
+            if datetime.now(timezone.utc).timestamp() > float(exp):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token has expired",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            return {
+                "user_id": int(user_id),
+                "tenant_id": int(tenant_id),
+                "tenant_name": tenant_name
+            }
 
         except JWTError:
             raise HTTPException(
@@ -105,7 +111,7 @@ class AuthService:
 
     def verify_user(self, token: str = Depends(oauth2_scheme)) -> Dict[str, int | str]:
         """
-        Extract `user_id` and `tenant_id` from a valid JWT token.
+        Extract `user_id`, `tenant_id`, and `tenant_name` from a valid JWT token.
 
         This function acts as a FastAPI dependency for protected routes.
 
@@ -115,16 +121,11 @@ class AuthService:
         Returns:
             dict: Dictionary with:
                 - `user_id` (int)
-                - `tenant_id` (str)
+                - `tenant_id` (int)
+                - `tenant_name` (str)
 
         Raises:
             HTTPException: If the token is invalid or expired.
-
-        Example:
-            ```python
-            user = auth_service.verify_user(token)
-            print(user["user_id"], user["tenant_id"])
-            ```
         """
         return self.verify_token(token)
     
