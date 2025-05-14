@@ -71,8 +71,8 @@ class TenantUserController:
         tenant_repo = UserRepository(tenant_db)
         tenant_repo.create_user(
             email=user_data.email,
-            first_name="Admin",
-            last_name="Admin",
+            first_name=user_data.first_name,
+            last_name=user_data.last_name,
             password=user_data.password,  
             department_id=None,
             team_id=None

@@ -3,6 +3,7 @@ from auth.auth import auth_service
 from utils import hash_password, verify_password
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from utils.env_utils import EnvironmentVariable, get_env
 import re
 
 class LoginController:
@@ -41,7 +42,7 @@ class LoginController:
         if not email or not password:
             return None
         
-        self.db.execute(text(f"USE taskeri_global"))
+        self.db.execute(text(f"USE "+get_env(EnvironmentVariable.DB_NAME)))
     
         self.db.commit()
         print("executed")

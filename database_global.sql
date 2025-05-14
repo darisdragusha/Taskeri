@@ -10,7 +10,6 @@ USE main_system;
 CREATE TABLE tenant_users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
     tenant_schema VARCHAR(255) NOT NULL,  -- The schema where the user's data is stored
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
