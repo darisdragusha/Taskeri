@@ -6,6 +6,7 @@ from models.dtos import (
 )
 from typing import List, Dict, Optional
 from datetime import date
+from auth import auth_service
 
 router = APIRouter(
     prefix="/tasks",
@@ -16,7 +17,8 @@ router = APIRouter(
 @router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     task_data: TaskCreate, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new task.
@@ -29,7 +31,8 @@ async def create_task(
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: int, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a specific task by ID.
@@ -48,7 +51,8 @@ async def get_task(
 @router.get("/{task_id}/details", response_model=TaskDetailResponse)
 async def get_task_details(
     task_id: int, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get detailed information about a task including relationships.
@@ -67,7 +71,8 @@ async def get_task_details(
 @router.get("/project/{project_id}", response_model=List[TaskResponse])
 async def get_tasks_by_project(
     project_id: int, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all tasks in a specific project.
@@ -85,7 +90,8 @@ async def get_tasks_by_project(
 async def get_tasks_by_user(
     user_id: int, 
     request: Request,
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> List[TaskResponse]:
     """
     Get all tasks assigned to a specific user.
@@ -112,7 +118,8 @@ async def get_tasks_paginated(
     assigned_to_user_id: Optional[int] = Query(None, description="Filter by assigned user"),
     project_id: Optional[int] = Query(None, description="Filter by project"),
     search_term: Optional[str] = Query(None, description="Search in task name and description"),
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get paginated list of tasks with optional filtering.
@@ -140,7 +147,8 @@ async def get_tasks_paginated(
 async def update_task(
     task_id: int, 
     task_data: TaskUpdate, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update a task's information.
@@ -159,7 +167,8 @@ async def update_task(
 @router.delete("/{task_id}", response_model=Dict[str, str])
 async def delete_task(
     task_id: int, 
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a task.
@@ -177,7 +186,8 @@ async def delete_task(
 
 @router.get("/statistics", response_model=TaskStatistics)
 async def get_task_statistics(
-    controller: TaskController = Depends()
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get task statistics across the system.

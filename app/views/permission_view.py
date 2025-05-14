@@ -4,6 +4,7 @@ from controllers import PermissionController
 from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 from typing import List
 from utils import get_db 
+from auth import auth_service
 
 router = APIRouter(tags=["Permissions"])
 
@@ -11,7 +12,8 @@ router = APIRouter(tags=["Permissions"])
 async def create_permission(
     permission_create: PermissionCreate,
     request: Request,
-    controller: PermissionController = Depends()
+    controller: PermissionController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> PermissionResponse:
     """
     Endpoint to create a new permission.
@@ -30,7 +32,8 @@ async def create_permission(
 async def get_permission(
     permission_id: int,
     request: Request,
-    controller: PermissionController = Depends()
+    controller: PermissionController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> PermissionResponse:
     """
     Endpoint to get a permission by ID.
@@ -49,7 +52,8 @@ async def update_permission(
     permission_id: int,
     permission_update: PermissionUpdate,
     request: Request,
-    controller: PermissionController = Depends()
+    controller: PermissionController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> PermissionResponse:
     """
     Endpoint to update a permission.
@@ -68,7 +72,8 @@ async def update_permission(
 async def delete_permission(
     permission_id: int,
     request: Request,
-    controller: PermissionController = Depends()
+    controller: PermissionController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> dict:
     """
     Endpoint to delete a permission.
@@ -87,7 +92,8 @@ async def delete_permission(
 @router.get("/permissions", response_model=List[PermissionResponse])
 async def get_all_permissions(
     request: Request,
-    controller: PermissionController = Depends()
+    controller: PermissionController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ) -> List[PermissionResponse]:
     """
     Endpoint to retrieve all permissions.

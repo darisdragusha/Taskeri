@@ -56,12 +56,12 @@ def get_my_attendance(
 
 @router.get("/user/{user_id}", response_model=List[AttendanceResponse])
 def get_my_attendance(
-    request: Request,
-    user_id: int, 
     db: Session = Depends(get_db),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all attendance records for the current authenticated user.
     """
     controller = AttendanceController(db)
+    user_id = current_user.get("user_id")
     return controller.get_user_attendance(user_id)

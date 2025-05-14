@@ -41,7 +41,8 @@ def create_leave_request(
 @router.get("/{leave_id}", response_model=LeaveRequestResponse)
 async def get_leave_request(
     leave_id: int,
-    controller: LeaveRequestController = Depends()
+    controller: LeaveRequestController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get a leave request by ID.
@@ -52,7 +53,8 @@ async def get_leave_request(
 @router.get("/user/{user_id}", response_model=List[LeaveRequestResponse])
 async def get_leave_requests_by_user(
     user_id: int,
-    controller: LeaveRequestController = Depends()
+    controller: LeaveRequestController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all leave requests submitted by a specific user.
@@ -64,7 +66,8 @@ async def get_leave_requests_by_user(
 async def update_leave_status(
     leave_id: int,
     status: Literal["Approved", "Rejected"] = Query(..., description="New status for the leave request"),
-    controller: LeaveRequestController = Depends()
+    controller: LeaveRequestController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update the status of a leave request.
@@ -75,7 +78,8 @@ async def update_leave_status(
 @router.delete("/{leave_id}", response_model=Dict[str, str])
 async def delete_leave_request(
     leave_id: int,
-    controller: LeaveRequestController = Depends()
+    controller: LeaveRequestController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a leave request by ID.
