@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from utils.env_utils import EnvironmentVariable, get_env
 import re
-from utils.env_utils import EnvironmentVariable, get_env
 
 class LoginController:
     """
