@@ -1,2 +1,2 @@
-from .auth_middleware import MultiTenantMiddleware
+from .multi_tenant_middleware import MultiTenantMiddleware
 from .authorization_middleware import AuthorizationMiddleware
