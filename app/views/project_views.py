@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status, Query, Path, HTTPException
 from controllers.project_controller import ProjectController
 from models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
 from typing import List, Dict
+from auth import auth_service
 
 router = APIRouter(
     prefix="/projects",
@@ -12,7 +13,8 @@ router = APIRouter(
 @router.post("/", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 async def create_project(
     project_data: ProjectCreate,
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new project (optionally assign users).
@@ -28,7 +30,8 @@ async def create_project(
 
 @router.get("/", response_model=List[ProjectResponse])
 async def get_all_projects(
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve all projects in the system.
@@ -43,7 +46,8 @@ async def get_all_projects(
 
 @router.get("/statistics", response_model=ProjectStatistics)
 async def get_project_statistics(
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve statistics about project statuses.
@@ -59,7 +63,8 @@ async def get_project_statistics(
 @router.get("/{project_id}", response_model=ProjectResponse)
 async def get_project_by_id(
     project_id: int = Path(..., description="ID of the project to retrieve"),
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve a single project by its ID.
@@ -77,7 +82,8 @@ async def get_project_by_id(
 async def update_project(
     project_id: int,
     project_update: ProjectUpdate,
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update an existing project (optionally reassign users).
@@ -95,7 +101,8 @@ async def update_project(
 @router.delete("/{project_id}", response_model=Dict[str, str])
 async def delete_project(
     project_id: int,
-    controller: ProjectController = Depends()
+    controller: ProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a project by ID.
