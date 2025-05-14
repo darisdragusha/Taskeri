@@ -4,6 +4,7 @@ from controllers.role_permission_controller import RolePermissionController
 from models.dtos.role_permission_dto import RolePermissionCreate, RolePermissionResponse
 from utils import get_db
 from typing import List
+from auth import auth_service
 
 router = APIRouter(prefix="/role-permissions", tags=["Role-Permissions"])
 
@@ -15,7 +16,8 @@ def create_role_permission(
     data: RolePermissionCreate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: RolePermissionController = Depends(get_role_permission_controller)
+    controller: RolePermissionController = Depends(get_role_permission_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Assign a permission to a role.
@@ -30,7 +32,8 @@ def create_role_permission(
 def get_all_role_permissions(
     request: Request,
     db: Session = Depends(get_db),
-    controller: RolePermissionController = Depends(get_role_permission_controller)
+    controller: RolePermissionController = Depends(get_role_permission_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve all role-permission mappings.
@@ -43,7 +46,8 @@ def delete_role_permission(
     permission_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: RolePermissionController = Depends(get_role_permission_controller)
+    controller: RolePermissionController = Depends(get_role_permission_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Remove a permission from a role.
