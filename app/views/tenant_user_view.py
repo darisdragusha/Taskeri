@@ -11,7 +11,6 @@ router = APIRouter(prefix="/tenant-users", tags=["Tenant Users"])
 def register_user(
     user_data: TenantUserCreate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Register a new tenant user. 
