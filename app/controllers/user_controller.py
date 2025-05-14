@@ -20,7 +20,7 @@ class UserController:
         """
         self.repository = UserRepository(db_session)
 
-    def create_user(self, user_create: UserCreate, current_user: dict, default_role_id: Optional[int] = None) -> UserResponse:
+    def create_user(self, user_create: UserCreate, current_user: dict) -> UserResponse:
         """
         Create a new user and assign them default roles.
 
@@ -43,8 +43,8 @@ class UserController:
         )
         
         # Assign default role if specified, otherwise find the "Employee" role
-        if default_role_id:
-            self.repository.assign_role_to_user(user.id, default_role_id)
+        if user_create.role_id:
+            self.repository.assign_role_to_user(user.id, user_create.role_id)
         else:
             # Try to find Employee role by name and assign it
             employee_role = self.repository.get_role_by_name("Employee")
