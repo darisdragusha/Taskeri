@@ -4,6 +4,7 @@ from controllers.user_profile_controller import UserProfileController
 from models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate, UserProfileResponse
 from utils import get_db
 from typing import Optional
+from auth import auth_service
 
 router = APIRouter(prefix="/profiles", tags=["User Profiles"])
 
@@ -15,7 +16,8 @@ def create_user_profile(
     data: UserProfileCreate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: UserProfileController = Depends(get_user_profile_controller)
+    controller: UserProfileController = Depends(get_user_profile_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Create a new user profile.
@@ -31,7 +33,8 @@ def get_user_profile(
     user_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: UserProfileController = Depends(get_user_profile_controller)
+    controller: UserProfileController = Depends(get_user_profile_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Retrieve a user's profile by their ID.
@@ -50,7 +53,8 @@ def update_user_profile(
     data: UserProfileUpdate,
     request: Request,
     db: Session = Depends(get_db),
-    controller: UserProfileController = Depends(get_user_profile_controller)
+    controller: UserProfileController = Depends(get_user_profile_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Update a user profile by user ID.
@@ -69,7 +73,8 @@ def delete_user_profile(
     user_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    controller: UserProfileController = Depends(get_user_profile_controller)
+    controller: UserProfileController = Depends(get_user_profile_controller),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Delete a user profile by user ID.

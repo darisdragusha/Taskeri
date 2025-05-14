@@ -14,7 +14,8 @@ router = APIRouter(
 async def assign_user_to_project(
     user_id: int = Query(...,gt=0, description="ID of the user to assign"),
     project_id: int = Query(...,gt=0, description="ID of the project"),
-    controller: UserProjectController = Depends()
+    controller: UserProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Assign a user to a project.
@@ -25,7 +26,8 @@ async def assign_user_to_project(
 async def remove_user_from_project(
     user_id: int = Query(...,gt=0, description="ID of the user to remove"),
     project_id: int = Query(...,gt=0, description="ID of the project"),
-    controller: UserProjectController = Depends()
+    controller: UserProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Remove a user from a project.
@@ -35,7 +37,8 @@ async def remove_user_from_project(
 @router.get("/{project_id}/users", response_model=List[UserResponse])
 async def get_users_for_project(
     project_id: int = Path(..., gt=0, description="Project ID (must be positive)"),
-    controller: UserProjectController = Depends()
+    controller: UserProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     List all users assigned to a project with full user details.
@@ -45,7 +48,8 @@ async def get_users_for_project(
 @router.get("/users/{user_id}/projects", response_model=List[ProjectResponse])
 async def get_projects_for_user(
     user_id: int = Path(..., gt=0, description="User ID (must be positive)"),
-    controller: UserProjectController = Depends()
+    controller: UserProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     List all projects assigned to a user with full project details.
@@ -55,7 +59,8 @@ async def get_projects_for_user(
 @router.get("/me/projects", response_model=List[ProjectResponse])
 async def get_my_projects(
     user_data: dict = Depends(auth_service.verify_user),
-    controller: UserProjectController = Depends()
+    controller: UserProjectController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Get all projects assigned to the authenticated user.

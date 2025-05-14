@@ -3,13 +3,15 @@ from sqlalchemy.orm import Session
 from utils import get_db
 from controllers import TenantUserController
 from models.dtos import TenantUserCreate, TenantUserOut
+from auth import auth_service
 
 router = APIRouter(prefix="/tenant-users", tags=["Tenant Users"])
 
 @router.post("/", response_model=TenantUserOut)
 def register_user(
     user_data: TenantUserCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(auth_service.verify_user)
 ):
     """
     Register a new tenant user. 
