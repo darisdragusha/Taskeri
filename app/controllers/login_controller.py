@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from utils.env_utils import EnvironmentVariable, get_env
 import re
+from utils.env_utils import EnvironmentVariable, get_env
 
 class LoginController:
     """
@@ -42,10 +43,10 @@ class LoginController:
         if not email or not password:
             return None
         
-        self.db.execute(text(f"USE "+get_env(EnvironmentVariable.DB_NAME)))
+        global_db = get_env(EnvironmentVariable.DB_NAME, "taskeri_global")
+        self.db.execute(text(f"USE {global_db}"))
     
         self.db.commit()
-        print("executed")
         tenant_user_repo = TenantUserRepository(self.db)
         
         # Get tenant user by email
