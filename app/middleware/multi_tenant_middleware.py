@@ -3,8 +3,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy import text
 from starlette.responses import Response
 from sqlalchemy.orm import Session
-from utils import SessionLocal
-from auth import auth_service
+from app.utils import SessionLocal
+from app.auth import auth_service
 from typing import Awaitable, Callable, Dict, Any
 import logging
 
