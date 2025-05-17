@@ -1,10 +1,10 @@
 # app/views/role_view.py
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from controllers import RoleController
+from app.controllers import RoleController
 from typing import List
-from models.dtos import RoleCreate, RoleUpdate, RoleResponse
-from utils import get_db 
-from auth import auth_service
+from app.models.dtos import RoleCreate, RoleUpdate, RoleResponse
+from app.utils import get_db 
+from app.auth import auth_service
 
 
 router = APIRouter(tags=["Roles"])

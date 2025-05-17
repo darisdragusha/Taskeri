@@ -1,10 +1,9 @@
-# app/views/user_view.py
 from fastapi import HTTPException, status, APIRouter, Depends, Request
-from controllers import UserController
-from models.dtos import UserCreate, UserUpdate, UserResponse
+from app.controllers import UserController
+from app.models.dtos import UserCreate, UserUpdate, UserResponse
 from sqlalchemy.sql import text
-from utils.db_utils import get_db 
-from auth import auth_service
+from app.utils.db_utils import get_db 
+from app.auth import auth_service
 
 
 router = APIRouter(tags=["User"])

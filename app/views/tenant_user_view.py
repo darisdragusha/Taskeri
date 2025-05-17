@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from utils import get_db
-from controllers import TenantUserController
-from models.dtos import TenantUserCreate, TenantUserOut
-from auth import auth_service
+from app.utils import get_db
+from app.controllers import TenantUserController
+from app.models.dtos import TenantUserCreate, TenantUserOut
+from app.auth import auth_service
 
 router = APIRouter(prefix="/tenant-users", tags=["Tenant Users"])
 

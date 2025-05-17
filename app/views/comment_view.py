@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
 from sqlalchemy.orm import Session
 from typing import List, Dict
 
-from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, CommentListResponse
-from controllers.comment_controller import CommentController
-from utils.db_utils import get_db
-from auth import auth_service
+from app.models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, CommentListResponse
+from app.controllers.comment_controller import CommentController
+from app.utils.db_utils import get_db
+from app.auth import auth_service
 
 router = APIRouter(
     prefix="/comments",

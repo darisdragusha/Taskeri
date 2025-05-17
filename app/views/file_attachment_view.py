@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from controllers.file_attachment_controller import FileAttachmentController
-from models.dtos.file_attachment_dtos import (
+from app.controllers.file_attachment_controller import FileAttachmentController
+from app.models.dtos.file_attachment_dtos import (
     FileAttachmentCreate,
     FileAttachmentUpdate,
     FileAttachmentResponse
 )
-from utils import get_db
+from app.utils import get_db
 from typing import List
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/attachments", tags=["File Attachments"])
 

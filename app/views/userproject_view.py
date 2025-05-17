@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Path, Query
-from controllers.userproject_controller import UserProjectController
-from models.dtos.user_dtos import UserResponse
-from models.dtos.project_dtos import ProjectResponse
-from auth import auth_service
+from app.controllers.userproject_controller import UserProjectController
+from app.models.dtos.user_dtos import UserResponse
+from app.models.dtos.project_dtos import ProjectResponse
+from app.auth import auth_service
 from typing import List
 
 router = APIRouter(

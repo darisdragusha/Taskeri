@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from controllers.user_profile_controller import UserProfileController
-from models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate, UserProfileResponse
-from utils import get_db
+from app.controllers.user_profile_controller import UserProfileController
+from app.models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate, UserProfileResponse
+from app.utils import get_db
 from typing import Optional
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/profiles", tags=["User Profiles"])
 

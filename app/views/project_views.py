@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status, Query, Path, HTTPException
-from controllers.project_controller import ProjectController
-from models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
+from app.controllers.project_controller import ProjectController
+from app.models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
 from typing import List, Dict
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(
     prefix="/projects",

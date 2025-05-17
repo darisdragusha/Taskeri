@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from models.dtos import CompanyCreate, CompanyResponse, CompanyUpdate
-from controllers import CompanyController
-from utils import get_db
+from app.models.dtos import CompanyCreate, CompanyResponse, CompanyUpdate
+from app.controllers import CompanyController
+from app.utils import get_db
 from typing import List
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/companies", tags=["Companies"])
 
