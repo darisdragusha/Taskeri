@@ -128,6 +128,14 @@ ROUTE_PERMISSIONS = {
     r"^/attendance/user/\d+$": {
         "GET": ["read_any_user_attendance"]
     },
+    r"^/company-settings/?$": {
+    "POST": ["create_company_settings"]
+    },
+    r"^/company-settings/\d+$": {
+        "GET": ["read_company_settings"],
+        "PUT": ["update_company_settings"],
+        "DELETE": ["delete_company_settings"]
+    }
 }
 
 
