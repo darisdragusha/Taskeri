@@ -6,7 +6,7 @@ from typing import List, Dict, Literal
 from app.repositories.leave_request_repository import LeaveRequestRepository
 from app.models.leave_request import LeaveRequest
 from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
-from utils import get_db
+from app.utils import get_db
 
 
 class LeaveRequestController:

@@ -2,7 +2,7 @@ from pydantic import BaseModel, validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from enum import Enum
-from utils.formatters.datetime_formatter import to_api_datetime
+from app.utils.formatters.datetime_formatter import to_api_datetime
 
 class PriorityEnum(str, Enum):
     LOW = "Low"

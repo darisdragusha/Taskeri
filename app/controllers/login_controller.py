@@ -1,5 +1,5 @@
 from app.repositories import TenantUserRepository, UserRepository
-from auth.auth import auth_service
+from app.auth import auth_service
 from app.utils import hash_password, verify_password
 from sqlalchemy.orm import Session
 from sqlalchemy import text
