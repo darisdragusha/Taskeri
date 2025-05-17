@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import update, func, or_, and_, desc, text, case
 from typing import Optional, List, Dict, Any, Tuple
-from models.tenant.tasks.task import Task
-from models.tenant.tasks.task_assignment import TaskAssignment
-from models.tenant.tasks.comment import Comment
-from models.file_attachment import FileAttachment
-from models.user import User
-from models.project import Project
-from models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
+from app.models.tenant.tasks.task import Task
+from app.models.tenant.tasks.task_assignment import TaskAssignment
+from app.models.tenant.tasks.comment import Comment
+from app.models.file_attachment import FileAttachment
+from app.models.user import User
+from app.models.project import Project
+from app.models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
 from datetime import date, datetime
 
 class TaskRepository:

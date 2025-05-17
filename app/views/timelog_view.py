@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from typing import List, Dict
 
-from models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate, TimeLogResponse
-from controllers.timelog_controller import TimeLogController
-from utils.db_utils import get_db
+from app.models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate, TimeLogResponse
+from app.controllers.timelog_controller import TimeLogController
+from app.utils.db_utils import get_db
 from datetime import datetime
-from auth import auth_service  # Assumes JWT or session-based auth that returns current user info
+from app.auth import auth_service  # Assumes JWT or session-based auth that returns current user info
 
 router = APIRouter(
     prefix="/time-logs",

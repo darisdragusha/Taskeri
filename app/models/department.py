@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, BigInteger, ForeignKey, TIMESTAMP, text
 from sqlalchemy.orm import relationship
-from utils import Base
+from app.utils import Base
 
 class Department(Base):
     __tablename__ = "departments"

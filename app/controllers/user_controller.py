@@ -1,8 +1,8 @@
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
-from repositories import UserRepository
-from utils import get_db
-from models.dtos import UserCreate, UserUpdate, UserResponse
+from app.repositories import UserRepository
+from app.utils import get_db
+from app.models.dtos import UserCreate, UserUpdate, UserResponse
 from typing import List, Optional, Dict
 
 class UserController:

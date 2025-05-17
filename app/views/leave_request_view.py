@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status, Query, Path, Request, HTTPException
-from controllers.leave_request_controller import LeaveRequestController
-from models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
+from app.controllers.leave_request_controller import LeaveRequestController
+from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
 from typing import List, Literal, Dict
 from sqlalchemy.orm import Session
-from auth import auth_service
-from utils.db_utils import get_db
+from app.auth import auth_service
+from app.utils.db_utils import get_db
 
 
 router = APIRouter(

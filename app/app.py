@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from views import routers
-from middleware import MultiTenantMiddleware, AuthorizationMiddleware 
+from app.views import routers
+from app.middleware import MultiTenantMiddleware, AuthorizationMiddleware 
 
 app = FastAPI()
 
@@ -133,10 +133,3 @@ for router in routers:
     app.include_router(router)
 
 
-if __name__ == "__main__":
-    import uvicorn
-    from utils.env_utils import EnvironmentVariable, get_env
-
-    host = get_env(EnvironmentVariable.HOST, "127.0.0.1")
-    port = int(get_env(EnvironmentVariable.PORT, "10000"))
-    uvicorn.run("app:app", host=host, port=port, reload=True)

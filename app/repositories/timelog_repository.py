@@ -3,8 +3,8 @@ from typing import List, Optional, Tuple
 from sqlalchemy import desc
 from datetime import datetime
 
-from models.time_log import TimeLog  # Adjust the import path if needed
-from models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate  # You must define these DTOs
+from app.models.time_log import TimeLog 
+from app.models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate  
 
 
 class TimeLogRepository:

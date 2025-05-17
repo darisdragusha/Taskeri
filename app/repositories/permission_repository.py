@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from models.tenant.roles.permission import Permission
+from app.models.tenant.roles.permission import Permission
 
 class PermissionRepository:
     """Repository class for handling permission-related database operations."""

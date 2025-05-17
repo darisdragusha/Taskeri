@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from repositories.role_permission_repository import RolePermissionRepository
-from models.dtos.role_permission_dto import RolePermissionCreate
-from models.role_permission import RolePermission
+from app.repositories.role_permission_repository import RolePermissionRepository
+from app.models.dtos.role_permission_dto import RolePermissionCreate
+from app.models.role_permission import RolePermission
 from typing import List
 
 class RolePermissionController:

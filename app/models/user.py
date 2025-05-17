@@ -1,7 +1,7 @@
 # app/models/user.py
 from sqlalchemy import Column, String, Integer, BigInteger, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
-from utils import Base  
+from app.utils import Base  
 from .department import Department
 from .team import Team
 from sqlalchemy.sql import func

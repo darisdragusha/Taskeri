@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from repositories import PermissionRepository
-from utils import get_db
+from app.repositories import PermissionRepository
+from app.utils import get_db
 from typing import List
-from models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
+from app.models.dtos import PermissionCreate, PermissionUpdate, PermissionResponse
 
 class PermissionController:
     """Controller class for handling permission operations."""

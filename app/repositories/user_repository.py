@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from models.user import User
-from models.tenant.roles.role import Role
-from models.tenant.roles.user_role import UserRole
-from utils import hash_password
+from app.models.user import User
+from app.models.tenant.roles.role import Role
+from app.models.tenant.roles.user_role import UserRole
+from app.utils import hash_password
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 import logging

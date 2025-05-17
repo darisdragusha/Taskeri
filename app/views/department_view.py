@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate, DepartmentResponse
-from controllers.department_controller import DepartmentController
-from utils import get_db
+from app.models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate, DepartmentResponse
+from app.controllers.department_controller import DepartmentController
+from app.utils import get_db
 from typing import List
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
 

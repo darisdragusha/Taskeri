@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models.user_profile import UserProfile
-from models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate
+from app.models.user_profile import UserProfile
+from app.models.dtos.user_profile_dtos import UserProfileCreate, UserProfileUpdate
 from typing import Optional
 
 class UserProfileRepository:

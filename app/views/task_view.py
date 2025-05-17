@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, status, Query, Path, HTTPException, Request
-from controllers import TaskController
-from models.dtos import (
+from app.controllers import TaskController
+from app.models.dtos import (
     TaskCreate, TaskUpdate, TaskResponse, TaskDetailResponse, 
     TaskListResponse, TaskFilterParams, TaskStatistics
 )
 from typing import List, Dict, Optional
 from datetime import date
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(
     prefix="/tasks",

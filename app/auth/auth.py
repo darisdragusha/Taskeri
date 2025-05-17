@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from typing import Dict
 from functools import lru_cache
-from utils.env_utils import EnvironmentVariable, get_env
+from app.utils.env_utils import EnvironmentVariable, get_env
 
 class AuthService:
     """

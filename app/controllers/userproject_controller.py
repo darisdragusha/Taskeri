@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from models.dtos.user_dtos import UserResponse
-from models.dtos.project_dtos import ProjectResponse
-from repositories.userproject_repository import UserProjectRepository
-from utils import get_db
+from app.models.dtos.user_dtos import UserResponse
+from app.models.dtos.project_dtos import ProjectResponse
+from app.repositories.userproject_repository import UserProjectRepository
+from app.utils import get_db
 
 class UserProjectController:
     """Controller class for assigning/removing users from projects."""

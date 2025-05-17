@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, TIMESTAMP, Integer, ForeignKey
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class TimeLog(Base):
     __tablename__ = "time_logs"

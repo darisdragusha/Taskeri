@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from controllers.company_settings_controller import CompanySettingsController
-from models.dtos.company_settings_dtos import (
+from app.controllers.company_settings_controller import CompanySettingsController
+from app.models.dtos.company_settings_dtos import (
     CompanySettingsCreate,
     CompanySettingsUpdate,
     CompanySettingsResponse,
 )
-from utils import get_db
-from auth import auth_service
+from app.utils import get_db
+from app.auth import auth_service
 
 router = APIRouter(prefix="/company-settings", tags=["Company Settings"])
 

@@ -1,10 +1,10 @@
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from repositories.project_repository import ProjectRepository
-from utils import get_db
-from models.user import User
-from models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
+from app.repositories.project_repository import ProjectRepository
+from app.utils import get_db
+from app.models.user import User
+from app.models.dtos.project_dtos import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectStatistics
 from typing import List, Dict, Optional
 
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Request
-from controllers.team_controller import TeamController
-from models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
+from app.controllers.team_controller import TeamController
+from app.models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
 from typing import List
-from utils import get_db
-from auth import auth_service
+from app.utils import get_db
+from app.auth import auth_service
 
 router = APIRouter(tags=["Teams"])
 

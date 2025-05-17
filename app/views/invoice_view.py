@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from controllers.invoice_controller import InvoiceController
-from models.dtos.invoice_dtos import InvoiceCreate, InvoiceUpdate, InvoiceResponse
-from utils import get_db
+from app.controllers.invoice_controller import InvoiceController
+from app.models.dtos.invoice_dtos import InvoiceCreate, InvoiceUpdate, InvoiceResponse
+from app.utils import get_db
 from typing import List
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
 

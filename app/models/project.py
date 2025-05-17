@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Text, BigInteger, Date, Enum, TIMESTAMP, func
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class Project(Base):
     __tablename__ = "projects"

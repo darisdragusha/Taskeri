@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, String, TIMESTAMP, ForeignKey, func
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class FileAttachment(Base):
     __tablename__ = "file_attachments"

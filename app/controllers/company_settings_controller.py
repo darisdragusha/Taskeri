@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from repositories.company_settings_repository import CompanySettingsRepository
-from models.dtos.company_settings_dtos import CompanySettingsCreate, CompanySettingsUpdate
-from models.company_settings import CompanySettings
+from app.repositories.company_settings_repository import CompanySettingsRepository
+from app.models.dtos.company_settings_dtos import CompanySettingsCreate, CompanySettingsUpdate
+from app.models.company_settings import CompanySettings
 from typing import Optional
 
 class CompanySettingsController:

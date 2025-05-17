@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from repositories.team_repository import TeamRepository
-from utils import get_db
-from models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
+from app.repositories.team_repository import TeamRepository
+from app.utils import get_db
+from app.models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
 from typing import List, Dict
 
 

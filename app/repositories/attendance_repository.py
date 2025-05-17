@@ -2,7 +2,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from models.attendance import Attendance
+from app.models.attendance import Attendance
 
 
 class AttendanceRepository:

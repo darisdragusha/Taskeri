@@ -4,9 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from typing import List
 
-from repositories.attendance_repository import AttendanceRepository
-from models.attendance import Attendance
-from utils import get_db
+from app.repositories.attendance_repository import AttendanceRepository
+from app.models.attendance import Attendance
+from app.utils import get_db
 
 
 class AttendanceController:

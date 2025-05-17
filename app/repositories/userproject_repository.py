@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from models.userproject import UserProject
-from models.user import User
-from models.project import Project
+from app.models.userproject import UserProject
+from app.models.user import User
+from app.models.project import Project
 
 class UserProjectRepository:
     """Handles operations related to project-user assignments."""

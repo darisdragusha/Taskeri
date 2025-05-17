@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from controllers.role_permission_controller import RolePermissionController
-from models.dtos.role_permission_dto import RolePermissionCreate, RolePermissionResponse
-from utils import get_db
+from app.controllers.role_permission_controller import RolePermissionController
+from app.models.dtos.role_permission_dto import RolePermissionCreate, RolePermissionResponse
+from app.utils import get_db
 from typing import List
-from auth import auth_service
+from app.auth import auth_service
 
 router = APIRouter(prefix="/role-permissions", tags=["Role-Permissions"])
 

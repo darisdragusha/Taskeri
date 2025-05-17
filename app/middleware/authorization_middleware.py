@@ -5,13 +5,13 @@ from starlette.responses import Response
 from typing import Awaitable, Callable, Dict, Any, List, Optional, Set
 import logging
 import re
-from models.tenant.roles.user_role import UserRole
-from models.tenant.roles.role import Role
-from models.tenant.roles.permission import Permission
-from models.role_permission import RolePermission
-from models.tenant.tasks.task import Task
-from models.tenant.tasks.task_assignment import TaskAssignment
-from models.project import Project
+from app.models.tenant.roles.user_role import UserRole
+from app.models.tenant.roles.role import Role
+from app.models.tenant.roles.permission import Permission
+from app.models.role_permission import RolePermission
+from app.models.tenant.tasks.task import Task
+from app.models.tenant.tasks.task_assignment import TaskAssignment
+from app.models.project import Project
 
 # Setup basic logging configuration
 logging.basicConfig(level=logging.INFO)

@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Depends, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from repositories import TaskRepository
-from utils import get_db
-from models.dtos import (
+from app.repositories import TaskRepository
+from app.utils import get_db
+from app.models.dtos import (
     TaskCreate, TaskUpdate, TaskResponse, TaskDetailResponse, 
     TaskListResponse, TaskFilterParams, TaskStatistics
 )

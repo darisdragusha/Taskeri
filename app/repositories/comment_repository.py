@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional, Dict, Any, Tuple
-from models.tenant.tasks.comment import Comment
-from models.user import User
-from models.dtos.task_dtos import CommentCreate, CommentUpdate
+from app.models.tenant.tasks.comment import Comment
+from app.models.user import User
+from app.models.dtos.task_dtos import CommentCreate, CommentUpdate
 
 
 class CommentRepository:

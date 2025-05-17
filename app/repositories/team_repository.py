@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional, List, Dict, Any
-from models.team import Team
-from models.department import Department
+from app.models.team import Team
+from app.models.department import Department
 
 
 class TeamRepository:
