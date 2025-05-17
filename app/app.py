@@ -254,7 +254,17 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_own_profile", "read_any_profile"],
         "PUT": ["update_own_profile", "update_any_profile"],
         "DELETE": ["delete_own_profile", "delete_any_profile"]
+    },
+
+    # User role management routes
+    r"^/user-roles/\d+/roles$": {
+        "GET": ["manage_user_roles"]
+    },
+    r"^/user-roles/\d+/roles/\d+$": {
+        "POST": ["manage_user_roles"],
+        "DELETE": ["manage_user_roles"]
     }
+
 }
 
 
