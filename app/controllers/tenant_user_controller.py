@@ -25,15 +25,76 @@ class TenantUserController:
         tenant_db = get_tenant_scoped_session("tenant_"+user_data.tenant_schema)
 
         PERMISSIONS = [
+            # Company
             "read_company", "create_company", "update_company", "delete_company",
+
+            # Role
             "read_role", "create_role", "update_role", "delete_role",
-            "read_any_user", "create_user", "read_user", "update_user", "delete_user",
+
+            # User
+            "read_user", "read_any_user", "create_user", "update_user", "update_any_user",
+            "delete_user",
+
+            # User Role Management
             "manage_user_roles",
-            "read_task", "create_task", "update_task", "delete_own_task", "delete_any_task",
-            "read_any_task", "read_any_user_task", "view_statistics",
+
+            # Tasks
+            "read_task", "read_any_task", "read_any_user_task",
+            "create_task", "update_task", "update_any_task",
+            "delete_own_task", "delete_any_task",
+
+            # Statistics
+            "view_statistics",
+
+            # Permissions
             "read_permission", "create_permission", "update_permission", "delete_permission",
-            "create_comment", "read_comment", "update_comment", "delete_comment"
+
+            # Comments
+            "create_comment", "read_comment", "update_comment", "delete_comment",
+
+            # Attendance
+            "check_in", "check_out", "read_own_attendance", "read_any_user_attendance",
+
+            # Company Settings
+            "create_company_settings", "read_company_settings", "update_company_settings", "delete_company_settings",
+
+            # Departments
+            "read_department", "create_department", "update_department", "delete_department",
+
+            # File Attachments
+            "read_attachment", "create_attachment", "update_attachment", "delete_attachment",
+
+            # Invoices
+            "read_invoice", "create_invoice", "update_invoice", "delete_invoice",
+
+            # Leave Requests
+            "create_leave_request", "read_leave_request", "update_leave_status",
+            "delete_leave_request", "read_any_user_leave_request",
+
+            # Projects
+            "read_project", "create_project", "update_project", "update_any_project",
+            "delete_project", "delete_any_project",
+
+            # Role Permissions
+            "manage_role_permissions",
+
+            # Teams
+            "read_team", "create_team", "update_team", "delete_team",
+
+            # Time Logs
+            "create_time_log", "read_time_log", "read_own_time_log", "read_user_time_log",
+            "update_time_log", "update_own_time_log", "delete_time_log", "delete_own_time_log",
+
+            # User Profiles
+            "create_user_profile", "read_own_profile", "read_any_profile",
+            "update_own_profile", "update_any_profile",
+            "delete_own_profile", "delete_any_profile",
+
+            # Project-User Assignments
+            "assign_user_to_project", "remove_user_from_project",
+            "read_project_users", "read_user_projects"
         ]
+
 
         permission_repo = PermissionRepository(tenant_db)
         permission_repo.create_permissions_bulk(PERMISSIONS)
