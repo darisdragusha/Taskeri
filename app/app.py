@@ -204,6 +204,13 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_project"],
         "PUT": ["update_project", "update_any_project"],
         "DELETE": ["delete_project", "delete_any_project"]
+    },
+
+    # Role-Permission routes
+    r"^/role-permissions/?$": {
+        "GET": ["manage_role_permissions"],
+        "POST": ["manage_role_permissions"],
+        "DELETE": ["manage_role_permissions"]
     }
 }
 
