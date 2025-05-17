@@ -144,7 +144,21 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_department"],
         "PUT": ["update_department"],
         "DELETE": ["delete_department"]
+    },
+    # File Attachment routes
+    r"^/attachments/?$": {
+        "GET": ["read_attachment"],
+        "POST": ["create_attachment"]
+    },
+    r"^/attachments/\d+$": {
+        "GET": ["read_attachment"],
+        "PUT": ["update_attachment"],
+        "DELETE": ["delete_attachment"]
+    },
+    r"^/attachments/task/\d+$": {
+        "GET": ["read_attachment"]
     }
+
 }
 
 
