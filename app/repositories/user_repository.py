@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.user import User
 from app.models.tenant.roles.role import Role
-from app.models.tenant.roles.user_role import UserRole
+from app.models.user_role import UserRole
 from app.utils import hash_password
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException

@@ -5,7 +5,7 @@ from starlette.responses import Response
 from typing import Awaitable, Callable, Dict, Any, List, Optional, Set
 import logging
 import re
-from app.models.tenant.roles.user_role import UserRole
+from app.models.user_role import UserRole
 from app.models.tenant.roles.role import Role
 from app.models.tenant.roles.permission import Permission
 from app.models.role_permission import RolePermission

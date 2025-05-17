@@ -4,7 +4,7 @@ from app.models.user_profile import UserProfile
 
 from app.models.tenant.roles.role import Role
 from app.models.tenant.roles.permission import Permission
-from app.models.tenant.roles.user_role import UserRole
+from app.models.user_role import UserRole
 from app.models.role_permission import RolePermission
 
 from app.models.company import Company
