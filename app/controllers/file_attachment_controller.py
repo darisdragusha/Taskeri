@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from repositories.file_attachment_repository import FileAttachmentRepository
-from models.dtos.file_attachment_dtos import FileAttachmentCreate, FileAttachmentUpdate
-from models.file_attachment import FileAttachment
+from app.repositories.file_attachment_repository import FileAttachmentRepository
+from app.models.dtos.file_attachment_dtos import FileAttachmentCreate, FileAttachmentUpdate
+from app.models.file_attachment import FileAttachment
 from typing import List, Optional
 
 class FileAttachmentController:

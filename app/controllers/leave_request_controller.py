@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List, Dict, Literal
 
-from repositories.leave_request_repository import LeaveRequestRepository
-from models.leave_request import LeaveRequest
-from models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
+from app.repositories.leave_request_repository import LeaveRequestRepository
+from app.models.leave_request import LeaveRequest
+from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
 from utils import get_db
 
 

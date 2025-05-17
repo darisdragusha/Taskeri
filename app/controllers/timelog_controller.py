@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
-from models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate, TimeLogResponse
-from repositories.timelog_repository import TimeLogRepository
-from models.time_log import TimeLog
-from utils.db_utils import get_db
+from app.models.dtos.timelog_dtos import TimeLogCreate, TimeLogUpdate, TimeLogResponse
+from app.repositories.timelog_repository import TimeLogRepository
+from app.models.time_log import TimeLog
+from app.utils.db_utils import get_db
 
 
 class TimeLogController:

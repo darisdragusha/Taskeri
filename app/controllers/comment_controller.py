@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, Depends, status
 
-from models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, UserBasicInfo, CommentListResponse
-from repositories.comment_repository import CommentRepository
-from models.tenant.tasks.comment import Comment
-from models.user import User
-from utils.db_utils import get_db
+from app.models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, UserBasicInfo, CommentListResponse
+from app.repositories.comment_repository import CommentRepository
+from app.models.tenant.tasks.comment import Comment
+from app.models.user import User
+from app.utils.db_utils import get_db
 
 
 class CommentController:

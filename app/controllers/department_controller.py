@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from repositories.department_repository import DepartmentRepository
-from models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate
-from models.department import Department
+from app.repositories.department_repository import DepartmentRepository
+from app.models.dtos.department_dtos import DepartmentCreate, DepartmentUpdate
+from app.models.department import Department
 
 
 class DepartmentController:
