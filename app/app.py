@@ -211,6 +211,20 @@ ROUTE_PERMISSIONS = {
         "GET": ["manage_role_permissions"],
         "POST": ["manage_role_permissions"],
         "DELETE": ["manage_role_permissions"]
+    },
+
+    # Team routes
+    r"^/teams/?$": {
+        "GET": ["read_team"],
+        "POST": ["create_team"]
+    },
+    r"^/teams/statistics$": {
+        "GET": ["view_statistics"]
+    },
+    r"^/teams/\d+$": {
+        "GET": ["read_team"],
+        "PUT": ["update_team"],
+        "DELETE": ["delete_team"]
     }
 }
 
