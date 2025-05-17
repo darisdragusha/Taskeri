@@ -225,6 +225,25 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_team"],
         "PUT": ["update_team"],
         "DELETE": ["delete_team"]
+    },
+
+    # Time log routes
+    r"^/time-logs/?$": {
+        "POST": ["create_time_log"]
+    },
+    r"^/time-logs/my$": {
+        "GET": ["read_own_time_log"]
+    },
+    r"^/time-logs/\d+$": {
+        "GET": ["read_time_log", "read_own_time_log"],
+        "PUT": ["update_time_log", "update_own_time_log"],
+        "DELETE": ["delete_time_log", "delete_own_time_log"]
+    },
+    r"^/time-logs/task/\d+$": {
+        "GET": ["read_time_log"]
+    },
+    r"^/time-logs/user/\d+/by-time$": {
+        "GET": ["read_time_log", "read_user_time_log"]
     }
 }
 
