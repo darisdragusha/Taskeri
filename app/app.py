@@ -135,6 +135,15 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_company_settings"],
         "PUT": ["update_company_settings"],
         "DELETE": ["delete_company_settings"]
+    },
+    r"^/departments/?$": {
+    "GET": ["read_department"],
+    "POST": ["create_department"]
+    },
+    r"^/departments/\d+$": {
+        "GET": ["read_department"],
+        "PUT": ["update_department"],
+        "DELETE": ["delete_department"]
     }
 }
 
