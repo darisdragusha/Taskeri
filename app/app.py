@@ -115,7 +115,19 @@ ROUTE_PERMISSIONS = {
     },
     r"^/comments/task/\d+$": {
         "GET": ["read_comment"]
-    }
+    },
+    r"^/attendance/check-in$": {
+    "POST": ["check_in"]
+    },
+    r"^/attendance/check-out$": {
+        "PUT": ["check_out"]
+    },
+    r"^/attendance/my$": {
+        "GET": ["read_own_attendance"]
+    },
+    r"^/attendance/user/\d+$": {
+        "GET": ["read_any_user_attendance"]
+    },
 }
 
 
