@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from views import routers
-from middleware import MultiTenantMiddleware, AuthorizationMiddleware 
+from app.views import routers
+from app.middleware import MultiTenantMiddleware, AuthorizationMiddleware 
 
 app = FastAPI()
 
