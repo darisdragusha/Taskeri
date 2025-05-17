@@ -113,18 +113,92 @@ class TenantUserController:
 
         role_permission_data = []
 
+        manager_permissions = [
+        # Company
+        "read_company",
+
+        # Role
+        "read_role",
+
+        # User
+        "read_user", "read_any_user", "update_user",
+
+        # Tasks
+        "read_task", "read_any_task", "read_any_user_task",
+        "create_task", "update_task", "update_any_task", "delete_own_task",
+
+        # Comments
+        "read_comment", "create_comment", "update_comment", "delete_comment",
+
+        # Attendance
+        "read_any_user_attendance",
+
+        # Departments
+        "read_department", "create_department", "update_department", "delete_department",
+
+        # Attachments
+        "read_attachment",
+
+        # Leave Requests
+        "read_leave_request", "update_leave_status", "read_any_user_leave_request",
+
+        # Projects
+        "read_project", "create_project", "update_project", "update_any_project", "delete_project",
+
+        # Teams
+        "read_team", "create_team", "update_team", "delete_team",
+
+        # Time Logs
+        "read_time_log", "read_user_time_log",
+
+        # User Profiles
+        "read_any_profile", "update_any_profile",
+
+        # Project-User
+        "assign_user_to_project", "remove_user_from_project", "read_project_users", "read_user_projects",
+
+        # Stats
+        "view_statistics"
+    ]
+        
+
+        employee_permissions = [
+        # Tasks
+        "read_task", "create_task", "update_task", "delete_own_task",
+
+        # Comments
+        "read_comment", "create_comment", "update_comment",
+
+        # Attendance
+        "check_in", "check_out", "read_own_attendance",
+
+        # Leave Requests
+        "create_leave_request", "read_leave_request", "delete_leave_request",
+
+        # Time Logs
+        "create_time_log", "read_own_time_log", "update_own_time_log", "delete_own_time_log",
+
+        # User Profiles
+        "create_user_profile", "read_own_profile", "update_own_profile", "delete_own_profile",
+
+        # Projects
+        "read_user_projects"
+    ]
+        
+        #Default Roles Assigned Permissions
+
         for perm_name, perm_id in perm_name_map.items():
-            # Admin gets all
+            # Admin gets everything
             role_permission_data.append(RolePermissionCreate(role_id=role_id_map["admin"], permission_id=perm_id))
 
-            if any(kw in perm_name for kw in ["read_", "view_", "manage_"]):
+            # Manager
+            if perm_name in manager_permissions:
                 role_permission_data.append(RolePermissionCreate(role_id=role_id_map["manager"], permission_id=perm_id))
 
-            if perm_name in [
-                "read_task", "create_task", "update_task", "delete_own_task",
-                "read_comment", "create_comment", "update_comment"
-            ]:
+            # Employee
+            if perm_name in employee_permissions:
                 role_permission_data.append(RolePermissionCreate(role_id=role_id_map["employee"], permission_id=perm_id))
+
 
         role_perm_repo = RolePermissionRepository(tenant_db)
         role_perm_repo.create_bulk(role_permission_data)

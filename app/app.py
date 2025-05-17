@@ -51,8 +51,10 @@ ROUTE_PERMISSIONS = {
     },
     
     # User routes - can use either self-permission or any-permission
-    r"^/users$": {
+    r"^/users/?$": {
         "GET": ["read_any_user"],
+    },
+    r"^/users/create$": {
         "POST": ["create_user"]
     },
     r"^/users/\d+$": {
@@ -105,7 +107,7 @@ ROUTE_PERMISSIONS = {
     },
     
     # Comment routes
-    r"^/comments$": {
+    r"^/comments/$": {
         "POST": ["create_comment"]
     },
     r"^/comments/\d+$": {
