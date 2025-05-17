@@ -1,7 +1,7 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from models.leave_request import LeaveRequest
+from app.models.leave_request import LeaveRequest
 
 class LeaveRequestRepository:
     """Repository class for handling leave request-related database operations."""

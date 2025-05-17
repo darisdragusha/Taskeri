@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional, List, Dict, Any
-from models.department import Department
+from app.models.department import Department
 
 class DepartmentRepository:
     """Repository for managing department-related database operations."""
