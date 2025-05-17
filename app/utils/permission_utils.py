@@ -3,13 +3,13 @@ from fastapi import HTTPException, Depends, Request, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, exists, and_, or_
 from auth import auth_service
-from models.tenant.roles.user_role import UserRole
-from models.tenant.roles.role import Role
-from models.tenant.roles.permission import Permission
-from models.role_permission import RolePermission
-from models.tenant.tasks.task import Task
-from models.tenant.tasks.task_assignment import TaskAssignment
-from models.project import Project
+from app.models.tenant.roles.user_role import UserRole
+from app.models.tenant.roles.role import Role
+from app.models.tenant.roles.permission import Permission
+from app.models.role_permission import RolePermission
+from app.models.tenant.tasks.task import Task
+from app.models.tenant.tasks.task_assignment import TaskAssignment
+from app.models.project import Project
 
 class PermissionChecker:
     """

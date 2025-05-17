@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from fastapi import Request
-from utils.env_utils import EnvironmentVariable, get_env
+from app.utils.env_utils import EnvironmentVariable, get_env
 import os
 
 # Database URL
