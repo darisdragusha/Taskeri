@@ -263,8 +263,22 @@ ROUTE_PERMISSIONS = {
     r"^/user-roles/\d+/roles/\d+$": {
         "POST": ["manage_user_roles"],
         "DELETE": ["manage_user_roles"]
-    }
+    },
 
+    # Project-User assignment routes
+    r"^/project-users/?$": {
+        "POST": ["assign_user_to_project"],
+        "DELETE": ["remove_user_from_project"]
+    },
+    r"^/project-users/\d+/users$": {
+        "GET": ["read_project_users"]
+    },
+    r"^/project-users/users/\d+/projects$": {
+        "GET": ["read_user_projects"]
+    },
+    r"^/project-users/me/projects$": {
+        "GET": ["read_user_projects"]
+    }
 }
 
 
