@@ -175,7 +175,23 @@ ROUTE_PERMISSIONS = {
         "GET": ["read_invoice"],
         "PUT": ["update_invoice"],
         "DELETE": ["delete_invoice"]
+    },
+
+    # Leave request routes
+    r"^/leave-requests/?$": {
+        "POST": ["create_leave_request"]
+    },
+    r"^/leave-requests/\d+$": {
+        "GET": ["read_leave_request"],
+        "DELETE": ["delete_leave_request"]
+    },
+    r"^/leave-requests/\d+/status$": {
+        "PATCH": ["update_leave_status"]
+    },
+    r"^/leave-requests/user/\d+$": {
+        "GET": ["read_any_user_leave_request"]
     }
+
 }
 
 
