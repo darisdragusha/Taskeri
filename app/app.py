@@ -190,8 +190,21 @@ ROUTE_PERMISSIONS = {
     },
     r"^/leave-requests/user/\d+$": {
         "GET": ["read_any_user_leave_request"]
-    }
+    },
 
+    # Project routes
+    r"^/projects/?$": {
+        "GET": ["read_project"],
+        "POST": ["create_project"]
+    },
+    r"^/projects/statistics$": {
+        "GET": ["view_statistics"]
+    },
+    r"^/projects/\d+$": {
+        "GET": ["read_project"],
+        "PUT": ["update_project", "update_any_project"],
+        "DELETE": ["delete_project", "delete_any_project"]
+    }
 }
 
 
