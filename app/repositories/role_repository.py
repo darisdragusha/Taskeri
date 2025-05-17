@@ -29,7 +29,24 @@ class RoleRepository:
         self.db_session.commit()
         self.db_session.refresh(role)
         return role
+    
+    def create_roles_bulk(self, names: List[str]) -> List[Role]:
+        """
+        Create multiple roles in bulk.
 
+        Args:
+            names (List[str]): List of role names.
+
+        Returns:
+            List[Role]: List of created roles objects.
+        """
+        roles = [Role(name=name) for name in names]
+        self.db_session.bulk_save_objects(roles)
+        self.db_session.commit()
+
+        # Optional: re-query to get full objects with IDs
+        return self.db_session.query(Role).filter(Role.name.in_(names)).all()
+    
     def get_role_by_id(self, role_id: int) -> Optional[Role]:
         """
         Retrieve a role by ID.

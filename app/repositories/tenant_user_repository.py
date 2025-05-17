@@ -13,9 +13,7 @@ class TenantUserRepository:
 
         user = TenantUser(
             email=user_data.email,
-            password_hash=hashed_pw,
             tenant_schema=user_data.tenant_schema,
-            role=user_data.role,
         )
 
         self.db.add(user)

@@ -26,6 +26,22 @@ class RolePermissionRepository:
         self.db.commit()
         self.db.refresh(role_permission)
         return role_permission
+    
+    def create_bulk(self, data_list: List[RolePermissionCreate]) -> List[RolePermission]:
+        """
+        Assign multiple permissions to roles in bulk.
+
+        :param data_list: List of RolePermissionCreate DTOs
+        :return: List of created RolePermission instances
+        """
+        role_permissions = [RolePermission(**data.model_dump()) for data in data_list]
+        self.db.bulk_save_objects(role_permissions)
+        self.db.commit()
+
+        # Optional: return all role-permissions just inserted
+        return self.db.query(RolePermission).filter(
+            RolePermission.role_id.in_([rp.role_id for rp in role_permissions])
+        ).all()
 
     def get_all(self) -> List[RolePermission]:
         """

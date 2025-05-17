@@ -19,7 +19,8 @@ async def create_user(
     Endpoint to create a new user.
     Requires the 'create_user' permission (handled by middleware).
     """
-    return controller.create_user(user_create)
+    return controller.create_user(user_create, current_user)
+
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(

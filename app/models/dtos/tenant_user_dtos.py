@@ -6,15 +6,15 @@ from pydantic import EmailStr
 
 class TenantUserCreate(BaseModel):
     email: EmailStr
+    first_name: str
+    last_name: str
     password: str
     tenant_schema: str
-    role: str  # Admin, Manager, Employee
 
 class TenantUserOut(BaseModel):
     id: int
     email: EmailStr
     tenant_schema: str
-    role: str
     created_at: datetime
 
     model_config = {
