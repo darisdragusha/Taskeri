@@ -244,6 +244,16 @@ ROUTE_PERMISSIONS = {
     },
     r"^/time-logs/user/\d+/by-time$": {
         "GET": ["read_time_log", "read_user_time_log"]
+    },
+
+    # User Profile routes
+    r"^/profiles/?$": {
+        "POST": ["create_user_profile"]
+    },
+    r"^/profiles/\d+$": {
+        "GET": ["read_own_profile", "read_any_profile"],
+        "PUT": ["update_own_profile", "update_any_profile"],
+        "DELETE": ["delete_own_profile", "delete_any_profile"]
     }
 }
 
