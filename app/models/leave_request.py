@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, Enum, Date, ForeignKey
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class LeaveRequest(Base):
     __tablename__ = "leave_requests"

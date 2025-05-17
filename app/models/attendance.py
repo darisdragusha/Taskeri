@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, TIMESTAMP, ForeignKey
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class Attendance(Base):
     __tablename__ = "attendance"

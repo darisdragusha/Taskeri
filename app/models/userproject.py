@@ -1,5 +1,5 @@
 from sqlalchemy import Column, BigInteger, ForeignKey, UniqueConstraint
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class UserProject(Base):
     __tablename__ = "user_projects"

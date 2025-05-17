@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, BigInteger, Integer, ForeignKey
-from utils.db_utils import Base
+from app.utils.db_utils import Base
 
 class CompanySettings(Base):
     __tablename__ = "company_settings"

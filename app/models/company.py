@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, BigInteger, TIMESTAMP, func
-from utils import Base
+from app.utils import Base
 
 class Company(Base):
     __tablename__ = "companies"
