@@ -116,6 +116,8 @@ ROUTE_PERMISSIONS = {
     r"^/comments/task/\d+$": {
         "GET": ["read_comment"]
     },
+
+    #Attendance routes
     r"^/attendance/check-in$": {
     "POST": ["check_in"]
     },
@@ -128,6 +130,8 @@ ROUTE_PERMISSIONS = {
     r"^/attendance/user/\d+$": {
         "GET": ["read_any_user_attendance"]
     },
+
+    #Company Settings routes
     r"^/company-settings/?$": {
     "POST": ["create_company_settings"]
     },
@@ -136,6 +140,8 @@ ROUTE_PERMISSIONS = {
         "PUT": ["update_company_settings"],
         "DELETE": ["delete_company_settings"]
     },
+
+    #Departments routes
     r"^/departments/?$": {
     "GET": ["read_department"],
     "POST": ["create_department"]
@@ -145,6 +151,7 @@ ROUTE_PERMISSIONS = {
         "PUT": ["update_department"],
         "DELETE": ["delete_department"]
     },
+
     # File Attachment routes
     r"^/attachments/?$": {
         "GET": ["read_attachment"],
@@ -157,8 +164,18 @@ ROUTE_PERMISSIONS = {
     },
     r"^/attachments/task/\d+$": {
         "GET": ["read_attachment"]
-    }
+    },
 
+    # Invoice routes
+    r"^/invoices/?$": {
+        "GET": ["read_invoice"],
+        "POST": ["create_invoice"]
+    },
+    r"^/invoices/\d+$": {
+        "GET": ["read_invoice"],
+        "PUT": ["update_invoice"],
+        "DELETE": ["delete_invoice"]
+    }
 }
 
 
