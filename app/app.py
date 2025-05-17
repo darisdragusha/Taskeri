@@ -29,7 +29,7 @@ PUBLIC_ROUTES = [
 # Define route permissions mapping - regexes are used for pattern matching
 ROUTE_PERMISSIONS = {
     # Company routes
-    r"^/companies$": {
+    r"^/companies/?$": {
         "GET": ["read_company"],
         "POST": ["create_company"]
     },
@@ -118,8 +118,6 @@ ROUTE_PERMISSIONS = {
     }
 }
 
-# Add MultiTenantMiddleware first (handles authentication)
-app.add_middleware(MultiTenantMiddleware)
 
 # Add AuthorizationMiddleware after authentication (handles permissions)
 app.add_middleware(
@@ -127,6 +125,11 @@ app.add_middleware(
     public_routes=PUBLIC_ROUTES,
     route_permissions=ROUTE_PERMISSIONS
 )
+
+# Add MultiTenantMiddleware first (handles authentication)
+
+app.add_middleware(MultiTenantMiddleware)
+
 
 # Include routers
 for router in routers:
