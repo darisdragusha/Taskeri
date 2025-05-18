@@ -50,6 +50,8 @@ class LoginController:
         
         # Get tenant user by email
         tenant_user = tenant_user_repo.get_by_email(email)
+        if not tenant_user:
+            return None
         schema = tenant_user.tenant_schema
         tenant_id = tenant_user.id
 
