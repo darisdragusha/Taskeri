@@ -2,10 +2,10 @@ from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List, Dict, Literal
-
+from fastapi import Query
 from app.repositories.leave_request_repository import LeaveRequestRepository
 from app.models.leave_request import LeaveRequest
-from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
+from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse, LeaveRequestListResponse
 from app.utils import get_db
 
 
@@ -142,6 +142,35 @@ class LeaveRequestController:
                     detail="Leave request not found"
                 )
             return {"message": "Leave request deleted successfully"}
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+        
+    def get_paginated_leave_requests(
+        self,
+        page: int = Query(1, ge=1),
+        page_size: int = Query(20, ge=1, le=100)
+    ) -> LeaveRequestListResponse:
+        """
+        Get a paginated list of leave requests.
+
+        Args:
+            page (int): Page number.
+            page_size (int): Number of items per page.
+
+        Returns:
+            LeaveRequestListResponse: Paginated leave requests.
+        """
+        try:
+            leave_requests, total = self.repository.get_paginated_leave_requests(page=page, page_size=page_size)
+            return LeaveRequestListResponse(
+                items=[LeaveRequestResponse.from_orm(lr) for lr in leave_requests],
+                total=total,
+                page=page,
+                page_size=page_size
+            )
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

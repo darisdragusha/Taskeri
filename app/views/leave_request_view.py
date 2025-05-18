@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, Query, Path, Request, HTTPException
 from app.controllers.leave_request_controller import LeaveRequestController
-from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse
+from app.models.dtos.leave_request_dtos import LeaveRequestCreate, LeaveRequestResponse, LeaveRequestListResponse
 from typing import List, Literal, Dict
 from sqlalchemy.orm import Session
 from app.auth import auth_service
@@ -85,3 +85,19 @@ async def delete_leave_request(
     Delete a leave request by ID.
     """
     return controller.delete_leave_request(leave_id)
+
+
+@router.get("/", response_model=LeaveRequestListResponse)
+async def get_paginated_leave_requests(
+    page: int = Query(1, ge=1, description="Page number (starting from 1)"),
+    page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
+    controller: LeaveRequestController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Get a paginated list of all leave requests.
+
+    Permission requirements (handled by middleware):
+    - Admin/HR roles typically have access to all leave requests
+    """
+    return controller.get_paginated_leave_requests(page=page, page_size=page_size)

@@ -133,3 +133,20 @@ class LeaveRequestRepository:
             count = self.db_session.query(func.count(LeaveRequest.id)).filter(LeaveRequest.status == status).scalar()
             result[status] = count
         return result
+
+    def get_paginated_leave_requests(self, page: int = 1, page_size: int = 20) -> tuple[List[LeaveRequest], int]:
+        """
+        Retrieve paginated leave requests.
+
+        Args:
+            page (int): Page number.
+            page_size (int): Number of items per page.
+
+        Returns:
+            Tuple of (leave requests list, total count).
+        """
+        query = self.db_session.query(LeaveRequest)
+        total = query.count()
+        items = query.offset((page - 1) * page_size).limit(page_size).all()
+        return items, total
+
