@@ -5,8 +5,8 @@ class Notification(Base):
     __tablename__ = "notifications"
     __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
 
-    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
     message = Column(Text, nullable=False)
-    read_status = Column(Boolean, default=False, nullable=False)
-    created_at = Column(TIMESTAMP, server_default=func.current_timestamp(), nullable=False)
+    read_status = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP, server_default=func.now())

@@ -9,9 +9,9 @@ class NotificationResponse(BaseModel):
     read_status: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
-
+    model_config = {
+        "from_attributes": True 
+    }
 class NotificationCreate(BaseModel):
     user_id: int
     message: str
