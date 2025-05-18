@@ -237,6 +237,7 @@ class CommentController:
             id=comment.id,
             content=comment.content,
             user_id=comment.user_id,
+            task_id=comment.task_id,  
             created_at=comment.created_at  # This will trigger the validator
         )
         

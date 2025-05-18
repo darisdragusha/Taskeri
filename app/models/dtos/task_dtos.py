@@ -62,6 +62,7 @@ class CommentResponse(BaseModel):
     id: int
     content: str
     user_id: int
+    task_id: int 
     created_at: str
     user: Optional[UserBasicInfo] = None
 
