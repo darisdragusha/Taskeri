@@ -1,9 +1,11 @@
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from app.repositories import UserRepository
-from app.utils import get_db
-from app.models.dtos import UserCreate, UserUpdate, UserResponse
+from app.utils import get_db, get_global_db
+from app.models.dtos import UserCreate, UserUpdate, UserResponse, TenantUserCreate
 from typing import List, Optional, Dict
+from app.repositories.tenant_user_repository import TenantUserRepository
+from app.auth import auth_service
 
 class UserController:
     """Controller class for handling user operations."""
@@ -17,7 +19,7 @@ class UserController:
         """
         self.repository = UserRepository(db_session)
 
-    def create_user(self, user_create: UserCreate, default_role_id: Optional[int] = None) -> UserResponse:
+    def create_user(self, user_create: UserCreate, current_user: dict, default_role_id: Optional[int] = None) -> UserResponse:
         """
         Create a new user and assign them default roles.
 
@@ -54,6 +56,20 @@ class UserController:
                     detail="Default 'Employee' role not found. Unable to assign default role."
                 )
         
+        schema_name = current_user["tenant_name"]
+
+        with get_global_db() as global_db:
+            tenant_user_repo = TenantUserRepository(global_db)
+            tenant_user_repo.create(
+                user_data=TenantUserCreate(
+                    email=user_create.email,
+                    first_name=user_create.first_name,
+                    last_name=user_create.last_name,
+                    password=user_create.password,
+                    tenant_schema=schema_name
+                )
+            )
+
         return UserResponse.from_orm(user)
 
     def get_user(self, user_id: int) -> UserResponse:

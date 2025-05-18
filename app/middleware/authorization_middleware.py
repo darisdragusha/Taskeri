@@ -12,6 +12,7 @@ from app.models.role_permission import RolePermission
 from app.models.tenant.tasks.task import Task
 from app.models.tenant.tasks.task_assignment import TaskAssignment
 from app.models.project import Project
+from fastapi.responses import JSONResponse
 
 # Setup basic logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -84,9 +85,9 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
             # Check if this is a resource ownership route
             is_owner = await self._check_resource_ownership(request, path, user_id)
             if not is_owner:
-                raise HTTPException(
+                return JSONResponse(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="You don't have permission to access this resource"
+                    content={"detail": "You don't have permission to access this resource"}
                 )
         
         response = await call_next(request)
