@@ -1,6 +1,6 @@
 from datetime import date
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, List
 
 
 class LeaveRequestCreate(BaseModel):
@@ -19,3 +19,10 @@ class LeaveRequestResponse(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True
+
+class LeaveRequestListResponse(BaseModel):
+    items: List[LeaveRequestResponse]
+    total: int
+    page: int
+    page_size: int

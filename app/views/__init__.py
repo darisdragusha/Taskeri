@@ -19,6 +19,7 @@ from .file_attachment_view import router as file_attatchment_router
 from .attendance_view import router as attendance_router
 from .userproject_view import router as userproject_router
 from .invoice_view import router as invoice_router
+from .notification_view import router as notification_router
 
 routers = [
     login_router,
@@ -41,6 +42,7 @@ routers = [
     file_attatchment_router,
     attendance_router,
     userproject_router,
-    invoice_router
+    invoice_router,
+    notification_router
 ]
 
