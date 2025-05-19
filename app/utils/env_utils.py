@@ -14,6 +14,7 @@ class EnvironmentVariable(str, Enum):
     DB_PASSWORD = "DB_PASSWORD" 
     DB_USERNAME = "DB_USERNAME"
     DB_URL = "DB_URL"
+    DB_PORT = "DB_PORT"
     
 
     SECRET_KEY = "SECRET_KEY"

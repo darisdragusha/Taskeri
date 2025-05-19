@@ -6,7 +6,13 @@ from contextlib import contextmanager
 import os
 
 # Database URL
-DB_URL = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}/{get_env(EnvironmentVariable.DB_NAME)}"
+DB_URL = (
+    f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:"
+    f"{get_env(EnvironmentVariable.DB_PASSWORD)}@"
+    f"{get_env(EnvironmentVariable.DB_HOST)}:"
+    f"{get_env(EnvironmentVariable.DB_PORT)}/"
+    f"{get_env(EnvironmentVariable.DB_NAME)}"
+)
 
 # Create the database engine
 engine = create_engine(DB_URL, echo=True, pool_pre_ping=True)
@@ -19,7 +25,7 @@ Base = declarative_base()
 
 
 def get_tenant_scoped_session(database_name: str) -> Session:
-    tenant_db_url = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}/{database_name}"
+    tenant_db_url = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}:{get_env(EnvironmentVariable.DB_PORT)}/{database_name}"
     tenant_engine = create_engine(tenant_db_url, echo=True, pool_pre_ping=True)
     TenantSessionLocal = sessionmaker(bind=tenant_engine)
     return TenantSessionLocal()
