@@ -2,8 +2,10 @@ from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.repositories.team_repository import TeamRepository
+from app.repositories.user_repository import UserRepository
 from app.utils import get_db
 from app.models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
+from app.models.dtos.user_dtos import UserResponse
 from typing import List, Dict
 
 
@@ -12,6 +14,7 @@ class TeamController:
 
     def __init__(self, db_session: Session = Depends(get_db)):
         self.repository = TeamRepository(db_session)
+        self.user_repository = UserRepository(db_session)
 
     def create_team(self, team_create: TeamCreate) -> TeamResponse:
         """
@@ -89,3 +92,17 @@ class TeamController:
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
+        
+    def get_team_members(self, team_id: int) -> List[UserResponse]:
+        """
+        Retrieve all members assigned to a specific team.
+
+        Args:
+            team_id (int): The ID of the team whose members are to be fetched.
+
+        Returns:
+            List[UserResponse]: A list of users belonging to the specified team,
+                                formatted as response DTOs.
+        """
+        users = self.user_repository.get_users_by_team(team_id)
+        return [UserResponse.model_validate(user) for user in users]

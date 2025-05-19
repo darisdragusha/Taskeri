@@ -224,3 +224,16 @@ class UserRepository:
         except SQLAlchemyError:
             self.db_session.rollback()
             return False
+        
+    def get_users_by_team(self, team_id: int) -> List[User]:
+        """
+        Get all users that belong to a given team.
+        
+        Args:
+            team_id (int): ID of the team.
+
+        Returns:
+            List[User]: List of users assigned to the team.
+        """
+        return self.db_session.query(User).filter(User.team_id == team_id).all()
+
