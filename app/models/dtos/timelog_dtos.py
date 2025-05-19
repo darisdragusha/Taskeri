@@ -19,3 +19,6 @@ class TimeLogResponse(BaseModel):
     start_time: datetime
     end_time: datetime
     duration: int
+
+    class Config:
+        from_attributes = True
