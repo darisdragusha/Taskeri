@@ -26,10 +26,7 @@ def create_time_log(
     Create a new time log. The user is automatically set from the logged-in user.
     """
     controller = TimeLogController(db)
-    # Inject user_id from auth context
-    data_dict = data.dict()
-    data_dict["user_id"] = current_user["user_id"]
-    return controller.create_time_log(TimeLogCreate(**data_dict))
+    return controller.create_time_log(user_id=current_user["user_id"], data=data)
 
 
 @router.get("/{time_log_id}", response_model=TimeLogResponse)

@@ -16,10 +16,10 @@ class TimeLogController:
     def __init__(self, db_session: Session = Depends(get_db)):
         self.repository = TimeLogRepository(db_session)
 
-    def create_time_log(self, data: TimeLogCreate) -> TimeLogResponse:
+    def create_time_log(self, user_id: int, data: TimeLogCreate) -> TimeLogResponse:
         """Create a new time log entry with duration calculated."""
         try:
-            time_log = self.repository.create_time_log(data)
+            time_log = self.repository.create_time_log(user_id=user_id, data=data)
             return self._map_to_response(time_log)
         except SQLAlchemyError as e:
             raise HTTPException(
@@ -31,6 +31,7 @@ class TimeLogController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="An unexpected error occurred"
             )
+
 
     def get_time_log(self, time_log_id: int) -> Optional[TimeLogResponse]:
         """Get a time log entry by ID."""
