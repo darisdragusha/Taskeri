@@ -57,7 +57,7 @@ async def get_db(request: Request) -> Session:
         # Session already created by middleware → use it
         yield db
 
-GLOBAL_DB_URL = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}/{get_env(EnvironmentVariable.DB_NAME)}"
+GLOBAL_DB_URL = f"mysql+mysqlconnector://{get_env(EnvironmentVariable.DB_USERNAME)}:{get_env(EnvironmentVariable.DB_PASSWORD)}@{get_env(EnvironmentVariable.DB_HOST)}:{get_env(EnvironmentVariable.DB_PORT)}/{get_env(EnvironmentVariable.DB_NAME)}"
 
 global_engine = create_engine(GLOBAL_DB_URL, echo=True, pool_pre_ping=True)
 GlobalSessionLocal = sessionmaker(bind=global_engine, autocommit=False, autoflush=False)
