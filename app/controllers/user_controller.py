@@ -180,3 +180,18 @@ class UserController:
         # Get user roles
         roles = self.repository.get_user_roles(user_id)
         return [{"id": role.id, "name": role.name} for role in roles]
+    
+    def get_user_by_email(self, email: str) -> UserResponse:
+        """
+        Get a user by email.
+
+        Args:
+            email (str): User email.
+
+        Returns:
+            UserResponse: Retrieved user response.
+        """
+        user = self.repository.get_user_by_email(email)
+        if user:
+            return UserResponse.from_orm(user)
+        raise HTTPException(status_code=404, detail="User not found")
