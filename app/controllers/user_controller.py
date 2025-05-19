@@ -195,3 +195,14 @@ class UserController:
         if user:
             return UserResponse.from_orm(user)
         raise HTTPException(status_code=404, detail="User not found")
+    
+    def get_all_users(self) -> List[UserResponse]:
+        """
+        Retrieve all users in the system.
+
+        Returns:
+            List[UserResponse]: A list of all user responses.
+        """
+        users = self.repository.get_all_users()
+        return [UserResponse.from_orm(user) for user in users]
+

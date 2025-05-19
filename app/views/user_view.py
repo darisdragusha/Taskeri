@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException, status, APIRouter, Depends, Request
 from app.controllers import UserController
 from app.models.dtos import UserCreate, UserUpdate, UserResponse
@@ -42,6 +43,25 @@ async def get_user(
     """
     
     return controller.get_user(user_id)
+
+@router.get("/users", response_model=List[UserResponse])
+async def get_all_users(
+    request: Request,
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+) -> List[UserResponse]:
+    """
+    Endpoint to retrieve all users.
+
+    Permission requirements (handled by middleware):
+    - 'read_any_user' permission
+
+    Business logic:
+    - Only users with 'read_any_user' permission can access the full user list
+    """
+    return controller.get_all_users()
+
+
 
 @router.put("/users/{user_id}", response_model=UserResponse)
 async def update_user(

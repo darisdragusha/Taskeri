@@ -236,4 +236,13 @@ class UserRepository:
             List[User]: List of users assigned to the team.
         """
         return self.db_session.query(User).filter(User.team_id == team_id).all()
+    
+    def get_all_users(self) -> List[User]:
+        """
+        Retrieve all users from the database.
+
+        Returns:
+            List[User]: A list of all user objects.
+        """
+        return self.db_session.query(User).all()
 
