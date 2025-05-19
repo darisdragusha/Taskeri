@@ -5,6 +5,7 @@ from app.utils import get_db, get_global_db
 from app.models.dtos import UserCreate, UserUpdate, UserResponse, TenantUserCreate
 from typing import List, Optional, Dict
 from app.repositories.tenant_user_repository import TenantUserRepository
+from app.models.dtos.role_dtos import RoleResponse  # import your DTO
 from app.auth import auth_service
 
 class UserController:
@@ -162,24 +163,22 @@ class UserController:
             detail="Failed to remove role from user"
         )
         
-    def get_user_roles(self, user_id: int) -> List[Dict[str, str]]:
+    def get_user_roles(self, user_id: int) -> List[RoleResponse]:
         """
         Get all roles assigned to a user.
-        
+
         Args:
             user_id (int): User ID.
-            
+
         Returns:
-            List[Dict[str, str]]: List of roles with their details.
+            List[RoleResponse]: List of roles.
         """
-        # Check if user exists
         user = self.repository.get_user_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-            
-        # Get user roles
+
         roles = self.repository.get_user_roles(user_id)
-        return [{"id": role.id, "name": role.name} for role in roles]
+        return [RoleResponse.from_orm(role) for role in roles]
     
     def get_user_by_email(self, email: str) -> UserResponse:
         """
