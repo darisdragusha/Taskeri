@@ -40,6 +40,8 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
             HTTPException: If the token is missing, invalid, or cannot be decoded.
         """
         # Exclude public routes from authentication
+        if request.method == "OPTIONS" or request.url.path in {"/login", "/register", "/docs", "/openapi.json", "/token", "/tenant-users/"}:
+            return await call_next(request)
         if request.url.path in {"/login", "/register", "/docs","/openapi.json","/token", "/tenant-users/"}:
             return await call_next(request)
 
@@ -85,6 +87,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
         """
         auth_header: str | None = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
+            logger.error(f"Missing or invalid Authorization header. Headers received: {dict(request.headers)}")
             raise HTTPException(status_code=401, detail="Missing or invalid token")
         
         return auth_header.split(" ")[1]
