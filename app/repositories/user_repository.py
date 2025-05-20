@@ -3,7 +3,10 @@ from typing import Optional, List
 from app.models.user import User
 from app.models.tenant.roles.role import Role
 from app.models.user_role import UserRole
+from app.models.tenant_user import TenantUser
+from app.models.tenant import TaskAssignment
 from app.utils import hash_password
+from app.utils.db_utils import switch_schema, get_global_db
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 import logging
@@ -119,11 +122,29 @@ class UserRepository:
         if user:
             try:
                 # Delete associated user roles
-                self.db_session.query(UserRole).filter(UserRole.user_id == user_id).delete()
+                user_roles = self.db_session.query(UserRole).filter(UserRole.user_id == user_id).all()
+                for user_role in user_roles:
+                    self.db_session.delete(user_role)
 
+                # Delete associated task assignments
+                task_assignments = self.db_session.query(TaskAssignment).filter(TaskAssignment.user_id == user_id).all()
+                for task_assignment in task_assignments:
+                    self.db_session.delete(task_assignment)
+
+                # Flush to apply the deletions before deleting the user
+                self.db_session.flush()
                 # Delete the user
                 self.db_session.delete(user)
                 self.db_session.commit()
+
+                # Switch to the global schema
+                switch_schema(self.db_session, "taskeri_global")
+
+                # Delete the user from tenant_users using ORM
+                tenant_user = self.db_session.query(TenantUser).filter(TenantUser.email == user.email).first()
+                if tenant_user:
+                    self.db_session.delete(tenant_user)
+                        
                 return user
             except SQLAlchemyError as e:
                 self.db_session.rollback()
