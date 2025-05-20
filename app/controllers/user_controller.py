@@ -6,7 +6,7 @@ from app.models.dtos import UserCreate, UserUpdate, UserResponse, TenantUserCrea
 from typing import List, Optional
 from app.repositories.tenant_user_repository import TenantUserRepository
 from app.models.dtos.role_dtos import RoleResponse
-import asyncio
+from fastapi import BackgroundTasks
 from app.utils.email_utils import send_account_creation_email
 
 
@@ -58,13 +58,12 @@ class UserController:
             )
 
         # Send welcome email asynchronously without blocking
-        asyncio.create_task(
-            send_account_creation_email(
-                to_email=user_create.email,
-                first_name=user_create.first_name,
-                password=user_create.password
-            )
+        send_account_creation_email(
+        to_email=user_create.email,
+        first_name=user_create.first_name,
+        password=user_create.password
         )
+
 
         # Attach role_id to the response
         roles = self.repository.get_user_roles(user.id)

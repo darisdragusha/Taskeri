@@ -2,7 +2,7 @@ from fastapi_mail import FastMail, MessageSchema
 from app.utils.mail_config import conf
 import asyncio
 
-async def send_account_creation_email(to_email: str, first_name: str, password: str):
+def send_account_creation_email(to_email: str, first_name: str, password: str):
     """
     Sends a welcome email with account creation details to the specified email address.
 
@@ -33,6 +33,6 @@ async def send_account_creation_email(to_email: str, first_name: str, password: 
     )
 
     fm = FastMail(conf)
-    await fm.send_message(message)
+    fm.send_message(message)
 
 
