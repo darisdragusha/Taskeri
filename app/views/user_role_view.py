@@ -8,7 +8,7 @@ from app.auth import auth_service
 
 router = APIRouter(prefix="/user-roles", tags=["User Roles"])
 
-@router.post("/{user_id}/roles/{role_id}", response_model=Dict[str, str])
+@router.put("/{user_id}/roles/{role_id}", response_model=Dict[str, str])
 async def assign_role_to_user(
     user_id: int,
     role_id: int,

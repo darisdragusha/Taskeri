@@ -154,41 +154,46 @@ class UserRepository:
         
     def assign_role_to_user(self, user_id: int, role_id: int) -> bool:
         """
-        Assign a role to a user.
-        
+        Assign or update the user's role.
+
+        If the user already has a role, it updates it.
+        If not, it creates a new UserRole entry.
+
         Args:
             user_id (int): User ID.
             role_id (int): Role ID.
-            
+
         Returns:
             bool: True if successful, False otherwise.
         """
         try:
-            # Check if user and role exist
             user = self.get_user_by_id(user_id)
             role = self.db_session.query(Role).filter(Role.id == role_id).first()
-            
+
             if not user or not role:
                 return False
-                
-            # Check if the user already has this role
-            existing = self.db_session.query(UserRole).filter(
-                UserRole.user_id == user_id,
-                UserRole.role_id == role_id
+
+            # Check if user already has any role assigned
+            user_role = self.db_session.query(UserRole).filter(
+                UserRole.user_id == user_id
             ).first()
-            
-            if existing:
-                return True  # Role already assigned
-                
-            # Create the new role assignment
-            user_role = UserRole(
-                user_id=user_id,
-                role_id=role_id
-            )
-            
-            self.db_session.add(user_role)
+
+            if user_role:
+                # Update existing role
+                user_role.role_id = role_id
+            else:
+                # Create new role assignment
+                user_role = UserRole(user_id=user_id, role_id=role_id)
+                self.db_session.add(user_role)
+
             self.db_session.commit()
             return True
+
+        except Exception as e:
+            self.db_session.rollback()
+            print(f"Error assigning role: {e}")
+            return False
+
             
         except SQLAlchemyError as e:
             logger.error(f"Error assigning role to user {user_id}: {e}")
