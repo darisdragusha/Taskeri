@@ -6,6 +6,6 @@ class FileAttachment(Base):
     __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
 
     id = Column(BigInteger, primary_key=True)
-    task_id = Column(BigInteger, ForeignKey("tasks.id"), nullable=False)
+    task_id = Column(BigInteger, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False)
     file_path = Column(String(255), nullable=False)
     uploaded_at = Column(TIMESTAMP, server_default=func.now())

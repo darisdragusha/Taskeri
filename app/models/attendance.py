@@ -6,6 +6,6 @@ class Attendance(Base):
     __table_args__ = {"schema": None}
 
     id = Column(BigInteger, primary_key=True)
-    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     check_in = Column(TIMESTAMP, nullable=False)
     check_out = Column(TIMESTAMP)

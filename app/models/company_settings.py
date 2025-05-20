@@ -6,6 +6,6 @@ class CompanySettings(Base):
     __table_args__ = {"schema": None}
 
 
-    company_id = Column(BigInteger, ForeignKey("companies.id"), primary_key=True)
+    company_id = Column(BigInteger, ForeignKey("companies.id", ondelete="CASCADE"), primary_key=True)
     timezone = Column(String(50), nullable=False, default="UTC")
     work_hours_per_day = Column(Integer, default=8)

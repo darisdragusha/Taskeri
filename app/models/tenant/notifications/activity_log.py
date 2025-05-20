@@ -6,6 +6,6 @@ class ActivityLog(Base):
     __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
 
     id = Column(BigInteger, primary_key=True)
-    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     action = Column(Text, nullable=False)
     timestamp = Column(TIMESTAMP, server_default=func.now())

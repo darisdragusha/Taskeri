@@ -8,6 +8,6 @@ class TaskAssignment(Base):
         {"schema": None}  # must be at the end as a dict
     )
 
-    task_id = Column(BigInteger, ForeignKey("tasks.id"))
-    user_id = Column(BigInteger, ForeignKey("users.id"))
+    task_id = Column(BigInteger, ForeignKey("tasks.id", ondelete="CASCADE"))
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"))
     assigned_at = Column(TIMESTAMP, server_default=func.now())
