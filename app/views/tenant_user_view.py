@@ -26,4 +26,4 @@ def register_user(
     - Hashes the provided password for secure storage
     """
     controller = TenantUserController(db)
-    return controller.register_tenant_user(user_data, request)
+    return controller.register_tenant_user(user_data)
