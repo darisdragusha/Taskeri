@@ -64,7 +64,7 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
         except HTTPException as e:
             raise e
         except Exception as e:
-            logger.exception("Unexpected error in middleware")
+            logging.error("Error in middleware dispatch", exc_info=True)
             raise HTTPException(status_code=500, detail="Internal server error")
 
     async def extract_token(self, request: Request) -> str:

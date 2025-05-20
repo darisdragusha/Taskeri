@@ -117,9 +117,18 @@ class UserRepository:
         """
         user = self.get_user_by_id(user_id)
         if user:
-            self.db_session.delete(user)
-            self.db_session.commit()
-            return user
+            try:
+                # Delete associated user roles
+                self.db_session.query(UserRole).filter(UserRole.user_id == user_id).delete()
+
+                # Delete the user
+                self.db_session.delete(user)
+                self.db_session.commit()
+                return user
+            except SQLAlchemyError as e:
+                self.db_session.rollback()
+                logger.error(f"Error deleting user {user_id}: {e}")
+                raise HTTPException(status_code=500, detail="Failed to delete user.")
         return None
         
     def get_role_by_name(self, role_name: str) -> Optional[Role]:
