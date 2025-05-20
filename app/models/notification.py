@@ -3,7 +3,7 @@ from app.utils.db_utils import Base
 
 class Notification(Base):
     __tablename__ = "notifications"
-    __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
+    __table_args__ = {"schema": None}  
 
     id = Column(BigInteger, primary_key=True)
     user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)

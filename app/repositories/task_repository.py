@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import update, func, or_, and_, desc, text, case
 from typing import Optional, List, Dict, Any, Tuple
-from app.models.tenant.tasks.task import Task
-from app.models.tenant.tasks.task_assignment import TaskAssignment
-from app.models.tenant.tasks.comment import Comment
+from app.models.task import Task
+from app.models.task_assignment import TaskAssignment
+from app.models.comment import Comment
 from app.models.file_attachment import FileAttachment
 from app.models.user import User
 from app.models.project import Project

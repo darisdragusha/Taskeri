@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from app.models.tenant.roles.role import Role  # Adjust path if needed
+from app.models.role import Role  # Adjust path if needed
 
 class RoleRepository:
     """Repository class for handling role-related database operations."""

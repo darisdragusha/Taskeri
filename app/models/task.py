@@ -3,7 +3,7 @@ from app.utils.db_utils import Base
 
 class Task(Base):
     __tablename__ = "tasks"
-    __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
+    __table_args__ = {"schema": None}  
 
     id = Column(BigInteger, primary_key=True)
     project_id = Column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)

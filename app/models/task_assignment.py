@@ -5,7 +5,7 @@ class TaskAssignment(Base):
     __tablename__ = "task_assignments"
     __table_args__ = (
         PrimaryKeyConstraint("task_id", "user_id"),
-        {"schema": None}  # must be at the end as a dict
+        {"schema": None}  
     )
 
     task_id = Column(BigInteger, ForeignKey("tasks.id", ondelete="CASCADE"))
