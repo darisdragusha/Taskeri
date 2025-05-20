@@ -121,18 +121,7 @@ class UserRepository:
         user = self.get_user_by_id(user_id)
         if user:
             try:
-                # Delete associated user roles
-                user_roles = self.db_session.query(UserRole).filter(UserRole.user_id == user_id).all()
-                for user_role in user_roles:
-                    self.db_session.delete(user_role)
-
-                # Delete associated task assignments
-                task_assignments = self.db_session.query(TaskAssignment).filter(TaskAssignment.user_id == user_id).all()
-                for task_assignment in task_assignments:
-                    self.db_session.delete(task_assignment)
-
-                # Flush to apply the deletions before deleting the user
-                self.db_session.flush()
+                
                 # Delete the user
                 self.db_session.delete(user)
                 self.db_session.commit()
