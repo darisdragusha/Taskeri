@@ -6,7 +6,8 @@ from app.models.dtos import UserCreate, UserUpdate, UserResponse, TenantUserCrea
 from typing import List, Optional
 from app.repositories.tenant_user_repository import TenantUserRepository
 from app.models.dtos.role_dtos import RoleResponse
-from app.auth import auth_service
+import asyncio
+from app.utils.email_utils import send_account_creation_email
 
 
 class UserController:
@@ -16,8 +17,10 @@ class UserController:
         """Initialize the UserController."""
         self.repository = UserRepository(db_session)
 
+
+
     def create_user(self, user_create: UserCreate, current_user: dict, default_role_id: Optional[int] = None) -> UserResponse:
-        """Create a new user and assign them default roles."""
+        """Create a new user, assign default roles, and send a welcome email."""
         user = self.repository.create_user(
             email=user_create.email,
             password=user_create.password,
@@ -53,6 +56,15 @@ class UserController:
                     tenant_schema=schema_name
                 )
             )
+
+        # Send welcome email asynchronously without blocking
+        asyncio.create_task(
+            send_account_creation_email(
+                to_email=user_create.email,
+                first_name=user_create.first_name,
+                password=user_create.password
+            )
+        )
 
         # Attach role_id to the response
         roles = self.repository.get_user_roles(user.id)
