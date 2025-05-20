@@ -4,7 +4,7 @@ from app.models.user import User
 from app.models.role import Role
 from app.models.user_role import UserRole
 from app.models.tenant_user import TenantUser
-from app.models.tenant import TaskAssignment
+from app.models.task_assignment import TaskAssignment
 from app.utils import hash_password
 from app.utils.db_utils import switch_schema, get_global_db
 from sqlalchemy.exc import SQLAlchemyError

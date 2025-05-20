@@ -3,7 +3,7 @@ from app.utils.db_utils import Base
 
 class Invoice(Base):
     __tablename__ = "invoices"
-    __table_args__ = {"schema": None}  # 👈 Important for schema-aware migration
+    __table_args__ = {"schema": None}  
 
     id = Column(BigInteger, primary_key=True)
     company_id = Column(BigInteger, ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)

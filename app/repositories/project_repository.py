@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional, List, Tuple, Dict, Any
 from app.models.project import Project
-from app.models.userproject import UserProject
+from app.models.user_project import UserProject
 from datetime import date
 
 class ProjectRepository:
