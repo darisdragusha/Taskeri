@@ -2,7 +2,7 @@ from fastapi_mail import FastMail, MessageSchema
 from app.utils.mail_config import conf
 import asyncio
 
-def send_account_creation_email(to_email: str, first_name: str, password: str):
+async def send_account_creation_email_async(to_email: str, first_name: str, password: str):
     """
     Sends a welcome email with account creation details to the specified email address.
 
@@ -33,6 +33,15 @@ def send_account_creation_email(to_email: str, first_name: str, password: str):
     )
 
     fm = FastMail(conf)
-    fm.send_message(message)
+    await fm.send_message(message)
 
+def send_account_creation_email(to_email: str, first_name: str, password: str):
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # no loop running, safe to run
+        asyncio.run(send_account_creation_email_async(to_email, first_name, password))
+    else:
+        # loop is running, create a task (do NOT call asyncio.run again)
+        loop.create_task(send_account_creation_email_async(to_email, first_name, password))
 

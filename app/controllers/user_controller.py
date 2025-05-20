@@ -6,8 +6,10 @@ from app.models.dtos import UserCreate, UserUpdate, UserResponse, TenantUserCrea
 from typing import List, Optional
 from app.repositories.tenant_user_repository import TenantUserRepository
 from app.models.dtos.role_dtos import RoleResponse
+from app.utils import hash_password
 from fastapi import BackgroundTasks
 from app.utils.email_utils import send_account_creation_email
+import asyncio
 
 
 class UserController:
@@ -21,9 +23,10 @@ class UserController:
 
     def create_user(self, user_create: UserCreate, current_user: dict, default_role_id: Optional[int] = None) -> UserResponse:
         """Create a new user, assign default roles, and send a welcome email."""
+        hashed_password = hash_password(user_create.password)
         user = self.repository.create_user(
             email=user_create.email,
-            password=user_create.password,
+            hashed_password=hashed_password,
             first_name=user_create.first_name,
             last_name=user_create.last_name,
             department_id=user_create.department_id,
@@ -57,12 +60,7 @@ class UserController:
                 )
             )
 
-        # Send welcome email asynchronously without blocking
-        send_account_creation_email(
-        to_email=user_create.email,
-        first_name=user_create.first_name,
-        password=user_create.password
-        )
+        send_account_creation_email(user_create.email, user_create.first_name, user_create.password)
 
 
         # Attach role_id to the response

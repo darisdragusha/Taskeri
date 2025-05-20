@@ -3,7 +3,6 @@ from typing import Optional, List
 from app.models.user import User
 from app.models.tenant.roles.role import Role
 from app.models.user_role import UserRole
-from app.utils import hash_password
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 import logging
@@ -23,7 +22,7 @@ class UserRepository:
         """
         self.db_session = db_session
 
-    def create_user(self, email: str, password: str, first_name: str, last_name: str, department_id: Optional[int], team_id: Optional[int]) -> User:
+    def create_user(self, email: str, hashed_password: str, first_name: str, last_name: str, department_id: Optional[int], team_id: Optional[int]) -> User:
         """
         Create a new user.
 
@@ -38,7 +37,7 @@ class UserRepository:
         Returns:
             User: The newly created user object.
         """
-        hashed_password = hash_password(password)
+        
         user = User(
             email=email,
             password_hash=hashed_password,
