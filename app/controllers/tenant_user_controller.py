@@ -87,7 +87,7 @@ class TenantUserController:
             ]
 
             employee_permissions = [
-                "read_task", "create_task", "update_task", "delete_own_task", "read_roles", "read_users", "read_teams", "read_department",
+                "read_task", "create_task", "update_task", "delete_own_task", "read_roles", "read_user", "read_team", "read_department",
                 "read_comment", "create_comment", "update_comment",
                 "check_in", "check_out", "read_own_attendance",
                 "create_leave_request", "read_leave_request", "delete_leave_request",
