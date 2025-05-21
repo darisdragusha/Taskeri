@@ -80,3 +80,16 @@ def delete_notification(
     Permission check required for 'delete_notification'.
     """
     return controller.delete_notification(notification_id)
+
+@router.get("/get/me", response_model=List[NotificationResponse])
+def get_my_notifications(
+    request: Request,
+    db: Session = Depends(get_db),
+    controller: NotificationController = Depends(get_notification_controller),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Get all notifications for the current user.
+    Permission check required for 'read_notification'.
+    """
+    return controller.get_notifications_for_user(current_user["user_id"])

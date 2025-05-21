@@ -8,8 +8,10 @@ from app.models.file_attachment import FileAttachment
 from app.models.user import User
 from app.models.project import Project
 from app.models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum, TaskResponse
+from app.models.dtos.notification_dtos import NotificationCreate
 from datetime import date, datetime
 import logging
+from app.controllers.notification_controller import NotificationController
 
 class TaskRepository:
     """Repository class for handling task-related database operations."""
@@ -59,7 +61,8 @@ class TaskRepository:
             self.db_session.add(task)
             self.db_session.flush() 
             
-            
+            notif_controller = NotificationController(self.db_session)
+
             if assigned_user_ids:
                 for user_id in assigned_user_ids:
                     assignment = TaskAssignment(
@@ -67,7 +70,10 @@ class TaskRepository:
                         user_id=user_id
                     )
                     self.db_session.add(assignment)
-            
+                    notif=NotificationCreate(
+                        user_id=user_id,
+                        message=f"You have been assigned to task '{name}'",)
+                    notif_controller.create_notification(notif )
             self.db_session.commit()
             self.db_session.refresh(task)
             return task
@@ -283,7 +289,7 @@ class TaskRepository:
                 self.db_session.query(TaskAssignment).filter(
                     TaskAssignment.task_id == task_id
                 ).delete()
-                
+                notif_controller = NotificationController(self.db_session)
                 # Create new assignments
                 for user_id in assigned_user_ids:
                     assignment = TaskAssignment(
@@ -291,6 +297,10 @@ class TaskRepository:
                         user_id=user_id
                     )
                     self.db_session.add(assignment)
+                    notif=NotificationCreate(
+                        user_id=user_id,
+                        message=f"Theres an update on task: '{task.name}'",)
+                    notif_controller.create_notification(notif )
             
             self.db_session.commit()
             self.db_session.refresh(task)

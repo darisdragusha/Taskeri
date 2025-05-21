@@ -4,6 +4,8 @@ from typing import Optional, List, Tuple, Dict, Any
 from app.models.project import Project
 from app.models.user_project import UserProject
 from datetime import date
+from app.models.dtos.notification_dtos import NotificationCreate
+from app.controllers.notification_controller import NotificationController
 
 class ProjectRepository:
     """Repository for managing project-related database operations."""
@@ -44,10 +46,12 @@ class ProjectRepository:
             )
             self.db_session.add(project)
             self.db_session.flush()  # To get project.id before assigning users
-
+            notf_controller = NotificationController(self.db_session)
             if assigned_user_ids:
                 for user_id in assigned_user_ids:
                     self.db_session.add(UserProject(user_id=user_id, project_id=project.id))
+                    notif = NotificationCreate(user_id=user_id, message=f"You have been assigned to the project '{name}'")
+                    notf_controller.create_notification(notif)
 
             self.db_session.commit()
             self.db_session.refresh(project)
@@ -89,13 +93,16 @@ class ProjectRepository:
             for key, value in update_data.items():
                 if hasattr(project, key) and value is not None:
                     setattr(project, key, value)
-
+            notif_controller = NotificationController(self.db_session)
             if assigned_user_ids is not None:
                 current_assignments = self.db_session.query(UserProject).filter(
                     UserProject.project_id == project_id
                 ).all()
                 current_user_ids = {up.user_id for up in current_assignments}
                 new_user_ids = set(assigned_user_ids)
+                for user_id in new_user_ids:
+                    notif = NotificationCreate(user_id=user_id, message=f"Theres a change in '{project.name}' project")
+                    notif_controller.create_notification(notif)
 
                 users_to_remove = current_user_ids - new_user_ids
                 users_to_add = new_user_ids - current_user_ids
@@ -108,6 +115,8 @@ class ProjectRepository:
 
                 for user_id in users_to_add:
                     self.db_session.add(UserProject(user_id=user_id, project_id=project_id))
+                    notif = NotificationCreate(user_id=user_id, message=f"You have been assigned to the project '{project.name}'")
+                    notif_controller.create_notification(notif)
 
             self.db_session.commit()
             self.db_session.refresh(project)
