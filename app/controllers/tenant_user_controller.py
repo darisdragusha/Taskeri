@@ -93,7 +93,7 @@ class TenantUserController:
                 "create_leave_request", "read_leave_request", "delete_leave_request",
                 "create_time_log", "read_own_time_log", "update_own_time_log", "delete_own_time_log",
                 "create_user_profile", "read_own_profile", "update_own_profile", "delete_own_profile",
-                "read_user_projects"
+                "read_user_projects", "read_any_user_leave_request"
             ]
 
             for perm_name, perm_id in perm_name_map.items():
