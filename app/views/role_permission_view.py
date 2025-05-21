@@ -6,7 +6,7 @@ from app.utils import get_db
 from typing import List
 from app.auth import auth_service
 
-router = APIRouter(prefix="/role-permissions", tags=["Role-Permissions"])
+router = APIRouter(prefix="/role-permissions", tags=["Role Permissions"])
 
 def get_role_permission_controller(db: Session = Depends(get_db)) -> RolePermissionController:
     return RolePermissionController(db)

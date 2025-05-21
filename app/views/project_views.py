@@ -6,7 +6,7 @@ from app.auth import auth_service
 
 router = APIRouter(
     prefix="/projects",
-    tags=["projects"],
+    tags=["Projects"],
     responses={404: {"description": "Not found"}},
 )
 

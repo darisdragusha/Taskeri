@@ -7,7 +7,7 @@ from typing import List
 
 router = APIRouter(
     prefix="/project-users",
-    tags=["project-users"],
+    tags=["User Projects"],
 )
 
 @router.post("/", status_code=201)

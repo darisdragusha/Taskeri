@@ -9,7 +9,7 @@ from app.auth import auth_service
 
 router = APIRouter(
     prefix="/comments",
-    tags=["comments"],
+    tags=["Comments"],
     responses={404: {"description": "Not found"}}
 )
 

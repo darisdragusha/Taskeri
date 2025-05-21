@@ -9,7 +9,7 @@ from app.auth import auth_service
 
 router = APIRouter(
     prefix="/attendance",
-    tags=["attendance"],
+    tags=["Attendance"],
     responses={404: {"description": "Not found"}}
 )
 

@@ -10,7 +10,7 @@ from app.auth import auth_service  # Assumes JWT or session-based auth that retu
 
 router = APIRouter(
     prefix="/time-logs",
-    tags=["time_logs"],
+    tags=["Time Logs"],
     responses={404: {"description": "Not found"}}
 )
 

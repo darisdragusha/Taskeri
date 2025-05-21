@@ -11,7 +11,7 @@ import logging
 
 router = APIRouter(
     prefix="/tasks",
-    tags=["tasks"],
+    tags=["Tasks"],
     responses={404: {"description": "Not found"}},
 )
 
