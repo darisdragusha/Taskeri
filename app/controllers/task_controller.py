@@ -9,6 +9,9 @@ from app.models.dtos import (
 )
 from typing import List, Dict, Any, Optional
 from datetime import date, datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TaskController:
     """Controller class for handling task operations."""
@@ -97,10 +100,10 @@ class TaskController:
                     detail="Task not found"
                 )
                 
-           
+            logger.info("Task found")
             assigned_users = self.repository.get_task_assignments(task_id)
-            
-            response = TaskResponse.from_orm(task)
+            logger.info(assigned_users)
+            response = TaskResponse.model_validate(task)
             response.assigned_users = assigned_users
             
             return response

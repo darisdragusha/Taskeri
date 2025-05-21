@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.project import Project
 from app.models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
 from datetime import date, datetime
+import logging
 
 class TaskRepository:
     """Repository class for handling task-related database operations."""
@@ -150,7 +151,8 @@ class TaskRepository:
         """
         assignments = self.db_session.query(TaskAssignment.user_id).filter(
             TaskAssignment.task_id == task_id
-        ).all()
+        ).all() 
+        logging.info(f"Assignments for task {task_id}: {assignments}")
         return [assignment[0] for assignment in assignments]
     
     def get_tasks_by_project(self, project_id: int) -> List[Task]:
