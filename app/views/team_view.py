@@ -6,13 +6,13 @@ from typing import List
 from app.utils import get_db
 from app.auth import auth_service
 
-router = APIRouter(tags=["Teams"])
+router = APIRouter(prefix= "/teams", tags=["Teams"])
 
 # -----------------------------
 # READ
 # -----------------------------
 
-@router.get("/teams", response_model=List[TeamResponse])
+@router.get("", response_model=List[TeamResponse])
 async def get_all_teams(
     request: Request,
     controller: TeamController = Depends(),
@@ -27,7 +27,7 @@ async def get_all_teams(
     return controller.get_all_teams()
 
 
-@router.get("/teams/statistics", response_model=TeamStatistics)
+@router.get("/statistics", response_model=TeamStatistics)
 async def get_team_statistics(
     request: Request,
     controller: TeamController = Depends(),
@@ -42,7 +42,7 @@ async def get_team_statistics(
     return controller.get_team_statistics()
 
 
-@router.get("/teams/{team_id}", response_model=TeamResponse)
+@router.get("/{team_id}", response_model=TeamResponse)
 async def get_team(
     team_id: int,
     request: Request,
@@ -62,7 +62,7 @@ async def get_team(
 # CREATE
 # -----------------------------
 
-@router.post("/teams", response_model=TeamResponse)
+@router.post("", response_model=TeamResponse)
 async def create_team(
     team_create: TeamCreate,
     request: Request,
@@ -82,7 +82,7 @@ async def create_team(
 # UPDATE
 # -----------------------------
 
-@router.put("/teams/{team_id}", response_model=TeamResponse)
+@router.put("/{team_id}", response_model=TeamResponse)
 async def update_team(
     team_id: int,
     team_update: TeamUpdate,
@@ -103,7 +103,7 @@ async def update_team(
 # DELETE
 # -----------------------------
 
-@router.delete("/teams/{team_id}", response_model=dict)
+@router.delete("/{team_id}", response_model=dict)
 async def delete_team(
     team_id: int,
     request: Request,
@@ -119,7 +119,7 @@ async def delete_team(
     """
     return controller.delete_team(team_id)
 
-@router.get("/teams/{team_id}/members", response_model=List[UserResponse])
+@router.get("/{team_id}/members", response_model=List[UserResponse])
 async def get_team_members(
     team_id: int,
     request: Request,
