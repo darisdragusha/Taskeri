@@ -47,7 +47,7 @@ async def get_task(
     - Users with 'read_any_task' can access any task
     - Admins/Managers can access any task
     """
-    logging.info(f"Fetching task with ID: {task_id}")
+    
     return controller.get_task(task_id)
 
 @router.get("/{task_id}/details", response_model=TaskDetailResponse)

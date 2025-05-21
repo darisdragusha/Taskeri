@@ -100,7 +100,7 @@ class TaskController:
                     detail="Task not found"
                 )
                 
-            logger.info("Task found")
+            logger.debug("Task found")
             assigned_users = self.repository.get_task_assignments(task_id)
             logger.info(assigned_users)
             response = TaskResponse.model_validate(task)
