@@ -35,9 +35,16 @@ class MultiTenantMiddleware(BaseHTTPMiddleware):
                 request.state.db = db
                 response = await call_next(request)
                 return response
-
+        
         # Extract token
-        token: str = await self.extract_token(request)
+        try:
+            token: str = await self.extract_token(request)
+        except HTTPException as e:
+            return Response(
+                content=e.detail,
+                status_code=e.status_code,
+                media_type="application/json"
+            )
 
         try:
             # Verify token and extract user & tenant info
