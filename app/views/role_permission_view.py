@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.controllers.role_permission_controller import RolePermissionController
 from app.models.dtos.role_permission_dto import RolePermissionCreate, RolePermissionResponse
+from app.models.dtos.permission_dtos import PermissionResponse
 from app.utils import get_db
 from typing import List
 from app.auth import auth_service
@@ -59,3 +60,18 @@ def delete_role_permission(
     if not success:
         raise HTTPException(status_code=404, detail="Mapping not found")
     return {"detail": "Mapping deleted"}
+
+
+@router.get("/permissions-by-role/{role_id}", response_model=List[PermissionResponse])
+def get_permissions_by_role_id(
+    role_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    controller: RolePermissionController = Depends(get_role_permission_controller),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Get all permissions for a specific role, returned as PermissionResponse list.
+    """
+    return controller.get_permissions_by_role_id(role_id)
+

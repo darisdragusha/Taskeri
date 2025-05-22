@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.repositories.role_permission_repository import RolePermissionRepository
 from app.models.dtos.role_permission_dto import RolePermissionCreate
 from app.models.role_permission import RolePermission
+from app.models.permission import Permission  # if not already imported
 from typing import List
 
 class RolePermissionController:
@@ -41,3 +42,13 @@ class RolePermissionController:
         :return: True if deleted, False otherwise
         """
         return self.repo.delete(role_id, permission_id)
+    
+
+    def get_permissions_by_role_id(self, role_id: int) -> List[Permission]:
+        """
+        Get list of Permission entities assigned to the role.
+
+        :param role_id: ID of the role
+        :return: List of Permission objects
+        """
+        return self.repo.get_permissions_by_role_id(role_id)
