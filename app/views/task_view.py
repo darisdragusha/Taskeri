@@ -29,6 +29,23 @@ async def create_task(
     """
     return controller.create_task(task_data)
 
+@router.get("/statistics", response_model=TaskStatistics)
+async def get_task_statistics(
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Get task statistics across the system.
+    
+    Permission requirements (handled by middleware):
+    - 'view_statistics' permission
+    
+    Business logic:
+    - Only users with explicit statistics viewing permission can access this endpoint
+    - Typically limited to managers and administrators
+    """
+    return controller.get_task_statistics()
+
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: int, 
@@ -185,20 +202,3 @@ async def delete_task(
     - Admins can delete any task
     """
     return controller.delete_task(task_id)
-
-@router.get("/statistics", response_model=TaskStatistics)
-async def get_task_statistics(
-    controller: TaskController = Depends(),
-    current_user: dict = Depends(auth_service.verify_user)
-):
-    """
-    Get task statistics across the system.
-    
-    Permission requirements (handled by middleware):
-    - 'view_statistics' permission
-    
-    Business logic:
-    - Only users with explicit statistics viewing permission can access this endpoint
-    - Typically limited to managers and administrators
-    """
-    return controller.get_task_statistics()
