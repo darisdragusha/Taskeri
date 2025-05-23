@@ -9,6 +9,7 @@ from app.models.dtos.role_permission_dto import RolePermissionCreate
 from app.services.tenant_provisioning import create_new_tenant
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from app.utils import hash_password
 
 class TenantUserController:
     def __init__(self, db: Session):
@@ -108,11 +109,12 @@ class TenantUserController:
 
             # Step 7: Create user in tenant DB and assign Admin role
             tenant_repo = UserRepository(tenant_db)
+            hashed_password = hash_password(user_data.password)
             tenant_repo.create_user(
                 email=user_data.email,
                 first_name=user_data.first_name,
                 last_name=user_data.last_name,
-                password=user_data.password,
+                hashed_password=hashed_password,
                 department_id=None,
                 team_id=None
             )

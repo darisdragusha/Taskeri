@@ -4,14 +4,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-from app.models import tenant
+
 
 # ───── Import environment utilities ─────
 from app.utils.env_utils import EnvironmentVariable, get_env
 
 # ───── Import Base and models (this loads metadata) ─────
 from app.utils.db_utils import Base
-from app.models import tenant 
+
 
 # ───── Alembic Config ─────
 config = context.config

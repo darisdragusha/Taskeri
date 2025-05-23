@@ -9,7 +9,7 @@ class TenantUserRepository:
         self.db = db
 
     def create(self, user_data: TenantUserCreate) -> TenantUser:
-        hashed_pw = hash_password(user_data.password) 
+        
 
         user = TenantUser(
             email=user_data.email,
