@@ -3,7 +3,9 @@ import os
 from dotenv import load_dotenv
 
 
-load_dotenv(dotenv_path=".env")
+if os.getenv("RAILWAY_ENVIRONMENT_NAME") is None:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=".env")
 
 class EnvironmentVariable(str, Enum):
     """Enumeration of all environment variables used in the application."""
