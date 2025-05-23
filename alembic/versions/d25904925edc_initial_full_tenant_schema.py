@@ -227,3 +227,31 @@ def upgrade() -> None:
     )
     
     # ### end Alembic commands ###
+
+
+def downgrade() -> None:
+    """Revert schema to empty state by dropping all tables."""
+    op.drop_table('user_projects')
+    op.drop_table('user_roles')
+    op.drop_table('user_profiles')
+    op.drop_table('time_logs')
+    op.drop_table('task_assignments')
+    op.drop_table('notifications')
+    op.drop_table('leave_requests')
+    op.drop_table('comments')
+    op.drop_table('attendance')
+    op.drop_table('activity_logs')
+    op.drop_table('users')
+    op.drop_table('teams')
+    op.drop_table('file_attachments')
+    op.drop_table('tasks')
+    op.drop_table('role_permissions')
+    op.drop_table('invoices')
+    op.drop_table('departments')
+    op.drop_table('company_settings')
+    op.drop_index(op.f('ix_tenant_users_id'), table_name='tenant_users')
+    op.drop_table('tenant_users')
+    op.drop_table('roles')
+    op.drop_table('projects')
+    op.drop_table('permissions')
+    op.drop_table('companies')
