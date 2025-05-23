@@ -56,6 +56,7 @@ class UserController:
                     first_name=user_create.first_name,
                     last_name=user_create.last_name,
                     password=user_create.password,
+                    company_name=schema_name,
                     tenant_schema=schema_name
                 )
             )
@@ -67,7 +68,7 @@ class UserController:
         roles = self.repository.get_user_roles(user.id)
         role_id = roles[0].id if roles else None
 
-        response = UserResponse.from_orm(user)
+        response = UserResponse.model_validate(user, from_attributes=True)
         response.role_id = role_id
         return response
 
@@ -80,7 +81,7 @@ class UserController:
         roles = self.repository.get_user_roles(user.id)
         role_id = roles[0].id if roles else None
 
-        response = UserResponse.from_orm(user)
+        response = UserResponse.model_validate(user, from_attributes=True)
         response.role_id = role_id
         return response
 
@@ -99,7 +100,7 @@ class UserController:
         roles = self.repository.get_user_roles(user.id)
         role_id = roles[0].id if roles else None
 
-        response = UserResponse.from_orm(user)
+        response = UserResponse.model_validate(user, from_attributes=True)
         response.role_id = role_id
         return response
 
@@ -131,7 +132,7 @@ class UserController:
             raise HTTPException(status_code=404, detail="User not found")
 
         roles = self.repository.get_user_roles(user_id)
-        return [RoleResponse.from_orm(role) for role in roles]
+        return [RoleResponse.model_validate(role, from_attributes=True) for role in roles]
 
     def get_user_by_email(self, email: str) -> UserResponse:
         """Get a user by email."""
@@ -142,7 +143,7 @@ class UserController:
         roles = self.repository.get_user_roles(user.id)
         role_id = roles[0].id if roles else None
 
-        response = UserResponse.from_orm(user)
+        response = UserResponse.model_validate(user, from_attributes=True)
         response.role_id = role_id
         return response
 

@@ -19,15 +19,20 @@ class TenantUserController:
         if self.repo.get_by_email(user_data.email):
             raise HTTPException(status_code=400, detail="Email already exists.")
 
+        # Ensure tenant_schema is properly formatted
+        tenant_schema_name = user_data.tenant_schema if user_data.tenant_schema.startswith("tenant_") else f"tenant_{user_data.tenant_schema}"
+        
         # Step 1: Create the tenant schema
-        create_new_tenant(self.repo.db, user_data.tenant_schema)
+        create_new_tenant(self.repo.db, tenant_schema_name)
 
-        # Step 2: Create the user in the global DB
+        # Step 2: Update the user_data with the properly formatted schema name
+        user_data.tenant_schema = tenant_schema_name
+        
+        # Step 3: Create the user in the global DB
         user = self.repo.create(user_data)
 
-        # Step 3: Create tenant DB session
-        schema_name = "tenant_" + user_data.tenant_schema
-        tenant_db = get_tenant_session(schema_name)
+        # Step 4: Create tenant DB session
+        tenant_db = get_tenant_session(tenant_schema_name)
 
         try:
             # Step 4: Create permissions

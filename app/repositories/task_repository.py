@@ -380,3 +380,56 @@ class TaskRepository:
             tasks_by_status=status_counts,
             tasks_by_priority=priority_counts
         )
+    
+    def create_task_assignment(self, task_id: int, user_id: int) -> TaskAssignment:
+        """
+        Create a new task assignment.
+        
+        Args:
+            task_id (int): Task ID
+            user_id (int): User ID
+            
+        Returns:
+            TaskAssignment: The new task assignment
+            
+        Raises:
+            Exception: If database operation fails
+        """
+        try:
+            assignment = TaskAssignment(
+                task_id=task_id,
+                user_id=user_id
+            )
+            self.db_session.add(assignment)
+            
+            # Create notification
+            notif_controller = NotificationController(self.db_session)
+            task = self.get_task_by_id(task_id)
+            notif = NotificationCreate(
+                user_id=user_id,
+                message=f"You have been assigned to task '{task.name}'"
+            )
+            notif_controller.create_notification(notif)
+            
+            self.db_session.commit()
+            self.db_session.refresh(assignment)
+            return assignment
+        except Exception as e:
+            self.db_session.rollback()
+            raise e
+
+    def get_task_assignees(self, task_id: int) -> List[User]:
+        """
+        Get all users assigned to a task.
+        
+        Args:
+            task_id (int): Task ID
+            
+        Returns:
+            List[User]: List of assigned users
+        """
+        return self.db_session.query(User).join(
+            TaskAssignment, TaskAssignment.user_id == User.id
+        ).filter(
+            TaskAssignment.task_id == task_id
+        ).all()

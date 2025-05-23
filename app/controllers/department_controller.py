@@ -35,7 +35,7 @@ class DepartmentController:
         """
         Update an existing department using its ID and new data.
         """
-        return self.repo.update_department(department_id, data.dict(exclude_unset=True))
+        return self.repo.update_department(department_id, data.model_dump(exclude_unset=True))
 
     def delete_department(self, department_id: int) -> bool:
         """

@@ -202,3 +202,41 @@ async def delete_task(
     - Admins can delete any task
     """
     return controller.delete_task(task_id)
+
+@router.post("/{task_id}/assign/{user_id}", response_model=dict)
+async def assign_user_to_task(
+    task_id: int,
+    user_id: int,
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Assign a user to a task.
+    
+    Permission requirements (handled by middleware):
+    - 'update_task' permission
+    
+    Business logic:
+    - Users with task update permissions can assign users to tasks
+    - The user being assigned must exist in the system
+    """
+    controller.assign_user(task_id, user_id)
+    return {"message": "User assigned successfully"}
+
+@router.get("/{task_id}/assignees", response_model=List[dict])
+async def get_task_assignees(
+    task_id: int,
+    controller: TaskController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+):
+    """
+    Get all users assigned to a task.
+    
+    Permission requirements (handled by middleware):
+    - 'read_task' permission
+    
+    Business logic:
+    - Users with task read permissions can view assignees
+    """
+    assignees = controller.get_assignees(task_id)
+    return assignees

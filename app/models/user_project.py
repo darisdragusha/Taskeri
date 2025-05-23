@@ -8,6 +8,5 @@ class UserProject(Base):
         {"schema": None},
     )
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     project_id = Column(BigInteger, ForeignKey("projects.id", ondelete="CASCADE"), primary_key=True)

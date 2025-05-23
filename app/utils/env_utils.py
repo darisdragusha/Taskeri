@@ -25,6 +25,9 @@ class EnvironmentVariable(str, Enum):
     
     HOST = "HOST"
     PORT = "PORT"
+    
+    # Testing environment
+    TESTING = "TESTING"
 
 def get_env(key: EnvironmentVariable, default: str = None) -> str:
     """Get environment variable value."""

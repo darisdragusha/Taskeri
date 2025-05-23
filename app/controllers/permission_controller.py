@@ -28,7 +28,7 @@ class PermissionController:
             PermissionResponse: Created permission response.
         """
         permission = self.repository.create_permission(name=permission_create.name)
-        return PermissionResponse.from_orm(permission)
+        return PermissionResponse.model_validate(permission, from_attributes=True)
 
     def get_permission(self, permission_id: int) -> PermissionResponse:
         """
@@ -42,7 +42,7 @@ class PermissionController:
         """
         permission = self.repository.get_permission_by_id(permission_id)
         if permission:
-            return PermissionResponse.from_orm(permission)
+            return PermissionResponse.model_validate(permission, from_attributes=True)
         raise HTTPException(status_code=404, detail="Permission not found")
 
     def update_permission(self, permission_id: int, permission_update: PermissionUpdate) -> PermissionResponse:
@@ -58,7 +58,7 @@ class PermissionController:
         """
         permission = self.repository.update_permission(permission_id, name=permission_update.name)
         if permission:
-            return PermissionResponse.from_orm(permission)
+            return PermissionResponse.model_validate(permission, from_attributes=True)
         raise HTTPException(status_code=404, detail="Permission not found")
 
     def delete_permission(self, permission_id: int) -> dict:
@@ -84,4 +84,4 @@ class PermissionController:
             List[PermissionResponse]: List of all permission responses.
         """
         permissions = self.repository.list_permissions()
-        return [PermissionResponse.from_orm(permission) for permission in permissions]
+        return [PermissionResponse.model_validate(permission, from_attributes=True) for permission in permissions]

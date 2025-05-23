@@ -125,10 +125,11 @@ class TestProjectController(unittest.TestCase):
 
         response = self.project_controller.get_project_statistics()
 
-        self.assertEqual(response.Not_Started, 5)
-        self.assertEqual(response.In_Progress, 10)
-        self.assertEqual(response.Completed, 3)
-        self.assertEqual(response.On_Hold, 2)
+        self.assertEqual(response.not_started_projects, 5)
+        self.assertEqual(response.in_progress_projects, 10)
+        self.assertEqual(response.completed_projects, 3)
+        self.assertEqual(response.on_hold_projects, 2)
+        self.assertEqual(response.total_projects, 20)
         mock_get_project_statistics.assert_called_once()
 
 if __name__ == "__main__":

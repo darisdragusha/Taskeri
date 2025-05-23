@@ -30,7 +30,7 @@ class UserProjectController:
     def get_users(self, project_id: int) -> list[UserResponse]:
         try:
             users = self.repository.get_users_for_project(project_id)
-            return [UserResponse.from_orm(user) for user in users]
+            return [UserResponse.model_validate(user, from_attributes=True) for user in users]
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -40,7 +40,7 @@ class UserProjectController:
     def get_projects(self, user_id: int) -> list[ProjectResponse]:
         try:
             projects = self.repository.get_projects_for_user(user_id)
-            return [ProjectResponse.from_orm(project) for project in projects]
+            return [ProjectResponse.model_validate(project, from_attributes=True) for project in projects]
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -54,10 +54,11 @@ class ProjectResponse(BaseModel):
 
 
 class ProjectStatistics(BaseModel):
-    Not_Started: int = 0
-    In_Progress: int = 0
-    Completed: int = 0
-    On_Hold: int = 0
+    total_projects: int = 0
+    not_started_projects: int = 0
+    in_progress_projects: int = 0
+    completed_projects: int = 0
+    on_hold_projects: int = 0
 
     model_config = {
         "from_attributes": True
@@ -65,9 +66,16 @@ class ProjectStatistics(BaseModel):
 
     @classmethod
     def from_dict(cls, stats: Dict[str, int]) -> "ProjectStatistics":
+        total = sum([
+            stats.get("Not Started", 0),
+            stats.get("In Progress", 0),
+            stats.get("Completed", 0),
+            stats.get("On Hold", 0)
+        ])
         return cls(
-            Not_Started=stats.get("Not Started", 0),
-            In_Progress=stats.get("In Progress", 0),
-            Completed=stats.get("Completed", 0),
-            On_Hold=stats.get("On Hold", 0),
+            total_projects=total,
+            not_started_projects=stats.get("Not Started", 0),
+            in_progress_projects=stats.get("In Progress", 0),
+            completed_projects=stats.get("Completed", 0),
+            on_hold_projects=stats.get("On Hold", 0),
         )

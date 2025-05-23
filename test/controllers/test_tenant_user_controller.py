@@ -14,7 +14,7 @@ class TestTenantUserController(unittest.TestCase):
     def test_register_tenant_user_email_exists(self, mock_get_by_email):
         user_data = TenantUserCreate(
             email="test@example.com",
-            tenant_schema="test_schema",
+            company_name="Test Company",
             first_name="Test",
             last_name="User",
             password="password123"

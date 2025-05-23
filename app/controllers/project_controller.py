@@ -44,7 +44,7 @@ class ProjectController:
                 status=project_create.status or "Not Started",
                 assigned_user_ids=project_create.assigned_user_ids
             )
-            return ProjectResponse.from_orm(project)
+            return ProjectResponse.model_validate(project, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -66,7 +66,7 @@ class ProjectController:
             project = self.repository.get_project_by_id(project_id)
             if not project:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-            return ProjectResponse.from_orm(project)
+            return ProjectResponse.model_validate(project, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -83,7 +83,7 @@ class ProjectController:
         """
         try:
             projects = self.repository.get_all_projects()
-            return [ProjectResponse.from_orm(project) for project in projects]
+            return [ProjectResponse.model_validate(project, from_attributes=True) for project in projects]
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -103,7 +103,7 @@ class ProjectController:
             HTTPException: If the project is not found or a database error occurs.
         """
         try:
-            update_data = project_update.dict(exclude_unset=True)
+            update_data = project_update.model_dump(exclude_unset=True)
             assigned_user_ids = update_data.pop("assigned_user_ids", None)
             if assigned_user_ids is not None:
                 self._validate_user_ids_exist(assigned_user_ids)
@@ -114,7 +114,7 @@ class ProjectController:
             )
             if not project:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-            return ProjectResponse.from_orm(project)
+            return ProjectResponse.model_validate(project, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")

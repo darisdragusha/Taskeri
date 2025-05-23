@@ -1,5 +1,5 @@
 # app/schemas/user_schema.py
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import datetime
 
@@ -26,11 +26,11 @@ class UserResponse(UserBase):
     updated_at: str
     role_id: Optional[int] = None
 
-    class Config:
-        orm_mode = True
-        from_attributes = True  
+    model_config = {
+        "from_attributes": True
+    }
     
-    @validator('created_at', 'updated_at', pre=True)
+    @field_validator('created_at', 'updated_at', mode='before')
     def datetime_to_str(cls, v):
         if isinstance(v, datetime):
             return v.isoformat()  # Converts datetime to ISO 8601 string

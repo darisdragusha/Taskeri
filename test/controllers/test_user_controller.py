@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 from app.controllers.user_controller import UserController
 from app.models.dtos.user_dtos import UserCreate, UserUpdate, UserResponse
 from app.models.dtos.role_dtos import RoleResponse
@@ -44,8 +44,8 @@ class TestUserController(unittest.TestCase):
             department_id=None,
             team_id=None,
             role_id=2,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
 
         # Patch the repository methods
@@ -83,8 +83,8 @@ class TestUserController(unittest.TestCase):
             email="test@example.com",
             first_name="Test",
             last_name="User",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         self.mock_repo.get_user_by_id.return_value = mock_user
 
@@ -106,8 +106,8 @@ class TestUserController(unittest.TestCase):
             email="test@example.com",
             first_name="Updated",
             last_name="User",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         self.mock_repo.update_user.return_value = mock_user
 

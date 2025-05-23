@@ -28,7 +28,7 @@ class RoleController:
             RoleResponse: Created role response.
         """
         role = self.repository.create_role(name=role_create.name)
-        return RoleResponse.from_orm(role)
+        return RoleResponse.model_validate(role, from_attributes=True)
 
     def get_role(self, role_id: int) -> RoleResponse:
         """
@@ -42,7 +42,7 @@ class RoleController:
         """
         role = self.repository.get_role_by_id(role_id)
         if role:
-            return RoleResponse.from_orm(role)
+            return RoleResponse.model_validate(role, from_attributes=True)
         raise HTTPException(status_code=404, detail="Role not found")
 
     def update_role(self, role_id: int, role_update: RoleUpdate) -> RoleResponse:
@@ -58,7 +58,7 @@ class RoleController:
         """
         role = self.repository.update_role(role_id, name=role_update.name)
         if role:
-            return RoleResponse.from_orm(role)
+            return RoleResponse.model_validate(role, from_attributes=True)
         raise HTTPException(status_code=404, detail="Role not found")
 
     def delete_role(self, role_id: int) -> dict:
@@ -84,4 +84,4 @@ class RoleController:
             List[RoleResponse]: List of all role responses.
         """
         roles = self.repository.list_roles()
-        return [RoleResponse.from_orm(role) for role in roles]
+        return [RoleResponse.model_validate(role, from_attributes=True) for role in roles]

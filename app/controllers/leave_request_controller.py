@@ -34,7 +34,7 @@ class LeaveRequestController:
                 end_date=request.end_date,
                 status="Pending"
             )
-            return LeaveRequestResponse.from_orm(leave)
+            return LeaveRequestResponse.model_validate(leave, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -58,7 +58,7 @@ class LeaveRequestController:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Leave request not found"
                 )
-            return LeaveRequestResponse.from_orm(leave)
+            return LeaveRequestResponse.model_validate(leave, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -77,7 +77,7 @@ class LeaveRequestController:
         """
         try:
             leaves = self.repository.get_leave_requests_by_user(user_id)
-            return [LeaveRequestResponse.from_orm(lr) for lr in leaves]
+            return [LeaveRequestResponse.model_validate(lr, from_attributes=True) for lr in leaves]
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -112,7 +112,7 @@ class LeaveRequestController:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Leave request not found"
                 )
-            return LeaveRequestResponse.from_orm(leave)
+            return LeaveRequestResponse.model_validate(leave, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

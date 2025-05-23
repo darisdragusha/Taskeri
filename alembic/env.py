@@ -1,6 +1,34 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path# ───── Read schema name from CLI (e.g. `alembic -x schema=company_xyz upgrade head`)
+schema_name = context.get_x_argument(as_dictionary=True).get("schema", "public")
+db_name = context.get_x_argument(as_dictionary=True).get("db_name", None)
+print(f"--> Running migration for schema: '{schema_name}' on database: '{db_name if db_name else 'default'}'")
+
+# Override database URL for testing
+if db_name:
+    original_url = config.get_main_option("sqlalchemy.url")
+    # Extract components of the URL
+    from urllib.parse import urlparse, urlunparse
+    parsed_url = urlparse(original_url)
+    # Replace the path component (database name)
+    path_parts = parsed_url.path.split('/')
+    # Replace the database name but keep any other path components
+    new_path = '/' + db_name
+    # Reconstruct the URL
+    new_url = urlunparse((
+        parsed_url.scheme, 
+        parsed_url.netloc, 
+        new_path, 
+        parsed_url.params, 
+        parsed_url.query, 
+        parsed_url.fragment
+    ))
+    # Set the new URL
+    config.set_main_option("sqlalchemy.url", new_url)
+
+# Provide metadata for autogenerate support
+target_metadata = Base.metadatad(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context

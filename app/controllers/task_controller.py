@@ -5,7 +5,8 @@ from app.repositories import TaskRepository
 from app.utils import get_db
 from app.models.dtos import (
     TaskCreate, TaskUpdate, TaskResponse, TaskDetailResponse, 
-    TaskListResponse, TaskFilterParams, TaskStatistics
+    TaskListResponse, TaskFilterParams, TaskStatistics,
+    UserBasicInfo
 )
 from typing import List, Dict, Any, Optional
 from datetime import date, datetime
@@ -54,7 +55,7 @@ class TaskController:
             if task_create.assigned_user_ids:
                 assigned_users = self.repository.get_task_assignments(task.id)
                 
-            response = TaskResponse.from_orm(task)
+            response = TaskResponse.model_validate(task, from_attributes=True)
             response.assigned_users = assigned_users
             
             return response
@@ -172,7 +173,7 @@ class TaskController:
         """
         try:
             tasks = self.repository.get_tasks_by_project(project_id)
-            return [TaskResponse.from_orm(task) for task in tasks]
+            return [TaskResponse.model_validate(task, from_attributes=True) for task in tasks]
         except SQLAlchemyError as e:
             
             raise HTTPException(
@@ -195,7 +196,7 @@ class TaskController:
         """
         try:
             tasks = self.repository.get_tasks_by_user(user_id)
-            return [TaskResponse.from_orm(task) for task in tasks]
+            return [TaskResponse.model_validate(task, from_attributes=True) for task in tasks]
         except SQLAlchemyError as e:
            
             raise HTTPException(
@@ -263,7 +264,7 @@ class TaskController:
         """
         try:
            
-            update_data = task_update.dict(exclude={"assigned_user_ids"}, exclude_none=True)
+            update_data = task_update.model_dump(exclude={"assigned_user_ids"}, exclude_none=True)
             
            
             if "priority" in update_data and update_data["priority"]:
@@ -287,7 +288,7 @@ class TaskController:
             
             assigned_users = self.repository.get_task_assignments(task_id)
             
-            response = TaskResponse.from_orm(task)
+            response = TaskResponse.model_validate(task, from_attributes=True)
             response.assigned_users = assigned_users
             
             return response
@@ -363,6 +364,82 @@ class TaskController:
         try:
             stats = self.repository.get_task_statistics()
             return stats
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+    
+    def assign_user(self, task_id: int, user_id: int) -> TaskResponse:
+        """
+        Assign a user to a task.
+        
+        Args:
+            task_id (int): Task ID
+            user_id (int): User ID to assign
+            
+        Returns:
+            TaskResponse: Updated task response
+            
+        Raises:
+            HTTPException: If task not found, user not found, or database error
+        """
+        try:
+            # Check if task exists
+            task = self.repository.get_task_by_id(task_id)
+            if not task:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Task not found"
+                )
+
+            # Add assignment
+            self.repository.create_task_assignment(task_id, user_id)
+            
+            # Get updated task with assignments
+            task = self.repository.get_task_by_id(task_id)
+            assigned_users = self.repository.get_task_assignments(task_id)
+            
+            response = TaskResponse.from_orm(task)
+            response.assigned_users = assigned_users
+            return response
+            
+        except HTTPException:
+            raise
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+
+    def get_assignees(self, task_id: int) -> List[UserBasicInfo]:
+        """
+        Get all users assigned to a task.
+        
+        Args:
+            task_id (int): Task ID
+            
+        Returns:
+            List[UserBasicInfo]: List of assigned users with basic info
+            
+        Raises:
+            HTTPException: If task not found or database error
+        """
+        try:
+            # Check if task exists
+            task = self.repository.get_task_by_id(task_id)
+            if not task:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Task not found"
+                )
+            
+            # Get users assigned to the task
+            users = self.repository.get_task_assignees(task_id)
+            return [UserBasicInfo.from_orm(user) for user in users]
+            
+        except HTTPException:
+            raise
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

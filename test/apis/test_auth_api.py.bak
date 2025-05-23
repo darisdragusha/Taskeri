@@ -1,0 +1,110 @@
+import pytest
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
+from unittest.mock import patch
+from app.app import app
+from datetime import datetime
+
+def test_login_success(client, test_user, override_get_db):
+    """Test successful login"""
+    login_data = {
+        "username": "test@example.com",
+        "password": "password123"
+    }
+    
+    response = client.post("/token", data=login_data)
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+
+def test_login_invalid_credentials(client, test_user, override_get_db):
+    """Test login with invalid credentials"""
+    login_data = {
+        "username": "test@example.com",
+        "password": "wrongpassword"
+    }
+    
+    response = client.post("/token", data=login_data)
+    assert response.status_code == 401
+    assert "detail" in response.json()
+    assert response.json()["detail"] == "Invalid credentials"
+
+def test_register_tenant_user(client, override_get_db):
+    """Test registering a new tenant user"""
+    user_data = {
+        "email": "newuser@example.com",
+        "password": "password123",
+        "first_name": "Test",
+        "last_name": "User",
+        "company_name": "Test Company"
+    }
+    
+    with patch('app.middleware.multi_tenant_middleware.get_public_routes') as mock_public:
+        mock_public.return_value = ["/tenant-users/"]
+        response = client.post("/tenant-users/", json=user_data)
+        
+    assert response.status_code == 200
+    data = response.json()
+    assert data["email"] == "newuser@example.com"
+    assert "tenant_schema" in data
+        
+        response = client.post("/tenant-users", json=user_data)
+        assert response.status_code == 200
+        assert response.json()["email"] == "test@example.com"
+        assert "tenant_schema" in response.json()
+
+def test_register_tenant_user_email_exists():
+    """Test registering a tenant user with existing email"""
+    with patch('app.controllers.tenant_user_controller.TenantUserController.register_tenant_user') as mock_register:
+        mock_register.side_effect = Exception("Email already exists")
+        
+        user_data = {
+            "email": "existing@example.com",
+            "password": "password123",
+            "first_name": "Test",
+            "last_name": "User",
+            "company_name": "Test Company"
+        }
+        
+        response = client.post("/tenant-users", json=user_data)
+        assert response.status_code == 400
+        assert "detail" in response.json()
+
+def test_login_missing_fields():
+    """Test login with missing required fields"""
+    login_data = {
+        "username": "test@example.com"
+        # missing password
+    }
+    
+    response = client.post("/token", data=login_data)
+    assert response.status_code == 422
+    assert "detail" in response.json()
+
+def test_register_tenant_user_invalid_data():
+    """Test registering a tenant user with invalid data"""
+    user_data = {
+        "email": "invalid-email",  # invalid email format
+        "password": "123",  # too short password
+        "first_name": "",  # empty first name
+        "last_name": "User",
+        "company_name": "Test Company"
+    }
+    
+    response = client.post("/tenant-users", json=user_data)
+    assert response.status_code == 422
+    assert "detail" in response.json()
+
+def test_protected_route_without_token():
+    """Test accessing a protected route without token"""
+    response = client.get("/users/1")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Not authenticated"
+
+def test_protected_route_invalid_token():
+    """Test accessing a protected route with invalid token"""
+    client.headers = {"Authorization": "Bearer invalid_token"}
+    response = client.get("/users/1")
+    assert response.status_code == 401
+    assert "detail" in response.json()

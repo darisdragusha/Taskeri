@@ -104,11 +104,15 @@ class CommentController:
             
             comments = [self._map_to_response(comment, user) for comment, user in comments_with_users]
             
+            # Calculate the total pages
+            total_pages = (total + page_size - 1) // page_size if page_size > 0 else 0
+            
             return CommentListResponse(
-                items=comments,
+                comments=comments,
                 total=total,
                 page=page,
-                page_size=page_size
+                page_size=page_size,
+                total_pages=total_pages
             )
         except SQLAlchemyError as e:
             raise HTTPException(

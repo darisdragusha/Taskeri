@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, field_validator, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from enum import Enum
@@ -41,9 +41,9 @@ class UserBasicInfo(BaseModel):
     last_name: str
     email: str
 
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 class CommentBase(BaseModel):
     """Base model for Comment data"""
@@ -52,7 +52,7 @@ class CommentBase(BaseModel):
 class CommentCreate(CommentBase):
     """Model for creating a new comment"""
     task_id: int = Field(..., description="ID of the task this comment belongs to")
-    user_id: int = Field(..., description="ID of the user who created the comment")
+    user_id: Optional[int] = Field(None, description="ID of the user who created the comment")
 
 class CommentUpdate(CommentBase):
     """Model for updating an existing comment"""
@@ -66,11 +66,11 @@ class CommentResponse(BaseModel):
     created_at: str
     user: Optional[UserBasicInfo] = None
 
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-    @validator('created_at', pre=True)
+    @field_validator('created_at', mode='before')
     def format_datetime(cls, v):
         return to_api_datetime(v)
 
@@ -79,11 +79,11 @@ class FileAttachmentResponse(BaseModel):
     file_path: str
     uploaded_at: str
 
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-    @validator('uploaded_at', pre=True)
+    @field_validator('uploaded_at', mode='before')
     def format_datetime(cls, v):
         return to_api_datetime(v)
 
@@ -91,9 +91,9 @@ class ProjectBasicInfo(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 class TaskResponse(TaskBase):
     id: int
@@ -101,11 +101,11 @@ class TaskResponse(TaskBase):
     updated_at: str
     assigned_users: Optional[List[int]] = None
 
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-    @validator('created_at', 'updated_at', pre=True)
+    @field_validator('created_at', 'updated_at', mode='before')
     def format_datetime(cls, v):
         return to_api_datetime(v)
 
@@ -125,10 +125,11 @@ class TaskListResponse(BaseModel):
 
 class CommentListResponse(BaseModel):
     """Response model for paginated comment lists"""
-    items: List[CommentResponse]
+    comments: List[CommentResponse]  # Changed from items to comments to match test expectations
     total: int
     page: int
     page_size: int
+    total_pages: int
 
 class TaskFilterParams(BaseModel):
     """Parameters for filtering tasks in search operations"""
@@ -144,6 +145,11 @@ class TaskStatistics(BaseModel):
     """Task statistics response model"""
     total_tasks: int
     completed_tasks: int
-    overdue_tasks: int
-    tasks_by_status: Dict[str, int]
-    tasks_by_priority: Dict[str, int]
+    in_progress_tasks: int
+    pending_tasks: int
+    high_priority_tasks: int
+    medium_priority_tasks: int
+    low_priority_tasks: int
+    overdue_tasks: int = 0  # Making this optional with default value
+    tasks_by_status: Optional[Dict[str, int]] = None
+    tasks_by_priority: Optional[Dict[str, int]] = None

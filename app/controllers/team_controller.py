@@ -31,7 +31,7 @@ class TeamController:
                 name=team_create.name,
                 department_id=team_create.department_id
             )
-            return TeamResponse.from_orm(team)
+            return TeamResponse.model_validate(team, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -42,7 +42,7 @@ class TeamController:
             team = self.repository.get_team_by_id(team_id)
             if not team:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
-            return TeamResponse.from_orm(team)
+            return TeamResponse.model_validate(team, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -51,7 +51,7 @@ class TeamController:
         """Retrieve all teams."""
         try:
             teams = self.repository.get_all_teams()
-            return [TeamResponse.from_orm(team) for team in teams]
+            return [TeamResponse.model_validate(team, from_attributes=True) for team in teams]
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
@@ -59,11 +59,11 @@ class TeamController:
     def update_team(self, team_id: int, team_update: TeamUpdate) -> TeamResponse:
         """Update an existing team's information."""
         try:
-            update_data = team_update.dict(exclude_unset=True)
+            update_data = team_update.model_dump(exclude_unset=True)
             team = self.repository.update_team(team_id, update_data)
             if not team:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
-            return TeamResponse.from_orm(team)
+            return TeamResponse.model_validate(team, from_attributes=True)
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")

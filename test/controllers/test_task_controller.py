@@ -127,6 +127,11 @@ class TestTaskController(unittest.TestCase):
         mock_statistics = TaskStatistics(
             total_tasks=18,
             completed_tasks=3,
+            in_progress_tasks=10,
+            pending_tasks=5,
+            high_priority_tasks=6,
+            medium_priority_tasks=8,
+            low_priority_tasks=4,
             overdue_tasks=2,
             tasks_by_status={"To Do": 5, "In Progress": 10, "Completed": 3},
             tasks_by_priority={"Low": 4, "Medium": 8, "High": 6}

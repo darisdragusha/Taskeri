@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from app.repositories.attendance_repository import AttendanceRepository
@@ -17,7 +17,7 @@ class AttendanceController:
 
     def create_attendance(self, user_id: int) -> Attendance:
         try:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             return self.repository.create_attendance(user_id=user_id, check_in=now)
         except SQLAlchemyError as e:
             raise HTTPException(
@@ -27,7 +27,7 @@ class AttendanceController:
 
     def close_attendance(self, user_id: int) -> Attendance:
         try:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             attendance = self.repository.close_open_attendance(user_id=user_id, check_out=now)
             if not attendance:
                 raise HTTPException(

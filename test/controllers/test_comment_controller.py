@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 from app.controllers.comment_controller import CommentController
 from app.models.dtos.task_dtos import CommentCreate, CommentUpdate
 
@@ -10,13 +10,13 @@ class TestCommentController(unittest.TestCase):
     def setUp(self):
         self.mock_db_session = MagicMock()
         self.comment_controller = CommentController(self.mock_db_session)
-        self.created_at_str = datetime.utcnow().isoformat()
+        self.created_at_str = datetime.now(timezone.utc).isoformat()
 
     @patch('app.repositories.comment_repository.CommentRepository.create_comment')
     @patch('app.repositories.comment_repository.CommentRepository.get_comment_by_id')
     def test_create_comment(self, mock_get_comment_by_id, mock_create_comment):
         comment_data = CommentCreate(task_id=1, user_id=1, content="Test comment")
-        mock_comment = MagicMock(id=1, **comment_data.dict())
+        mock_comment = MagicMock(id=1, **comment_data.model_dump())
         mock_comment.created_at = self.created_at_str
         mock_user = MagicMock(id=1, first_name="Test", last_name="User", email="test@example.com")
         mock_create_comment.return_value = mock_comment
@@ -51,8 +51,8 @@ class TestCommentController(unittest.TestCase):
 
         response = self.comment_controller.get_task_comments(task_id=1, page=1, page_size=10)
 
-        self.assertEqual(len(response.items), 1)
-        self.assertEqual(response.items[0].content, "Test comment")
+        self.assertEqual(len(response.comments), 1)
+        self.assertEqual(response.comments[0].content, "Test comment")
         mock_get_comments_by_task.assert_called_once_with(task_id=1, page=1, page_size=10)
 
     @patch('app.repositories.comment_repository.CommentRepository.get_comment_by_id')
