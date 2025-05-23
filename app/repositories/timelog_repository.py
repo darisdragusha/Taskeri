@@ -15,13 +15,13 @@ class TimeLogRepository:
 
     from datetime import timedelta
 
-    def create_time_log(self, data: TimeLogCreate) -> TimeLog:
+    def create_time_log(self, user_id: int, data: TimeLogCreate) -> TimeLog:
         """Create a new time log entry with duration calculated automatically."""
         try:
             duration = int((data.end_time - data.start_time).total_seconds() / 60)
 
             time_log = TimeLog(
-                user_id=data.user_id,
+                user_id=user_id,
                 task_id=data.task_id,
                 start_time=data.start_time,
                 end_time=data.end_time,
@@ -33,6 +33,7 @@ class TimeLogRepository:
             return time_log
         except Exception as e:
             self.db_session.rollback()
+            print(f"[TimeLogRepository] Error creating time log: {e}")
             raise e
 
 

@@ -54,7 +54,7 @@ class NotificationController:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database error: {str(e)}")
 
-    def get_notifications_for_user(self, user_id: int) -> List[NotificationResponse]:
+    def get_notifications_for_user(self, user_id: int, unread_only: bool = False) -> List[NotificationResponse]:
         """
         Retrieve all notifications for a specific user.
 
@@ -66,6 +66,9 @@ class NotificationController:
         """
         try:
             notifications = self.repository.get_notifications_by_user(user_id)
+            if unread_only:
+                notifications = [n for n in notifications if not n.read_status]
+                return [NotificationResponse.from_orm(n) for n in notifications]
             return [NotificationResponse.from_orm(n) for n in notifications]
         except SQLAlchemyError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

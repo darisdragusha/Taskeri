@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.userproject import UserProject
+from app.models.user_project import UserProject
 from app.models.user import User
 from app.models.project import Project
 

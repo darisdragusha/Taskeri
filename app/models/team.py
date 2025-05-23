@@ -8,6 +8,6 @@ class Team(Base):
 
     id = Column(BigInteger, primary_key=True)
     name = Column(String(100), nullable=False)
-    department_id = Column(BigInteger, ForeignKey("departments.id"))
+    department_id = Column(BigInteger, ForeignKey("departments.id", ondelete="CASCADE"))
 
     department = relationship("Department", backref="teams")

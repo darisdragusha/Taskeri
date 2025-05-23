@@ -5,7 +5,7 @@ from fastapi import HTTPException, Depends, status
 
 from app.models.dtos.task_dtos import CommentCreate, CommentUpdate, CommentResponse, UserBasicInfo, CommentListResponse
 from app.repositories.comment_repository import CommentRepository
-from app.models.tenant.tasks.comment import Comment
+from app.models.comment import Comment
 from app.models.user import User
 from app.utils.db_utils import get_db
 

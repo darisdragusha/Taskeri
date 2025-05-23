@@ -6,9 +6,9 @@ from typing import List
 from app.utils import get_db 
 from app.auth import auth_service
 
-router = APIRouter(tags=["Permissions"])
+router = APIRouter(prefix="/permissions",tags=["Permissions"])
 
-@router.post("/permissions", response_model=PermissionResponse)
+@router.post("", response_model=PermissionResponse)
 async def create_permission(
     permission_create: PermissionCreate,
     request: Request,
@@ -28,7 +28,7 @@ async def create_permission(
     """
     return controller.create_permission(permission_create)
 
-@router.get("/permissions/{permission_id}", response_model=PermissionResponse)
+@router.get("/{permission_id}", response_model=PermissionResponse)
 async def get_permission(
     permission_id: int,
     request: Request,
@@ -47,7 +47,7 @@ async def get_permission(
     """
     return controller.get_permission(permission_id)
 
-@router.put("/permissions/{permission_id}", response_model=PermissionResponse)
+@router.put("/{permission_id}", response_model=PermissionResponse)
 async def update_permission(
     permission_id: int,
     permission_update: PermissionUpdate,
@@ -68,7 +68,7 @@ async def update_permission(
     """
     return controller.update_permission(permission_id, permission_update)
 
-@router.delete("/permissions/{permission_id}", response_model=dict)
+@router.delete("/{permission_id}", response_model=dict)
 async def delete_permission(
     permission_id: int,
     request: Request,
@@ -89,7 +89,7 @@ async def delete_permission(
     """
     return controller.delete_permission(permission_id)
 
-@router.get("/permissions", response_model=List[PermissionResponse])
+@router.get("", response_model=List[PermissionResponse])
 async def get_all_permissions(
     request: Request,
     controller: PermissionController = Depends(),

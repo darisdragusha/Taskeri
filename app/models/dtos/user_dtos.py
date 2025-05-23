@@ -24,6 +24,7 @@ class UserResponse(UserBase):
     id: int
     created_at: str
     updated_at: str
+    role_id: Optional[int] = None
 
     class Config:
         orm_mode = True

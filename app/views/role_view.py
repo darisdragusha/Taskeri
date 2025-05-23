@@ -7,9 +7,9 @@ from app.utils import get_db
 from app.auth import auth_service
 
 
-router = APIRouter(tags=["Roles"])
+router = APIRouter(prefix="/roles",tags=["Roles"])
 
-@router.post("/roles", response_model=RoleResponse)
+@router.post("", response_model=RoleResponse)
 async def create_role(
     role_create: RoleCreate,
     request: Request,
@@ -28,7 +28,7 @@ async def create_role(
     """
     return controller.create_role(role_create)
 
-@router.get("/roles/{role_id}", response_model=RoleResponse)
+@router.get("/{role_id}", response_model=RoleResponse)
 async def get_role(
     role_id: int,
     request: Request,
@@ -46,7 +46,7 @@ async def get_role(
     """
     return controller.get_role(role_id)
 
-@router.put("/roles/{role_id}", response_model=RoleResponse)
+@router.put("/{role_id}", response_model=RoleResponse)
 async def update_role(
     role_id: int,
     role_update: RoleUpdate,
@@ -66,7 +66,7 @@ async def update_role(
     """
     return controller.update_role(role_id, role_update)
 
-@router.delete("/roles/{role_id}", response_model=dict)
+@router.delete("/{role_id}", response_model=dict)
 async def delete_role(
     role_id: int,
     request: Request,
@@ -86,7 +86,7 @@ async def delete_role(
     """
     return controller.delete_role(role_id)
 
-@router.get("/roles", response_model=List[RoleResponse])
+@router.get("", response_model=List[RoleResponse])
 async def get_all_roles(
     request: Request,
     controller: RoleController = Depends(),

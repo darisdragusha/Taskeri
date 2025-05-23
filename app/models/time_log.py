@@ -6,8 +6,8 @@ class TimeLog(Base):
     __table_args__ = {"schema": None}
 
     id = Column(BigInteger, primary_key=True)
-    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
-    task_id = Column(BigInteger, ForeignKey("tasks.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    task_id = Column(BigInteger, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False)
     start_time = Column(TIMESTAMP, nullable=False)
     end_time = Column(TIMESTAMP)
     duration = Column(Integer)  # in minutes

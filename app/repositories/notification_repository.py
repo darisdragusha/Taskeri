@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.models.tenant.notifications.notification import Notification
+from app.models.notification import Notification
 from app.models.dtos.notification_dtos import NotificationCreate
 from typing import Optional, List
 

@@ -7,6 +7,6 @@ class Department(Base):
 
     id = Column(BigInteger, primary_key=True)
     name = Column(String(100), nullable=False)
-    company_id = Column(BigInteger, ForeignKey("companies.id"), nullable=False)
+    company_id = Column(BigInteger, ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
 
     company = relationship("Company", backref="departments")

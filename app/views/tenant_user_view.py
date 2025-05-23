@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.utils import get_db
 from app.controllers import TenantUserController
@@ -10,6 +10,7 @@ router = APIRouter(prefix="/tenant-users", tags=["Tenant Users"])
 @router.post("/", response_model=TenantUserOut)
 def register_user(
     user_data: TenantUserCreate,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     """

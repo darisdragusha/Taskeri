@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, exists, and_, or_
 from app.auth import auth_service
 from app.models.user_role import UserRole
-from app.models.tenant.roles.role import Role
-from app.models.tenant.roles.permission import Permission
+from app.models.role import Role
+from app.models.permission import Permission
 from app.models.role_permission import RolePermission
-from app.models.tenant.tasks.task import Task
-from app.models.tenant.tasks.task_assignment import TaskAssignment
+from app.models.task import Task
+from app.models.task_assignment import TaskAssignment
 from app.models.project import Project
 
 class PermissionChecker:

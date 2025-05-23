@@ -10,10 +10,10 @@ class TestTimeLogController(unittest.TestCase):
         self.mock_db_session = MagicMock()
         self.timelog_controller = TimeLogController(self.mock_db_session)
 
+    # Corrected test_create_time_log to include user_id parameter
     @patch('app.repositories.timelog_repository.TimeLogRepository.create_time_log')
     def test_create_time_log(self, mock_create_time_log):
         time_log_data = TimeLogCreate(
-            user_id=1,
             task_id=2,
             start_time=datetime(2025, 5, 18, 9, 0),
             end_time=datetime(2025, 5, 18, 10, 0)
@@ -27,11 +27,11 @@ class TestTimeLogController(unittest.TestCase):
         mock_time_log.duration = 60
         mock_create_time_log.return_value = mock_time_log
 
-        response = self.timelog_controller.create_time_log(time_log_data)
+        response = self.timelog_controller.create_time_log(1, time_log_data)
 
         self.assertEqual(response.id, 1)
         self.assertEqual(response.duration, 60)
-        mock_create_time_log.assert_called_once_with(time_log_data)
+        mock_create_time_log.assert_called_once_with(user_id=1, data=time_log_data)
 
     @patch('app.repositories.timelog_repository.TimeLogRepository.get_time_log_by_id')
     def test_get_time_log(self, mock_get_time_log_by_id):

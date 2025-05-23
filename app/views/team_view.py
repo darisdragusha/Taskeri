@@ -1,31 +1,48 @@
 from fastapi import APIRouter, Depends, Request
 from app.controllers.team_controller import TeamController
 from app.models.dtos.team_dtos import TeamCreate, TeamUpdate, TeamResponse, TeamStatistics
+from app.models.dtos.user_dtos import UserResponse
 from typing import List
 from app.utils import get_db
 from app.auth import auth_service
 
-router = APIRouter(tags=["Teams"])
+router = APIRouter(prefix= "/teams", tags=["Teams"])
 
+# -----------------------------
+# READ
+# -----------------------------
 
-@router.post("/teams", response_model=TeamResponse)
-async def create_team(
-    team_create: TeamCreate,
+@router.get("", response_model=List[TeamResponse])
+async def get_all_teams(
     request: Request,
     controller: TeamController = Depends(),
     current_user: dict = Depends(auth_service.verify_user)
-) -> TeamResponse:
+) -> List[TeamResponse]:
     """
-    Endpoint to create a new team.
-    
+    Endpoint to retrieve all teams.
+
     Business logic:
-    - Only authorized users should be able to create new teams
-    - Team names should be unique within their department
+    - Useful for dashboards, HR, and organization charts
     """
-    return controller.create_team(team_create)
+    return controller.get_all_teams()
 
 
-@router.get("/teams/{team_id}", response_model=TeamResponse)
+@router.get("/statistics", response_model=TeamStatistics)
+async def get_team_statistics(
+    request: Request,
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+) -> TeamStatistics:
+    """
+    Endpoint to retrieve team count per department.
+
+    Business logic:
+    - Used for reporting and organizational analysis
+    """
+    return controller.get_team_statistics()
+
+
+@router.get("/{team_id}", response_model=TeamResponse)
 async def get_team(
     team_id: int,
     request: Request,
@@ -41,8 +58,31 @@ async def get_team(
     """
     return controller.get_team(team_id)
 
+# -----------------------------
+# CREATE
+# -----------------------------
 
-@router.put("/teams/{team_id}", response_model=TeamResponse)
+@router.post("", response_model=TeamResponse)
+async def create_team(
+    team_create: TeamCreate,
+    request: Request,
+    controller: TeamController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+) -> TeamResponse:
+    """
+    Endpoint to create a new team.
+
+    Business logic:
+    - Only authorized users should be able to create new teams
+    - Team names should be unique within their department
+    """
+    return controller.create_team(team_create)
+
+# -----------------------------
+# UPDATE
+# -----------------------------
+
+@router.put("/{team_id}", response_model=TeamResponse)
 async def update_team(
     team_id: int,
     team_update: TeamUpdate,
@@ -59,8 +99,11 @@ async def update_team(
     """
     return controller.update_team(team_id, team_update)
 
+# -----------------------------
+# DELETE
+# -----------------------------
 
-@router.delete("/teams/{team_id}", response_model=dict)
+@router.delete("/{team_id}", response_model=dict)
 async def delete_team(
     team_id: int,
     request: Request,
@@ -76,32 +119,14 @@ async def delete_team(
     """
     return controller.delete_team(team_id)
 
-
-@router.get("/teams", response_model=List[TeamResponse])
-async def get_all_teams(
+@router.get("/{team_id}/members", response_model=List[UserResponse])
+async def get_team_members(
+    team_id: int,
     request: Request,
     controller: TeamController = Depends(),
     current_user: dict = Depends(auth_service.verify_user)
-) -> List[TeamResponse]:
+):
     """
-    Endpoint to retrieve all teams.
-
-    Business logic:
-    - Useful for dashboards, HR, and organization charts
+    Get all users assigned to a specific team.
     """
-    return controller.get_all_teams()
-
-
-@router.get("/teams/statistics", response_model=TeamStatistics)
-async def get_team_statistics(
-    request: Request,
-    controller: TeamController = Depends(),
-    current_user: dict = Depends(auth_service.verify_user)
-) -> TeamStatistics:
-    """
-    Endpoint to retrieve team count per department.
-
-    Business logic:
-    - Used for reporting and organizational analysis
-    """
-    return controller.get_team_statistics()
+    return controller.get_team_members(team_id)

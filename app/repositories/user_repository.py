@@ -1,9 +1,11 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.user import User
-from app.models.tenant.roles.role import Role
+from app.models.role import Role
 from app.models.user_role import UserRole
-from app.utils import hash_password
+from app.models.tenant_user import TenantUser
+from app.models.task_assignment import TaskAssignment
+from app.utils.db_utils import switch_schema, get_global_db
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 import logging
@@ -23,7 +25,7 @@ class UserRepository:
         """
         self.db_session = db_session
 
-    def create_user(self, email: str, password: str, first_name: str, last_name: str, department_id: Optional[int], team_id: Optional[int]) -> User:
+    def create_user(self, email: str, hashed_password: str, first_name: str, last_name: str, department_id: Optional[int], team_id: Optional[int]) -> User:
         """
         Create a new user.
 
@@ -38,7 +40,7 @@ class UserRepository:
         Returns:
             User: The newly created user object.
         """
-        hashed_password = hash_password(password)
+        
         user = User(
             email=email,
             password_hash=hashed_password,
@@ -117,9 +119,25 @@ class UserRepository:
         """
         user = self.get_user_by_id(user_id)
         if user:
-            self.db_session.delete(user)
-            self.db_session.commit()
-            return user
+            try:
+                
+                # Delete the user
+                self.db_session.delete(user)
+                self.db_session.commit()
+
+                # Switch to the global schema
+                switch_schema(self.db_session, "taskeri_global")
+
+                # Delete the user from tenant_users using ORM
+                tenant_user = self.db_session.query(TenantUser).filter(TenantUser.email == user.email).first()
+                if tenant_user:
+                    self.db_session.delete(tenant_user)
+                        
+                return user
+            except SQLAlchemyError as e:
+                self.db_session.rollback()
+                logger.error(f"Error deleting user {user_id}: {e}")
+                raise HTTPException(status_code=500, detail="Failed to delete user.")
         return None
         
     def get_role_by_name(self, role_name: str) -> Optional[Role]:
@@ -154,41 +172,46 @@ class UserRepository:
         
     def assign_role_to_user(self, user_id: int, role_id: int) -> bool:
         """
-        Assign a role to a user.
-        
+        Assign or update the user's role.
+
+        If the user already has a role, it updates it.
+        If not, it creates a new UserRole entry.
+
         Args:
             user_id (int): User ID.
             role_id (int): Role ID.
-            
+
         Returns:
             bool: True if successful, False otherwise.
         """
         try:
-            # Check if user and role exist
             user = self.get_user_by_id(user_id)
             role = self.db_session.query(Role).filter(Role.id == role_id).first()
-            
+
             if not user or not role:
                 return False
-                
-            # Check if the user already has this role
-            existing = self.db_session.query(UserRole).filter(
-                UserRole.user_id == user_id,
-                UserRole.role_id == role_id
+
+            # Check if user already has any role assigned
+            user_role = self.db_session.query(UserRole).filter(
+                UserRole.user_id == user_id
             ).first()
-            
-            if existing:
-                return True  # Role already assigned
-                
-            # Create the new role assignment
-            user_role = UserRole(
-                user_id=user_id,
-                role_id=role_id
-            )
-            
-            self.db_session.add(user_role)
+
+            if user_role:
+                # Update existing role
+                user_role.role_id = role_id
+            else:
+                # Create new role assignment
+                user_role = UserRole(user_id=user_id, role_id=role_id)
+                self.db_session.add(user_role)
+
             self.db_session.commit()
             return True
+
+        except Exception as e:
+            self.db_session.rollback()
+            print(f"Error assigning role: {e}")
+            return False
+
             
         except SQLAlchemyError as e:
             logger.error(f"Error assigning role to user {user_id}: {e}")
@@ -224,3 +247,25 @@ class UserRepository:
         except SQLAlchemyError:
             self.db_session.rollback()
             return False
+        
+    def get_users_by_team(self, team_id: int) -> List[User]:
+        """
+        Get all users that belong to a given team.
+        
+        Args:
+            team_id (int): ID of the team.
+
+        Returns:
+            List[User]: List of users assigned to the team.
+        """
+        return self.db_session.query(User).filter(User.team_id == team_id).all()
+    
+    def get_all_users(self) -> List[User]:
+        """
+        Retrieve all users from the database.
+
+        Returns:
+            List[User]: A list of all user objects.
+        """
+        return self.db_session.query(User).all()
+

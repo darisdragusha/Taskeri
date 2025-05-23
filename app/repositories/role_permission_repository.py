@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.role_permission import RolePermission
 from app.models.dtos.role_permission_dto import RolePermissionCreate
+from app.models.permission import Permission
 from typing import List
 
 class RolePermissionRepository:
@@ -67,3 +68,17 @@ class RolePermissionRepository:
         self.db.delete(mapping)
         self.db.commit()
         return True
+    
+    def get_permissions_by_role_id(self, role_id: int) -> List[Permission]:
+        """
+        Get all Permission records assigned to a given role.
+
+        :param role_id: ID of the role
+        :return: List of Permission objects
+        """
+        return (
+            self.db.query(Permission)
+            .join(RolePermission, Permission.id == RolePermission.permission_id)
+            .filter(RolePermission.role_id == role_id)
+            .all()
+        )

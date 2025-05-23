@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException, status, APIRouter, Depends, Request
 from app.controllers import UserController
 from app.models.dtos import UserCreate, UserUpdate, UserResponse
@@ -6,9 +7,9 @@ from app.utils.db_utils import get_db
 from app.auth import auth_service
 
 
-router = APIRouter(tags=["User"])
+router = APIRouter(prefix="/users", tags=["User"])
 
-@router.post("/users/create", response_model=UserResponse)
+@router.post("/create", response_model=UserResponse)
 async def create_user(
     user_create: UserCreate,
     request: Request,
@@ -22,7 +23,7 @@ async def create_user(
     return controller.create_user(user_create, current_user)
 
 
-@router.get("/users/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: int,
     request: Request,
@@ -43,7 +44,26 @@ async def get_user(
     
     return controller.get_user(user_id)
 
-@router.put("/users/{user_id}", response_model=UserResponse)
+@router.get("", response_model=List[UserResponse])
+async def get_all_users(
+    request: Request,
+    controller: UserController = Depends(),
+    current_user: dict = Depends(auth_service.verify_user)
+) -> List[UserResponse]:
+    """
+    Endpoint to retrieve all users.
+
+    Permission requirements (handled by middleware):
+    - 'read_any_user' permission
+
+    Business logic:
+    - Only users with 'read_any_user' permission can access the full user list
+    """
+    return controller.get_all_users()
+
+
+
+@router.put("/{user_id}", response_model=UserResponse)
 async def update_user(
     user_id: int,
     user_update: UserUpdate,
@@ -64,7 +84,7 @@ async def update_user(
     """
     return controller.update_user(user_id, user_update)
 
-@router.delete("/users/{user_id}", response_model=dict)
+@router.delete("/{user_id}", response_model=dict)
 async def delete_user(
     user_id: int,
     request: Request,

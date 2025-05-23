@@ -6,7 +6,7 @@ class LeaveRequest(Base):
     __table_args__ = {"schema": None}
 
     id = Column(BigInteger, primary_key=True)
-    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     leave_type = Column(Enum("Vacation", "Sick Leave", "Personal", "Other"), nullable=False)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)

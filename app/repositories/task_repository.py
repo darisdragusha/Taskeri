@@ -1,14 +1,17 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import update, func, or_, and_, desc, text, case
 from typing import Optional, List, Dict, Any, Tuple
-from app.models.tenant.tasks.task import Task
-from app.models.tenant.tasks.task_assignment import TaskAssignment
-from app.models.tenant.tasks.comment import Comment
+from app.models.task import Task
+from app.models.task_assignment import TaskAssignment
+from app.models.comment import Comment
 from app.models.file_attachment import FileAttachment
 from app.models.user import User
 from app.models.project import Project
-from app.models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum
+from app.models.dtos import TaskDetailResponse, TaskStatistics, StatusEnum, TaskResponse
+from app.models.dtos.notification_dtos import NotificationCreate
 from datetime import date, datetime
+import logging
+from app.controllers.notification_controller import NotificationController
 
 class TaskRepository:
     """Repository class for handling task-related database operations."""
@@ -58,7 +61,8 @@ class TaskRepository:
             self.db_session.add(task)
             self.db_session.flush() 
             
-            
+            notif_controller = NotificationController(self.db_session)
+
             if assigned_user_ids:
                 for user_id in assigned_user_ids:
                     assignment = TaskAssignment(
@@ -66,7 +70,10 @@ class TaskRepository:
                         user_id=user_id
                     )
                     self.db_session.add(assignment)
-            
+                    notif=NotificationCreate(
+                        user_id=user_id,
+                        message=f"You have been assigned to task '{name}'",)
+                    notif_controller.create_notification(notif )
             self.db_session.commit()
             self.db_session.refresh(task)
             return task
@@ -150,7 +157,8 @@ class TaskRepository:
         """
         assignments = self.db_session.query(TaskAssignment.user_id).filter(
             TaskAssignment.task_id == task_id
-        ).all()
+        ).all() 
+        
         return [assignment[0] for assignment in assignments]
     
     def get_tasks_by_project(self, project_id: int) -> List[Task]:
@@ -193,67 +201,62 @@ class TaskRepository:
         assigned_to_user_id: Optional[int] = None,
         project_id: Optional[int] = None,
         search_term: Optional[str] = None
-    ) -> Tuple[List[Task], int]:
+    ) -> Tuple[List[TaskResponse], int]:
         """
-        Get paginated list of tasks with optional filtering.
-        
-        Args:
-            page (int): Page number (starting from 1)
-            page_size (int): Number of items per page
-            status (List[str]): Filter by status values
-            priority (List[str]): Filter by priority values
-            due_date_from (date): Filter by due date (from)
-            due_date_to (date): Filter by due date (to)
-            assigned_to_user_id (int): Filter by assigned user
-            project_id (int): Filter by project
-            search_term (str): Search in task name and description
-            
-        Returns:
-            Tuple[List[Task], int]: Tuple of (tasks list, total count)
+        Get paginated list of tasks with optional filtering, including assigned user IDs.
         """
-        
+
         query = self.db_session.query(Task)
-        
-        
+
         if status:
-            status_values = [s.value for s in status]
-            query = query.filter(Task.status.in_(status_values))
-            
+            query = query.filter(Task.status.in_(status))
+
         if priority:
-            priority_values = [p.value for p in priority]
-            query = query.filter(Task.priority.in_(priority_values))
-            
+            query = query.filter(Task.priority.in_(priority))
+
         if due_date_from:
             query = query.filter(Task.due_date >= due_date_from)
-            
+
         if due_date_to:
             query = query.filter(Task.due_date <= due_date_to)
-            
+
         if project_id:
             query = query.filter(Task.project_id == project_id)
-            
+
         if assigned_to_user_id:
-            query = query.join(
-                TaskAssignment, TaskAssignment.task_id == Task.id
-            ).filter(
-                TaskAssignment.user_id == assigned_to_user_id
-            )
-            
+            query = query.join(TaskAssignment).filter(TaskAssignment.user_id == assigned_to_user_id)
+
         if search_term:
             search_pattern = f"%{search_term}%"
             query = query.filter(or_(
                 Task.name.ilike(search_pattern),
                 Task.description.ilike(search_pattern)
             ))
-        
-        
+
         total = query.count()
-        
-        
+
         offset = (page - 1) * page_size
+
+        # Eagerly load assignments to reduce number of queries
         tasks = query.order_by(Task.updated_at.desc()).offset(offset).limit(page_size).all()
-        
-        return tasks, total
+
+        task_responses = []
+        for task in tasks:
+            assigned_user_ids = self.get_task_assignments(task.id)
+            task_responses.append(TaskResponse(
+                id=task.id,
+                name=task.name,
+                description=task.description,
+                priority=task.priority,
+                status=task.status,
+                due_date=task.due_date,
+                created_at=str(task.created_at),
+                updated_at=str(task.updated_at),
+                assigned_users=assigned_user_ids,
+                project_id=task.project_id
+            ))
+
+        return task_responses, total
 
     def update_task(self, 
                    task_id: int, 
@@ -286,7 +289,7 @@ class TaskRepository:
                 self.db_session.query(TaskAssignment).filter(
                     TaskAssignment.task_id == task_id
                 ).delete()
-                
+                notif_controller = NotificationController(self.db_session)
                 # Create new assignments
                 for user_id in assigned_user_ids:
                     assignment = TaskAssignment(
@@ -294,6 +297,10 @@ class TaskRepository:
                         user_id=user_id
                     )
                     self.db_session.add(assignment)
+                    notif=NotificationCreate(
+                        user_id=user_id,
+                        message=f"Theres an update on task: '{task.name}'",)
+                    notif_controller.create_notification(notif )
             
             self.db_session.commit()
             self.db_session.refresh(task)
