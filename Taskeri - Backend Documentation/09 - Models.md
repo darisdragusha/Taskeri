@@ -235,7 +235,6 @@ erDiagram
         BigInteger id PK
         String email
         String tenant_schema
-        String password_hash
         Timestamp created_at
     }
 ```
