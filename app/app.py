@@ -7,7 +7,9 @@ from app.middleware import MultiTenantMiddleware, AuthorizationMiddleware
 app = FastAPI()
 
 # CORS Configuration
-allowed_origins = ["http://localhost:3000"]
+allowed_origins = ["http://localhost:3000", "https://taskeri-frontend.vercel.app"]
+
+
 
 app.add_middleware(
     CORSMiddleware,
