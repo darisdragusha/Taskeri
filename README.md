@@ -18,7 +18,3 @@ The documentation is located in the `Taskeri - Backend Documentation` folder:
 10. [Database Schema](Taskeri%20-%20Backend%20Documentation/10%20-%20Database%20Schema.md)
 11. [Deployment Guide](Taskeri%20-%20Backend%20Documentation/11%20-%20Deployment%20Guide.md)
 
-## Opening in Obsidian
-
-For the best viewing experience, open the `Taskeri - Backend Documentation` folder directly in Obsidian. 
-Inside Obsidian, the links will work properly with this format: `[[01 - Introduction]]`
