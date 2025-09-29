@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Project Overview.md",
-                "mode": "source",
+                "file": "04 - Authorization System.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Project Overview"
+              "title": "04 - Authorization System"
             }
           }
         ]
@@ -168,19 +168,19 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "8f72143f1f929142",
+  "active": "72c408d3742bd685",
   "lastOpenFiles": [
+    "05 - Multi-Tenant Architecture.md",
+    "03 - Authentication System.md",
+    "02 - Architecture Overview.md",
+    "01 - Introduction.md",
     "11 - Deployment Guide.md",
     "10 - Database Schema.md",
     "09 - Models.md",
     "08 - Repositories.md",
     "07 - Controllers.md",
     "06 - API Endpoints.md",
-    "05 - Multi-Tenant Architecture.md",
     "04 - Authorization System.md",
-    "03 - Authentication System.md",
-    "02 - Architecture Overview.md",
-    "01 - Introduction.md",
     "Project Overview.md",
     "Permission System.md",
     "Controllers/Task Controller.md",
